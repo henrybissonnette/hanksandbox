@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}
+	{% if document %}
+		Edit {{document.title}}
+	{% else %}
+		Create Document
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+	<script>
+		var added_tags = new Array();
+		{% if document %}
+			{% for tag in document.tags %}
+				added_tags.push("'{{tag}}'")			 
+			{% endfor %}
+		{% endif %}		
+	</script>
+
+
+	<h1 class="embed">{% if document %}Edit{% else %}Create{% endif %}</h1>
+	<form action="/create"  method=post>
+		Title: <input type="text" name="title" value="{{document.title}}" />
+		Subtitle (optional): <input id="create_input" type="text" name="subtitle" value="{{document.subtitle}}" /><br/>
+		
+		{% for tag in added_tags %}
+		<div class="include_{{tag.title}}">
+		<input type="hidden" name="added_tag" class="include_{{tag.title}}" value="{{tag.title}}"/>
+		</div>
+		{% endfor%}
+		
+		<input type="hidden" name="username" value="{{document.author.username}}"/>
+		<input type="hidden" name="existing_title" value="{{document.title}}"/>
+	    <textarea name=document_content rows=20 cols=100>{{document.content}}</textarea>
+	    <br><input type=submit value={% if document %}"Save"{% else %}"Create"{% endif %}/>
+	</form>
+	
+	<br/>
+	<div id="added_tags">{% include 'tag_request/addto.html' %}</div>
+	<div id="tags">
+		
+			
+		<script type="text/javascript">
+			divtrigger("button#browse_tags","div#tags",'tag_base/',{"user_type":"user"})
+		</script> 	
+		<button  title="Use tags to identify your topic" id="browse_tags" class="subtlebutton">Add Tags</button>
+	</div>
+	
+	{% if document %}
+	<form action="delete/" method="get">
+		<input type="submit" value="Delete" title="Permanently delete this document." onClick="return confirmSubmit('Do you want to permanently delete this document?')"/>
+	</form>
+	{% endif %}
+	
+{% endblock %}

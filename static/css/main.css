@@ -1,0 +1,222 @@
+/***************************************/
+/***********EVERY PAGE****************/
+/*************************************/
+
+
+div.bodycontent{
+    color: #576;
+    background: #fff;
+    padding: 0 5em;
+    margin: 0;
+
+}
+
+
+div.pageframe{
+	border-style:solid;
+	border-width:1px;
+	padding-bottom:40px;
+}
+
+
+body {
+    font-family: Verdana, Helvetica, sans-serif;
+    height: 100%;
+}
+
+h2 {
+    border-top: 10px dotted #fff;
+    margin-top: 2em;
+}
+
+/* Elements that Represent Passages of Text are Seriffed*/
+
+div.comment,div.document{
+	color:#000;
+	font-family: "Times New Roman",Times,serif;
+}
+
+
+
+/***************Main Header*****************/
+
+div.pagetop {
+    color: #fff;
+    background: #576;
+    padding: 0 5em;
+    margin: 0;
+   /* height:100%; */
+    overflow:hidden;
+}
+
+/************************************************/
+/**************WIDELY USED***********************/
+/*************************************************/
+
+a.subtle{
+	color:#ced;
+	text-decoration: none;
+}
+
+a.subtle:hover{
+	color:#687;
+	text-decoration: none;
+}
+
+/****************Rating*************************/
+
+.rate {
+	float: right;
+}
+
+a.rate_up{
+	display: block;
+	height: 20px;
+	width: 40px;
+	background-color:transparent;
+	background-image: url('/static/images/rate_up_off.jpg');
+}
+
+a.rate_up:hover{
+	background-image: url('/static/images/rate_up_on.jpg');
+}
+
+a.rate_down{
+	display: block;
+	height: 20px;
+	width: 40px;
+	background-color:transparent;
+	background-image: url('/static/images/rate_down_off.jpg');
+}
+
+a.rate_down:hover{
+	background-image: url('/static/images/rate_down_on.jpg');
+}
+
+/*****************CREATOR***************************/
+/* Creator style defines the username that appears
+near the top of all pages associated with a particular
+user */
+
+h1.creator{
+	font-size:60px;
+	margin-left:auto;
+	margin-right:auto;
+	font-variant: small-caps;
+}
+
+h1.creator {
+	color:#aaa;
+}
+
+
+a.creator{
+	text-decoration: none;
+	color:#dfe;
+}
+
+
+
+a.home{
+
+	font-size:40px;
+	color:#dfe;
+	text-decoration: none;
+}
+
+a.header {
+    color: #dfe;
+}
+
+a.div_close{
+	float: right;
+}
+
+
+
+
+
+div.bottomlinks{
+	float: right;
+	padding-bottom:50px;
+}
+
+/**************Tag System********************/
+
+.toprule{
+    border-top: 1px dotted;
+}
+
+div.div_hover{
+	background-color:#dfe;
+}
+
+div.tag_expand{
+	/*border-style:dotted;
+	border-width:1px;*/
+}
+
+/****************Comment*********************/
+
+a.reply:link,a.reply:visited
+	{
+	display:block;
+	font-weight:bold;
+	color:#255;
+	background-color:#f0effa;
+	width:60px;
+	text-align:center;
+	padding:1px;
+	text-decoration:none;
+	}
+a.reply:hover,a.reply:active
+	{
+	background-color:#98bf21;
+	}
+
+div.nested{
+	width:96%;
+	position:relative;
+	left:20px;
+	border-left-style:dotted;
+	border-bottom-style:solid;
+	border-width:1px;
+	border-color:#999;
+	padding-top:10px;
+	padding-left:10px;
+	padding-bottom:10px;
+}
+
+div.comment_header{
+	background-color: #576;
+	color:#fff;
+	padding: 2px;
+	margin-top: 2px;
+	margin-bottom: -8px;
+}
+
+div.comment_top{
+	margin-top:10px;
+	background: #dfe;
+}
+
+div.top_comment{
+	border-top-style:dotted;
+	border-right-style:solid;
+	border-bottom-style:dotted;
+	border-left-style:solid;
+}
+
+div.comment {
+	padding-top:10px;
+	padding-bottom:10px;
+	padding-right:10px;
+	padding-left:10px;
+	background-color:#dfe;
+	color:black;
+    margin: 1em 0;
+}
+
+
+
+

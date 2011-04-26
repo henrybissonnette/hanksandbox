@@ -1,0 +1,110 @@
+
+<!--RUDIMENTARY WORKING VERSION -->
+<script type="text/javascript">
+	divtrigger("a#form_close{{parent_title}}","div#new{{parent_title}}",'tag_contract/',{"destination":"newbutton.html"})
+</script> 
+
+
+<li>
+<form action="tag_create/" method=post >
+	Title: <input type="text" name="new_title"/>
+	<input type=hidden name="parent_title" value="{{parent_title}}"/>
+	<input type=submit value="Create"/>
+	<a href="javascript:;" id="form_close{{parent_title}}" class="subtle">x</a>
+</form>
+
+</li>	
+	
+
+
+
+
+
+
+<!-- Hypothesized alternative. Not working. Would prevent tree from collapsing when new element is added. Links
+	and buttons are completely dead however.
+	
+<script type="text/javascript">
+		
+	$(document).ready(function(){
+		
+		$("button#sub_tag{{parent_title}}").click(function(){
+			var new_title = $("input:text#sub_tag{{parent_title}}").val();
+			$("div#expand_{{parent_title}}").load(
+				'tag_create/',
+				{"parent_title":"{{parent_title}}","new_title":new_title}
+			);
+		});
+	});	
+			
+</script>
+
+<script type="text/javascript">
+	divtrigger("a#form_close{{parent_title}}","div#expand_{{parent_title}}",'tag_expand/',{"parent_title":"{{parent_title}}",""})
+</script> 
+
+
+<li>
+	Title: <input type="text" id="sub_tag{{parent_title}}" name="new_title"/>
+	<input type=button id="sub_tag{{parent_title}}" value="Create Tag"/>
+
+	<a href="javascript:;" id="form_close{{parent_title}}" class="subtle">x</a>
+</li>
+
+ -->
+
+
+
+
+<!--
+
+
+
+<form id="new_title{{parent_title}}">
+	Title: <input type="text" id="new_title{{parent_title}}" />
+	<input type=submit id="text_title{{parent_title}}" value="Create"/>
+</form>
+<a href="javascript:;" id="form_close{{parent_title}}" class="subtle">x</a>
+</li>
+
+This script almost works it does grab the form variable and pass it, but it
+doesnt go to the right URL for some reason.
+
+<script type="text/javascript">
+		
+	$(document).ready(function(){
+		
+		$("form#new_title{{parent_title}} input#text_title{{parent_title}}").click(function(){
+			var new_title = $("form#new_title{{parent_title}} input:text").val();
+			$("div#expand_{{parent_title}}").load(
+				'tag_create/',
+				{"parent_title":"{{parent_title}}","new_title":new_title}
+			);
+		});
+	});	
+			
+</script>
+
+-->
+
+
+<!-- if the title tag is passed we need to instantiate the rest of the subtags in this file! 
+	each will need its own div 
+
+<script type="text/javascript">
+	divtrigger("a#form_close{{parent_title}}","div#expand_{{parent_title}}",'tag_expand/',{"title":"{{parent_title}}"})
+</script> 
+-->
+
+<!-- 
+var name = $("input#name").val();
+
+
+$('#your-form').bind('submit', function (event) {
+  jQuery.get('your-url.php', $(this).serialize(), function (response) {
+    alert("Woo");
+  });
+
+  event.preventDefault();
+});
+-->

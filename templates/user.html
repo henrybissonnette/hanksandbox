@@ -1,0 +1,30 @@
+{% extends "comment_request/commentary.html" %}
+
+{% block title %}
+{{ page_user }}'s Page
+{% endblock title%}
+
+{% block main_content %}
+
+
+
+<h1> Welcome to {{ page_user }}'s Page </h1>
+
+<h2> {{ page_user }}'s Essays </h2>		
+{% ifequal page_user user.username %}
+<a href="/create">Create</a>
+{% endifequal %}
+	<ul>
+	{% for essay in essays %}
+		<li><a href="/{{ page_user }}/document/{{ essay.title }}/">
+			{{ essay.title }}
+		</a></li>
+	{% endfor %}
+	</ul>
+
+
+
+
+
+{% endblock main_content %}
+

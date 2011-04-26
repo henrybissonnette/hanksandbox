@@ -1,0 +1,19 @@
+
+application: hanksandbox
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /static/css
+  static_dir: static/css
+- url: /static/js
+  static_dir: static/js
+- url: /static/images
+  static_dir: static/images
+- url: /static/tinymce/jscripts/tiny_mce
+  static_dir: static/tinymce/jscripts/tiny_mce
+- url: /.* 
+  script: main.py
+
+

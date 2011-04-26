@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Admin 
+{% endblock %}
+
+{% block content %}
+<script type="text/javascript" src="/static/js/admin.js"></script>	
+	
+<h1>Tag Manager</h1>
+<hr/>
+
+	<div id="tags">
+		<div id="added_tags"></div>
+			
+	
+		<button  title="Create or remove tags" id="browse_tags" class="subtlebutton">Manage Tags</button>
+	</div>
+	
+<h1>Model Updater</h1>
+<hr/>
+
+	<div id="models">
+		<div id="added_tags"></div>	
+		<button  
+		title="Restricted administrative function that updates models in the datastore when there has been a schema change. 
+Must be real admin to use (could easily wipe an entire class of objects from the datastore). " 
+		id="update_models" class="subtlebutton">
+		Update Models
+		</button>
+	</div>
+	
+{% endblock %}

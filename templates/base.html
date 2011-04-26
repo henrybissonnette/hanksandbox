@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html>
+<meta charset="UTF-8">
+		
+<title>
+	{% block title %}
+	{% endblock %}
+</title>		
+		
+
+<head>
+    <link type="text/css" rel="stylesheet" href="/static/css/main.css" />
+	<script type="text/javascript" src="/static/js/jquery.js"></script>
+	<script type="text/javascript" src="/static/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+	<script type="text/javascript" src="/static/js/base.js"></script>
+</head>
+
+<body>
+	
+	<div class="pagetop">
+		<b>
+			<a href="/home" title="Don't worry, this is just a placeholder until the site has a name." class="home">Essay.com</a>
+				
+			{% if user %}
+				Hello {{ user.username }}!
+				[<a class="header" href="{{ logout }}">sign out</a>]
+				<a class="header" href="/user/{{ user.username }}/">MyPage</a>
+			{% else %}
+				[<a class="header" href="{{ login }}">sign in</a>]
+			{% endif %}
+			<a href="/admin/" class="header">admin</a>
+			<!--this has problems if your not a user
+			{% comment %}
+			{% if user.admin %}
+				<a href="/admin/" class="header">admin</a>
+			{% endif %}
+			{% endcomment%}
+			-->
+		</b>
+	</div>
+	
+	<div class="pageframe">
+		<div class="bodycontent">
+		    {% block content %}
+		    {% endblock %}
+	    </div>
+
+    </div>
+    <div class="bottomlinks">
+	<a href="/meta/">Meta</a>|
+	</div>
+</body>
+</html>
+

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Essay Home
+{% endblock %}
+
+{% block content %}
+	
+	{% if not user %}
+		<a href="/register">Register</a>
+	{% endif %}
+	<h1>The future long-form publication site X</h1>
+
+	
+	<h3>Existing Documents</h3>
+	<ul>
+	{% for document in main_documents %}
+		<li><a href="{{ document.authorname }}/document/{{ document.title }}/">{{document.title}}</a> by <a href="/user/{{ document.authorname }}/">{{document.authorname}}</a></li>
+	{% endfor %}
+	</ul>
+	
+	<h1>Meta Pages</h1>
+	<p>This site is under construction. If you have bugs to report, would like to discuss features that need to be added, 
+		or you have design input, check out or contribute to the Meta Pages.</p>
+		
+	<ul>
+	{% for document in meta_documents %}
+		<li><a href="{{ document.authorname }}/document/{{ document.title }}/">{{document.title}}</a> by <a href="/user/{{ document.authorname }}/">{{document.authorname}}</a></li>
+	{% endfor %}
+	</ul>
+
+{% endblock %}

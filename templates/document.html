@@ -1,0 +1,35 @@
+
+
+{% extends "comment_request/commentary.html" %}
+
+{% block title %}
+{{document.title}}
+{% endblock title%}
+
+{% block main_content %}
+
+	<h1 class="creator"><a title="Visit {{document.author.username}}'s  Page" class="creator" href="/user/{{document.author.username}}/">
+		{{document.author.username}}
+		</a></h1>
+	<h1>{{title}}</h1><br />
+	
+	{% if subtitle %}
+		<h2>{{subtitle}}</h2><br />
+	{% endif %}
+	
+	{% autoescape off %}
+		<div class="document">{{document.content}}</div>
+	{% endautoescape %}
+
+	Tags:
+	{% for tag in document.tags %}
+		<button class="tag">{{tag}}</button> 
+	{% endfor %}
+	
+	{% ifequal user.username document.author.username %}
+		<form action="edit/" method="get">
+			<input type="submit" value="edit"/>
+		</form>
+	{% endifequal %}
+
+{% endblock main_content %}

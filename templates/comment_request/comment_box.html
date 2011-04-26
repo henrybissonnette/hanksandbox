@@ -1,0 +1,21 @@
+	
+
+	
+	<form action="comment/" method=post>
+		Subject:<input type="text" name="subject" cols=80 value="RE: {% if title %}{{title}}{% else %}{{page_user}}{% endif %}" /><br/>
+	    <textarea class="tinymce" name=content rows=5 cols=80></textarea>
+	    
+	    {% if authorname %}
+		    <input type="hidden" name="title" value="{{title}}">
+		    <input type="hidden" name="object_user" value="{{authorname}}">
+	    {% endif  %}
+	    
+	   	{% if page_user %}
+	    	<input type="hidden" name="object_user" value="{{page_user}}">
+	    {% endif  %}
+	    
+	    <input type="hidden" name="comment_type" value="top_level">
+	    <input type=submit value="Comment">
+	</form>
+	
+

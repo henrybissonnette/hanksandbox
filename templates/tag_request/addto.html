@@ -1,0 +1,21 @@
+
+{% for tag in added_tags %}
+	<div class="include_{{tag.title}}">
+	<button class="leaf_tag include_{{tag.title}}">{{tag.title}}</button>|
+	{% for ancestor in tag.ancestors %}
+		<button class="branch_tag" >{{ancestor}}</button>
+	{% endfor %}
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('a#uninclude{{tag.title}}').click(function(){
+				added_tags = array_remove(added_tags,"'{{tag.title}}'");
+				$('div.include_{{tag.title}}').remove();
+			})
+		})
+	</script> 
+					
+	<a href="javascript:;" title="Remove this tag." id="uninclude{{tag.title}}" class="subtle">X</a>
+
+	<br />
+	</div>
+{% endfor %}
