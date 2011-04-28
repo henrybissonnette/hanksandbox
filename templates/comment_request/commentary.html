@@ -25,13 +25,7 @@
 		    	"page_user":"{{page_user}}",
 		    	{% endif %}
 		    	},
-		    	function(){
-					tinyMCE.init({ 
-			        mode : "textareas",
-        			theme : "simple",
-        			gecko_spellcheck : true
-      				}); 
-		    	}
+		    	function(){basic_MCE()}
 		    );
 		  });
 		});		
@@ -108,13 +102,7 @@
 		    	,{
 		    	"key":"{{key}}",
 		    	},
-		    	function(){
-					tinyMCE.init({ 
-			        mode : "textareas",
-        			theme : "simple",
-        			gecko_spellcheck : true
-      				}); 
-		    	}
+		    	function(){basic_MCE()}
 		    );
 		  });
 		});		

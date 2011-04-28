@@ -4,11 +4,15 @@
 
 //include tiny mce in textareas when pages render
 //still needs to be independently loaded with ajaxed forms
-tinyMCE.init({
-        mode : "textareas",
-        theme : "simple",
-        gecko_spellcheck : true
-		});
+function basic_MCE()
+	{
+		tinyMCE.init({
+		        mode : "textareas",
+		        theme : "simple",
+		        gecko_spellcheck : true
+				});	
+	}
+
 		
 // shorthand for a .load into a div using an optional confirmation
 function divtrigger(trigger,div,url,context,confirm_message)
@@ -56,3 +60,5 @@ function array_remove(array, element)
 			}
 		return array;
 	}
+	
+basic_MCE()
