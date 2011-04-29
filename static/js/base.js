@@ -8,9 +8,12 @@ function basic_MCE()
 	{
 		tinyMCE.init({
 		        mode : "textareas",
-		        theme : "simple",
-		        gecko_spellcheck : true
-				});	
+			    theme : "advanced",
+			    plugins: "lists",
+			    theme_advanced_buttons1 : "bold,italic,underline,|,link,unlink,|,bullist, numlist,|,blockquote,undo", 
+			    theme_advanced_buttons2 : "", 
+			    theme_advanced_buttons3 : "" 
+		});			    
 	}
 
 		

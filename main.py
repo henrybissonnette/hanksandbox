@@ -188,7 +188,7 @@ class Comment(db.Model):
     """It might also be more elegant to 
     manage depth with a property here."""
     author = db.ReferenceProperty(User, collection_name = 'mycomments')
-    content = db.StringProperty(multiline=True)
+    content = db.TextProperty()
     date = db.DateTimeProperty(auto_now_add=True)
     above = db.SelfReferenceProperty(collection_name='replies')
     article = db.ReferenceProperty(Document,collection_name='comments')
