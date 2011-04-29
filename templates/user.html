@@ -17,8 +17,9 @@
 	<ul>
 	{% for essay in essays %}
 		<li><a href="/{{ page_user }}/document/{{ essay.filename }}/">
-			{{ essay.title }}
-		</a></li>
+			{{ essay.title }}</a><br/>
+			{% if essay.subtitle %}{{essay.subtitle}}{% endif %} 
+			</li>
 	{% endfor %}
 	</ul>
 

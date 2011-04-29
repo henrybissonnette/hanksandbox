@@ -18,11 +18,14 @@ def get_document(name, filename, title=None):
     #logging.info('in get name/title: /' + name + '/' + title)
     #logging.info('authorname query: ' + str(Document.all().filter('authorname ==',name).fetch(5)))
     #logging.info('title query: ' + str(Document.all().filter('title ==',title).fetch(5)))
-    if filename:
-        document = Document.all().filter('authorname ==',name).filter('filename ==',filename)[0]
-    else:
-        document = Document.all().filter('authorname ==',name).filter('title ==',title)[0]
-    return document
+    try:
+        if filename:
+            document = Document.all().filter('authorname ==',name).filter('filename ==',filename)[0]
+        else:
+            document = Document.all().filter('authorname ==',name).filter('title ==',title)[0]
+        return document
+    except:
+        return None
 
 def get_documents(tag_list=[], tag_not_list=[], type=None):
     """ tag_list should be a string list of tags """
@@ -227,7 +230,6 @@ class Tag(db.Model):
             else:
                 self.ancestors = [self.title]
         else:
-            logging.info('ancestry: ' + str(ancestry))
             if Tag.get_by_key_name(ancestry[-1]).parent_tag:
                 ancestry.append(Tag.get_by_key_name(ancestry[-1]).parent_tag.title)
                 return self.populate_ancestors(ancestry)
@@ -350,11 +352,13 @@ class View_Document(webapp.RequestHandler):
         self.response.out.write(template.render(tmpl, context))
 
 class Create_Document(webapp.RequestHandler):
-    
+    #this get should probably be merged with edit
     def get(self):
         
         user = get_user()
+        userdocuments = user.works
         context = {
+                   'userdocuments':userdocuments,
                    'user':      user,
                    'login':     users.create_login_url(self.request.uri),
                    'logout':    users.create_logout_url(self.request.uri)
@@ -369,12 +373,16 @@ class Create_Document(webapp.RequestHandler):
         filename = self.request.get('filename')
         filename = cleaner(filename)
         username = self.request.get('username')
-        logging.info('username: '+ username)
         
+        # username only gets passed on an edit
         if username:
             document = get_document(username,existing_filename)
         else:
-            document = Document()
+            # if new document uses existing filename this will happen
+            if get_document(user.username,filename):
+                document = get_document(user.username,filename)
+            else:
+                document = Document()
             
         tags_pre_pre = self.request.get_all('added_tag')
         #create ancestors for pre ancestor tags (soon to be uneccessary)
@@ -422,9 +430,11 @@ class Create_Document(webapp.RequestHandler):
 class Edit_Document(webapp.RequestHandler):
     def get(self,name,filename):
         user = get_user()
+        userdocuments = user.works
         document = get_document(name, filename)
         added_tags = [Tag.get_by_key_name(title) for title in  document.tags]
         context = {
+                   'userdocuments':userdocuments,
                    'added_tags':added_tags,
                    'document':  document,
                    'user':      user,

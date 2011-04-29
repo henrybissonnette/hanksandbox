@@ -54,6 +54,17 @@ function confirmSubmit(message)
 		return false ;
 	}
 
+function array_member(array, element)
+	{
+		for (i=0;i<array.length;i++)
+			{
+				if (array[i] == element)
+				{
+					return true
+				}
+			}
+		return false
+	}
 	
 function array_remove(array, element)
 	{

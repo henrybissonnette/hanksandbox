@@ -15,7 +15,7 @@
 	<h3>Existing Documents</h3>
 	<ul>
 	{% for document in main_documents %}
-		<li><a href="{{ document.authorname }}/document/{{ document.filename }}/">{{document.title}}</a> by <a href="/user/{{ document.authorname }}/">{{document.authorname}}</a></li>
+		<li><a href="{{ document.authorname }}/document/{{ document.filename }}/">{{document.title}}</a>{% if document.subtitle %}: {{document.subtitle}},{% endif %} by <a href="/user/{{ document.authorname }}/">{{document.authorname}}</a></li>
 	{% endfor %}
 	</ul>
 	
@@ -25,7 +25,7 @@
 		
 	<ul>
 	{% for document in meta_documents %}
-		<li><a href="{{ document.authorname }}/document/{{ document.filename }}/">{{document.title}}</a> by <a href="/user/{{ document.authorname }}/">{{document.authorname}}</a></li>
+		<li><a href="{{ document.authorname }}/document/{{ document.filename }}/">{{document.title}}</a>{% if document.subtitle %}: {{document.subtitle}},{% endif %} by <a href="/user/{{ document.authorname }}/">{{document.authorname}}</a></li>
 	{% endfor %}
 	</ul>
 
