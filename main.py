@@ -14,11 +14,14 @@ import os, re, logging, sys
 
 
 
-def get_document(name, title):
+def get_document(name, filename, title=None):
     #logging.info('in get name/title: /' + name + '/' + title)
     #logging.info('authorname query: ' + str(Document.all().filter('authorname ==',name).fetch(5)))
     #logging.info('title query: ' + str(Document.all().filter('title ==',title).fetch(5)))
-    document = Document.all().filter('authorname ==',name).filter('title ==',title)[0]
+    if filename:
+        document = Document.all().filter('authorname ==',name).filter('filename ==',filename)[0]
+    else:
+        document = Document.all().filter('authorname ==',name).filter('title ==',title)[0]
     return document
 
 def get_documents(tag_list=[], tag_not_list=[], type=None):
@@ -146,10 +149,10 @@ class Commentary:
             delta_return.append(delta_sub)
         return delta_return
     
-    def __init__(self, username, document=None):
+    def __init__(self, username, document_filename=None,document_title=None):
         
-        if document:
-            self.comments = get_document(username, document).comments.order('-date')
+        if document_filename:
+            self.comments = get_document(username, document_filename).comments.order('-date')
         else:      
             self.comments = get_user(username).mypagecomments.order('-date')
         self.comment_tree = self.prepare_reply_tree(self.comments)
@@ -172,6 +175,7 @@ class Document(db.Model):
     authorname = db.StringProperty()
     content = db.TextProperty()
     date = db.DateTimeProperty(auto_now_add=True)
+    filename = db.StringProperty()
     title = db.StringProperty()
     subtitle = db.StringProperty(multiline=True)
     rating = db.IntegerProperty(default=0)
@@ -327,16 +331,15 @@ class Register(webapp.RequestHandler):
 
 class View_Document(webapp.RequestHandler):
     
-    def get(self, name, title, reply_id=None):
+    def get(self, name, filename, reply_id=None):
         user = get_user()
-        title = title.replace('%20',' ')
-        document = get_document(name, title)
-        commentary = Commentary(name, title)
+        document = get_document(name, filename)
+        commentary = Commentary(name, filename)
 
         context = {
             'commentary': commentary,
             'document': document,
-            'title':    title,
+            'filename': filename,
             'subtitle': document.subtitle,
             'name':     name,
             'user':      user,
@@ -362,11 +365,14 @@ class Create_Document(webapp.RequestHandler):
     def post(self):
         
         user = get_user()
-        existing_title = self.request.get('existing_title')
+        existing_filename = self.request.get('existing_filename')
+        filename = self.request.get('filename')
+        filename = cleaner(filename)
         username = self.request.get('username')
+        logging.info('username: '+ username)
         
         if username:
-            document = get_document(username,existing_title)
+            document = get_document(username,existing_filename)
         else:
             document = Document()
             
@@ -390,16 +396,18 @@ class Create_Document(webapp.RequestHandler):
                 document.type.append('meta')
         document.tags = tags
         
-        if user.username:
-            document.author = user
-            document.authorname = user.username 
-        else:
-            error = 'Must Be Logged In to Create Documents'
+        if user:
+            if user.username:
+                document.author = user
+                document.authorname = user.username 
+            else:
+                error = 'Must Be Logged In to Create Documents'
             
         document.content = self.request.get('document_content')
         title = escape(self.request.get('title'))
         document.title = title
         document.subtitle = escape(self.request.get('subtitle'))
+        document.filename = filename
         document.put()
          
         mail.send_mail(
@@ -409,13 +417,12 @@ class Create_Document(webapp.RequestHandler):
             '%s wrote: \r\n\r\n"%s"' % (document.authorname, document.content),
         )
 
-        self.redirect('/' + document.authorname + '/document/'+  title + '/')
+        self.redirect('/' + document.authorname + '/document/'+  filename + '/')
         
 class Edit_Document(webapp.RequestHandler):
-    def get(self,name,title):
+    def get(self,name,filename):
         user = get_user()
-        title = title.replace('%20',' ')
-        document = get_document(name, title)
+        document = get_document(name, filename)
         added_tags = [Tag.get_by_key_name(title) for title in  document.tags]
         context = {
                    'added_tags':added_tags,
@@ -428,11 +435,8 @@ class Edit_Document(webapp.RequestHandler):
         self.response.out.write(template.render(tmpl, context))
         
 class Delete_Document(webapp.RequestHandler):
-    def get(self,name,title):
-        title = title.replace('%20',' ')    
-        logging.info('name: ' + name)
-        logging.info('title: ' + title)
-        document = get_document(name,title)
+    def get(self,name,filename):
+        document = get_document(name,filename)
         document.remove()
         self.redirect('/user/' + name + '/')
         
@@ -475,11 +479,12 @@ class CommentHandler(webapp.RequestHandler):
                 else:
                 # comments on a document page
                     if 'document' in self.request.uri:
-                        title= self.request.get('title')
+                        filename= self.request.get('filename')
                         name= self.request.get('object_user')
-                        comment.article = get_document(name, title)
+                        article = get_document(name, filename)
+                        comment.article = article
                         if not fallback_subject:
-                            fallback_subject = title
+                            fallback_subject = article
                  #comments on a user page       
                     if 'user' in self.request.uri:
                         name = self.request.get('object_user')
@@ -557,13 +562,14 @@ class CommentBox(webapp.RequestHandler):
     
     def post(self):
         user = get_user()
-        title = self.request.get('title')
+        filename = self.request.get('filename')
         authorname = self.request.get('authorname')
         page_user = self.request.get('page_user')
+        document = get_document(authorname,filename)
         context = {
             'page_user':    page_user,
             'authorname':    authorname,
-            'title':    title,
+            'document':    document,
             'user':      user,
             'login':     users.create_login_url(self.request.uri),
             'logout':    users.create_logout_url(self.request.uri)

@@ -10,9 +10,11 @@ function basic_MCE()
 		        mode : "textareas",
 			    theme : "advanced",
 			    plugins: "lists",
-			    theme_advanced_buttons1 : "bold,italic,underline,|,link,unlink,|,bullist, numlist,|,blockquote,undo", 
+			    theme_advanced_buttons1 : "bold,italic,underline,strikethrough,|,link,unlink,|,bullist, numlist,|,blockquote,undo", 
 			    theme_advanced_buttons2 : "", 
-			    theme_advanced_buttons3 : "" 
+			    theme_advanced_buttons3 : "" ,
+			    theme_advanced_statusbar_location : "bottom",
+			    theme_advanced_resizing : true
 		});			    
 	}
 

@@ -16,7 +16,7 @@
 {% endifequal %}
 	<ul>
 	{% for essay in essays %}
-		<li><a href="/{{ page_user }}/document/{{ essay.title }}/">
+		<li><a href="/{{ page_user }}/document/{{ essay.filename }}/">
 			{{ essay.title }}
 		</a></li>
 	{% endfor %}

@@ -21,9 +21,17 @@
 
 	<h1 class="embed">{% if document %}Edit{% else %}Create{% endif %}</h1>
 	<form action="/create"  method=post>
-		Title: <input type="text" name="title" value="{{document.title}}" />
-		Subtitle (optional): <input id="create_input" type="text" name="subtitle" value="{{document.subtitle}}" /><br/>
-		
+		<table>
+			<tr>
+				<td>File Name: </td><td><input type="text" name="filename" size=40 value="{{document.filename}}" /></td>
+			</tr>
+			<tr>
+				<td>Title: </td><td><input type="text" name="title" size=80 value="{{document.title}}" /></td>
+			</tr>
+			<tr>
+				<td>Subtitle (optional): </td><td><input id="create_input" type="text" name="subtitle" size=80 value="{{document.subtitle}}" /></td>
+			</tr>
+		</table>
 		{% for tag in added_tags %}
 		<div class="include_{{tag.title}}">
 		<input type="hidden" name="added_tag" class="include_{{tag.title}}" value="{{tag.title}}"/>
@@ -31,7 +39,7 @@
 		{% endfor%}
 		
 		<input type="hidden" name="username" value="{{document.author.username}}"/>
-		<input type="hidden" name="existing_title" value="{{document.title}}"/>
+		<input type="hidden" name="existing_filename" value="{{document.filename}}"/>
 	    <textarea name=document_content rows=20 cols=100>{{document.content}}</textarea>
 	    <br><input type=submit value={% if document %}"Save"{% else %}"Create"{% endif %}/>
 	</form>
