@@ -30,4 +30,25 @@ Must be real admin to use (could easily wipe an entire class of objects from the
 		</button>
 	</div>
 	
+	<script type="text/javascript">
+			$(document).ready(function(){
+				$(trigger).click(function(){
+					if (confirm_message == null) 
+						{
+							var confirmation= true;
+						}
+					else 
+						{
+							var confirmation = confirm(confirm_message);
+						};
+					if (confirmation==true)
+						{
+							$(div).load(
+								url,
+								context
+							);
+						};
+				});
+			});		
+	</script>
 {% endblock %}

@@ -28,6 +28,7 @@ function divtrigger(trigger,div,url,context,confirm_message)
 							var confirmation = confirm(confirm_message);
 						};
 					if (confirmation==true)
+					
 						{
 							$(div).load(
 								url,

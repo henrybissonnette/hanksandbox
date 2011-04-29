@@ -441,55 +441,74 @@ class Delete_Document(webapp.RequestHandler):
 
 class CommentHandler(webapp.RequestHandler):
     def post(self):
-        comment = Comment()
-        # I don't think comment type is actually in use
         comment_type = self.request.get('comment_type')
-        # subject handles comment topics
-        subject = self.request.get('subject')
-        fallback_subject=''
-        # replies to other comments get handled by if
-        if comment_type=='reply':
-            above_key = self.request.get('key')
-            comment.above = db.Key(above_key)
-            fallback_subject = comment.above.subject
-        # else sticks top level comments to an appropriate object
-        else:
-        # comments on a document page
-            if 'document' in self.request.uri:
-                title= self.request.get('title')
-                name= self.request.get('object_user')
-                comment.article = get_document(name, title)
-                if not fallback_subject:
-                    fallback_subject = title
-         #comments on a user page       
-            if 'user' in self.request.uri:
-                name = self.request.get('object_user')
-                comment.user_page = get_user(name)
-                if not fallback_subject:
-                    fallback_subject = name
-        if subject:
-            comment.subject = subject
-        else:
-            comment.subject = 'RE:'+ fallback_subject
         
-        user = get_user()
-        if user:
-            if user.username:
-                comment.author = user
-                commenter = user.username
-        else:
-            commenter = 'anonymous'
+        if comment_type == 'delete':
+            self_key = self.request.get('key')
+            comment = db.get(self_key)
+            comment.remove()
+            context={}
+            tmpl = path.join(path.dirname(__file__), 'templates/empty.html')
+            self.response.out.write(template.render(tmpl, context))
             
-        comment.content = self.request.get('content')
-        comment.put()
-        
-        mail.send_mail(
-            'postmaster@hanksandbox.appspotmail.com',
-            'hankster81@yahoo.com',
-            'Comment from %s' % commenter,
-            '%s wrote: \r\n\r\n"%s"' % (commenter, comment.content),
-        )
-        self.redirect('..')
+        else: 
+            
+            if comment_type == 'edit':
+                self_key = self.request.get('key')
+                comment = db.get(self_key)
+            else:
+                comment = Comment()
+            # subject handles comment topics
+            subject = self.request.get('subject')
+            # this if skips the above assignment
+            fallback_subject=''
+            if comment_type=='edit':
+                pass
+            else:
+                
+                # replies to other comments get handled by if
+                if comment_type=='reply':
+                    above_key = self.request.get('key')
+                    comment.above = db.Key(above_key)
+                    fallback_subject = comment.above.subject
+                # else sticks top level comments to an appropriate object
+                else:
+                # comments on a document page
+                    if 'document' in self.request.uri:
+                        title= self.request.get('title')
+                        name= self.request.get('object_user')
+                        comment.article = get_document(name, title)
+                        if not fallback_subject:
+                            fallback_subject = title
+                 #comments on a user page       
+                    if 'user' in self.request.uri:
+                        name = self.request.get('object_user')
+                        comment.user_page = get_user(name)
+                        if not fallback_subject:
+                            fallback_subject = name
+            if subject:
+                comment.subject = subject
+            else:
+                comment.subject = 'RE:'+ fallback_subject
+            
+            user = get_user()
+            if user:
+                if user.username:
+                    comment.author = user
+                    commenter = user.username
+            else:
+                commenter = 'anonymous'
+                
+            comment.content = self.request.get('content')
+            comment.put()
+            
+            mail.send_mail(
+                'postmaster@hanksandbox.appspotmail.com',
+                'hankster81@yahoo.com',
+                'Comment from %s' % commenter,
+                '%s wrote: \r\n\r\n"%s"' % (commenter, comment.content),
+            )
+            self.redirect('..')
       
 
         
@@ -555,10 +574,11 @@ class CommentBox(webapp.RequestHandler):
 class ReplyBox(webapp.RequestHandler):
     
     def post(self):
+        # request = edit tells us that its an edit
+        request = self.request.get('request')
         user = get_user()
         key = self.request.get('key')
         above = db.get(key)
-        logging.info('above: ' + str(above))
         context = {
             'above':  above,
             'key':    key,
@@ -566,6 +586,9 @@ class ReplyBox(webapp.RequestHandler):
             'login':     users.create_login_url(self.request.uri),
             'logout':    users.create_logout_url(self.request.uri)
            }  
+        if request == 'edit':
+            edit = db.get(key)
+            context['edit']=edit
         tmpl = path.join(path.dirname(__file__), 'templates/comment_request/reply_box.html')
         self.response.out.write(template.render(tmpl, context)) 
         
