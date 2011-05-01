@@ -550,7 +550,14 @@ class Rating(webapp.RequestHandler):
         user = get_user()
         rating = self.request.get('rating')
         key = self.request.get('key')
-        object = Comment.get(db.Key(key))
+        username = self.request.get('username')
+        filename = self.request.get('filename')
+        logging.info('username: ' + username)
+        logging.info('filename: ' + filename)
+        if key:
+            object = Comment.get(db.Key(key))
+        else:
+            object = get_document(username,filename)
         if rating == "up":
             rated = 1
             object.rating = object.rating + 1

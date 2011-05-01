@@ -17,6 +17,31 @@
 		<h2>{{subtitle}}</h2><br />
 	{% endif %}
 	
+			<!-- This script takes rating actions to the server. -->
+			<script type="text/javascript">
+				$(document).ready(function(){
+				  $("a#document_rate_up").click(function(){
+				    $("div#rate").load('rate/',{
+				    	"rating":"up",
+				    	"filename":"{{document.filename}}",
+				    	"username":"{{document.author.username}}",
+				    	});
+				  });
+				  $("a#document_rate_down").click(function(){
+				    $("div#rate").load('rate/',{
+				    	"rating":"down",
+				    	"filename":"{{document.filename}}",
+				    	"username":"{{document.author.username}}",
+				    	});
+				  });
+				});		
+			</script>
+			
+	<div id="rate">
+		<a href="javascript:;" title="Vote Up" id="document_rate_up" class="rate_up"></a>
+		<a href="javascript:;" title="Vote Down" id="document_rate_down" class="rate_down"></a>
+	</div>	
+	
 	{% autoescape off %}
 		<div class="document">{{document.content}}</div>
 	{% endautoescape %}
