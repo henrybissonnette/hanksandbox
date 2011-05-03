@@ -15,15 +15,18 @@ import os, re, logging, sys
 
 
 def get_document(name, filename, title=None):
-    #logging.info('in get name/title: /' + name + '/' + title)
-    #logging.info('authorname query: ' + str(Document.all().filter('authorname ==',name).fetch(5)))
-    #logging.info('title query: ' + str(Document.all().filter('title ==',title).fetch(5)))
+
+    user = get_user(name)
     try:
         if filename:
-            document = Document.all().filter('authorname ==',name).filter('filename ==',filename)[0]
+            document = Document.all().filter('author ==',user).filter('filename ==',filename)[0]
         else:
-            document = Document.all().filter('authorname ==',name).filter('title ==',title)[0]
+            document = Document.all().filter('author ==',user).filter('title ==',title)[0]
+        #temporary fix for obsolete authornames
+        document.authorname = user.username
+        document.put()
         return document
+
     except:
         return None
 
@@ -285,25 +288,7 @@ class Admin(webapp.RequestHandler):
         self.response.out.write(template.render(tmpl, context))   
     
 
-class View_Document(webapp.RequestHandler):
-    
-    def get(self, name, filename, reply_id=None):
-        user = get_user()
-        document = get_document(name, filename)
-        commentary = Commentary(name, filename)
 
-        context = {
-            'commentary': commentary,
-            'document': document,
-            'filename': filename,
-            'subtitle': document.subtitle,
-            'name':     name,
-            'user':      user,
-            'login':     users.create_login_url(self.request.uri),
-            'logout':    users.create_logout_url(self.request.uri)
-        }
-        tmpl = path.join(path.dirname(__file__), 'templates/document.html')
-        self.response.out.write(template.render(tmpl, context))
 
 class Create_Document(webapp.RequestHandler):
     #this get should probably be merged with edit
@@ -404,7 +389,24 @@ class Delete_Document(webapp.RequestHandler):
         document.remove()
         self.redirect('/user/' + name + '/')
         
-        
+class CommentBox(webapp.RequestHandler):
+    
+    def post(self):
+        user = get_user()
+        filename = self.request.get('filename')
+        authorname = self.request.get('authorname')
+        page_user = self.request.get('page_user')
+        document = get_document(authorname,filename)
+        context = {
+            'page_user':    page_user,
+            'authorname':    authorname,
+            'document':    document,
+            'user':      user,
+            'login':     users.create_login_url(self.request.uri),
+            'logout':    users.create_logout_url(self.request.uri)
+           }  
+        tmpl = path.join(path.dirname(__file__), 'templates/comment_request/comment_box.html')
+        self.response.out.write(template.render(tmpl, context))        
         
 
 class CommentHandler(webapp.RequestHandler):
@@ -500,22 +502,7 @@ class Home(webapp.RequestHandler):
         tmpl = path.join(path.dirname(__file__), 'templates/home.html')
         self.response.out.write(template.render(tmpl, context))   
         
-class UserPage(webapp.RequestHandler):
-    def get(self, page_user):
-        creator = User.all().filter('username ==', page_user).fetch(1)[0]
-        user = get_user()
-        essays = creator.works
-        commentary = Commentary(page_user)
-        context = {
-                   'commentary':commentary,
-                   'essays':    essays,
-                   'page_user': page_user,
-                   'user':      user,
-                   'login':     users.create_login_url(self.request.uri),
-                   'logout':    users.create_logout_url(self.request.uri)
-                   }     
-        tmpl = path.join(path.dirname(__file__), 'templates/user.html')
-        self.response.out.write(template.render(tmpl, context))   
+
         
 class Rating(webapp.RequestHandler):
     
@@ -548,24 +535,7 @@ class Rating(webapp.RequestHandler):
         tmpl = path.join(path.dirname(__file__), 'templates/rated.html')
         self.response.out.write(template.render(tmpl, context))  
         
-class CommentBox(webapp.RequestHandler):
-    
-    def post(self):
-        user = get_user()
-        filename = self.request.get('filename')
-        authorname = self.request.get('authorname')
-        page_user = self.request.get('page_user')
-        document = get_document(authorname,filename)
-        context = {
-            'page_user':    page_user,
-            'authorname':    authorname,
-            'document':    document,
-            'user':      user,
-            'login':     users.create_login_url(self.request.uri),
-            'logout':    users.create_logout_url(self.request.uri)
-           }  
-        tmpl = path.join(path.dirname(__file__), 'templates/comment_request/comment_box.html')
-        self.response.out.write(template.render(tmpl, context)) 
+
         
 class Register(webapp.RequestHandler):
     
@@ -730,7 +700,43 @@ class Username_Check(webapp.RequestHandler):
                 self.response.out.write('1')
         else:
                 self.response.out.write('02')
-            
+                
+class UserPage(webapp.RequestHandler):
+    def get(self, page_user):
+        creator = User.all().filter('username ==', page_user).fetch(1)[0]
+        user = get_user()
+        essays = creator.works
+        commentary = Commentary(page_user)
+        context = {
+                   'commentary':commentary,
+                   'essays':    essays,
+                   'page_user': page_user,
+                   'user':      user,
+                   'login':     users.create_login_url(self.request.uri),
+                   'logout':    users.create_logout_url(self.request.uri)
+                   }     
+        tmpl = path.join(path.dirname(__file__), 'templates/user.html')
+        self.response.out.write(template.render(tmpl, context))   
+  
+class View_Document(webapp.RequestHandler):
+    
+    def get(self, name, filename, reply_id=None):
+        user = get_user()
+        document = get_document(name, filename)
+        commentary = Commentary(name, filename)
+
+        context = {
+            'commentary': commentary,
+            'document': document,
+            'filename': filename,
+            'subtitle': document.subtitle,
+            'name':     name,
+            'user':      user,
+            'login':     users.create_login_url(self.request.uri),
+            'logout':    users.create_logout_url(self.request.uri)
+        }
+        tmpl = path.join(path.dirname(__file__), 'templates/document.html')
+        self.response.out.write(template.render(tmpl, context))          
 
 application = webapp.WSGIApplication([
     
