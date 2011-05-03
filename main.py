@@ -61,9 +61,13 @@ def adminboot():
 def get_user(name=None):
     """If a name is supplied get user returns the user with that username otherwise
     it returns the current user."""
-    
     if name:
-        user = User.all().filter('username ==', name).fetch(1)[0]
+        name = name.lower()
+    if name:
+        try:
+            user = User.all().filter('username ==', name).fetch(1)[0]
+        except: 
+            return None
     else:
         try:
             user = User.all().filter('google ==', users.get_current_user()).fetch(1)[0]
@@ -71,12 +75,16 @@ def get_user(name=None):
            return None
     if user == None:
         return None
+    #this is one time use for correcting prelowercase usernames
+    if user.username:
+        user.username = user.username.lower()
     if admincheck():
         user.admin = True 
         user.put()
     else:
         user.admin = False 
         user.put()
+    
     return user
 
 def cleaner(value, deletechars = ' `~!@#$%^&*()+={[}]|\"\':;?/>.<,'):
@@ -275,60 +283,6 @@ class Admin(webapp.RequestHandler):
                    }     
         tmpl = path.join(path.dirname(__file__), 'templates/admin.html')
         self.response.out.write(template.render(tmpl, context))   
-
-
-class Home(webapp.RequestHandler):
-    
-    def get(self):
-        if self.request.path != '/home':
-            self.redirect('/home')
-        user = get_user()
-        if users.get_current_user():
-            if not user:
-                self.redirect('/register')
-        main_documents = get_documents(type='not_meta')
-        meta_documents = get_documents(type='meta')
-        context = {
-                   'meta_documents': meta_documents,
-                   'main_documents': main_documents,
-                    'user':      user,
-                   'login':     users.create_login_url(self.request.uri),
-                   'logout':    users.create_logout_url(self.request.uri)                       
-                   }     
-        tmpl = path.join(path.dirname(__file__), 'templates/home.html')
-        self.response.out.write(template.render(tmpl, context))   
-
-
-class Register(webapp.RequestHandler):
-    
-    def get(self):
-        user = get_user()
-        if user:
-            if user.username:
-                self.redirect('/home')
-        if (not user) and users.get_current_user():
-            user = User()
-            user.google = users.get_current_user()
-            user.put()
-        else: 
-            self.redirect(users.create_login_url(self.request.uri))
-        
-
-        context = {
-                    'user':      user,
-                    'login':     users.create_login_url(self.request.uri),
-                    'logout':    users.create_logout_url(self.request.uri)                       
-                    }     
-        tmpl = path.join(path.dirname(__file__), 'templates/register.html')
-        self.response.out.write(template.render(tmpl, context))
-            
-    def post(self):
-        user = get_user()
-        user.google = users.get_current_user()
-        user.username = escape(self.request.get('username'))
-        user.put()
-        self.redirect('/home')
-
     
 
 class View_Document(webapp.RequestHandler):
@@ -525,7 +479,26 @@ class CommentHandler(webapp.RequestHandler):
             )
             self.redirect('..')
       
-
+class Home(webapp.RequestHandler):
+    
+    def get(self):
+        if self.request.path != '/home':
+            self.redirect('/home')
+        user = get_user()
+        if users.get_current_user():
+            if not user or not user.username:
+                self.redirect('/register')
+        main_documents = get_documents(type='not_meta')
+        meta_documents = get_documents(type='meta')
+        context = {
+                   'meta_documents': meta_documents,
+                   'main_documents': main_documents,
+                    'user':      user,
+                   'login':     users.create_login_url(self.request.uri),
+                   'logout':    users.create_logout_url(self.request.uri)                       
+                   }     
+        tmpl = path.join(path.dirname(__file__), 'templates/home.html')
+        self.response.out.write(template.render(tmpl, context))   
         
 class UserPage(webapp.RequestHandler):
     def get(self, page_user):
@@ -593,6 +566,40 @@ class CommentBox(webapp.RequestHandler):
            }  
         tmpl = path.join(path.dirname(__file__), 'templates/comment_request/comment_box.html')
         self.response.out.write(template.render(tmpl, context)) 
+        
+class Register(webapp.RequestHandler):
+    
+    def get(self):
+        user = get_user()
+        if user:
+            if user.username:
+                self.redirect('/home')
+        if not user:
+            if users.get_current_user():
+                user = User()
+                user.google = users.get_current_user()
+                user.put()
+            else: 
+                self.redirect(users.create_login_url(self.request.uri))
+        
+
+        context = {
+                    'user':      user,
+                    'login':     users.create_login_url(self.request.uri),
+                    'logout':    users.create_logout_url(self.request.uri)                       
+                    }     
+        tmpl = path.join(path.dirname(__file__), 'templates/register.html')
+        self.response.out.write(template.render(tmpl, context))
+            
+    def post(self):
+        user = get_user()
+        user.google = users.get_current_user()
+        name = self.request.get('username')
+        name = cleaner(name)
+        if not get_user(name.lower()):
+            user.username = name.lower()
+        user.put()
+        self.redirect('/home')
         
 class ReplyBox(webapp.RequestHandler):
     
@@ -697,7 +704,6 @@ class TagManager(webapp.RequestHandler):
                   
         if request == 'remove':
             removed = self.request.get('title')
-            logging.info('removed: ' + removed)
             Tag.get_by_key_name(removed).exterminate()
             
             context = {}
@@ -712,11 +718,23 @@ class Update_Models(webapp.RequestHandler):
             tmpl = path.join(path.dirname(__file__), 'templates/update_models.html')
             self.response.out.write(template.render(tmpl, context))
             
-        
+class Username_Check(webapp.RequestHandler):
+    def post(self):
+        username = self.request.get('username')
+        if username:
+            if get_user(username.lower()):
+                self.response.out.write('00')
+            elif username != cleaner(username):
+                self.response.out.write('01')
+            else:
+                self.response.out.write('1')
+        else:
+                self.response.out.write('02')
             
 
 application = webapp.WSGIApplication([
-                                      
+    
+    ('/availability/', Username_Check),
     ('/update_models/(.*)./', Update_Models),                                      
     ('.*/tag_(.*)/', TagManager),
     ('/admin/', Admin),
