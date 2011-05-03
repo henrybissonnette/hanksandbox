@@ -17,7 +17,7 @@
 	{% for document in main_documents %}
 		<li>
 			<a href="{{ document.authorname }}/document/{{ document.filename }}/">{{document.title}}</a><br/>
-			{% if document.subtitle %}{{document.subtitle}},{% endif %} by <a href="/user/{{ document.authorname }}/">{{document.authorname}}</a>
+			{% if document.subtitle %}{{document.subtitle}},{% endif %} by <a href="/user/{{ document.author.username }}/">{{document.authorname}}</a>
 		</li>
 	{% endfor %}
 	</ul>
@@ -30,7 +30,7 @@
 	{% for document in meta_documents %}
 		<li>
 			<a href="{{ document.authorname }}/document/{{ document.filename }}/">{{document.title}}</a><br/>
-			{% if document.subtitle %}{{document.subtitle}},{% endif %} by <a href="/user/{{ document.authorname }}/">{{document.authorname}}</a>
+			{% if document.subtitle %}{{document.subtitle}},{% endif %} by <a href="/user/{{ document.author.username }}/">{{document.authorname}}</a>
 		</li>
 	{% endfor %}
 	</ul>
