@@ -188,6 +188,7 @@ div.nested{
 }
 
 div.comment_header{
+	cursor:pointer;
 	background-color: #576;
 	color:#fff;
 	padding: 2px;
@@ -198,6 +199,14 @@ div.comment_header{
 div.comment_top{
 	margin-top:10px;
 	background: #dfe;
+}
+
+div.minimized_comment{
+	cursor:pointer;
+	background-color: #8a9;
+	color:#fff;
+	height:20px;
+	overflow:hidden;
 }
 
 div.top_comment{

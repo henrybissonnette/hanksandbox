@@ -8,10 +8,8 @@ from google.appengine.ext import db, webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
 from cgi import escape
+from django.utils.html import strip_tags
 import os, re, logging, sys
-
-
-
 
 
 def get_document(name, filename, title=None):
@@ -122,10 +120,16 @@ class Commentary:
     
     def comment_tree_expand(self, comment, depth = 0):
     
+        # temporary stripped content maker
+        if not comment.stripped_content:
+            comment.stripped_content = strip_tags(comment.content)
+            comment.put()
+        # end temporary
         tree = [(comment,depth)]
             
         if comment.replies:
             for sub_comment in comment.replies:
+                
                 tree.extend(self.comment_tree_expand(sub_comment, depth+1))
         
         return tree
@@ -178,10 +182,11 @@ class Commentary:
 
 class User(db.Model):
     
-    google = db.UserProperty()
-    username = db.StringProperty()
-    reputation = db.IntegerProperty(default=0)
     admin = db.BooleanProperty(default=False)
+    displayname = db.StringProperty()
+    google = db.UserProperty()
+    reputation = db.IntegerProperty(default=0)
+    username = db.StringProperty()
 
 class Document(db.Model):
     
@@ -212,6 +217,7 @@ class Comment(db.Model):
     article = db.ReferenceProperty(Document,collection_name='comments')
     user_page = db.ReferenceProperty(User, collection_name='mypagecomments')
     rating = db.IntegerProperty(default=0)
+    stripped_content = db.TextProperty()
     subject = db.StringProperty()
     
     def remove(self):
@@ -288,107 +294,6 @@ class Admin(webapp.RequestHandler):
         self.response.out.write(template.render(tmpl, context))   
     
 
-
-
-class Create_Document(webapp.RequestHandler):
-    #this get should probably be merged with edit
-    def get(self):
-        
-        user = get_user()
-        userdocuments = user.works
-        context = {
-                   'userdocuments':userdocuments,
-                   'user':      user,
-                   'login':     users.create_login_url(self.request.uri),
-                   'logout':    users.create_logout_url(self.request.uri)
-                   }     
-        tmpl = path.join(path.dirname(__file__), 'templates/create.html')
-        self.response.out.write(template.render(tmpl, context))   
-        
-    def post(self):
-        
-        user = get_user()
-        existing_filename = self.request.get('existing_filename')
-        filename = self.request.get('filename')
-        filename = cleaner(filename)
-        username = self.request.get('username')
-        
-        # username only gets passed on an edit
-        if username:
-            document = get_document(username,existing_filename)
-        else:
-            # if new document uses existing filename this will happen
-            if get_document(user.username,filename):
-                document = get_document(user.username,filename)
-            else:
-                document = Document()
-            
-        tags_pre_pre = self.request.get_all('added_tag')
-        #create ancestors for pre ancestor tags (soon to be uneccessary)
-        
-        for tag in tags_pre_pre:
-            update = Tag.get_by_key_name(tag)
-            update.populate_ancestors()
-            update.put()
-            
-        tags_pre = [Tag.get_by_key_name(title).ancestors for title in tags_pre_pre]
-        tags = [item for sublist in tags_pre for item in sublist]
-        tags = remove_duplicates(tags)
-        if 'Meta' in tags:
-            if 'meta' not in document.type:
-                try:
-                    document.type.remove('not_meta')
-                except:
-                    pass
-                document.type.append('meta')
-        document.tags = tags
-        
-        if user:
-            if user.username:
-                document.author = user
-                document.authorname = user.username 
-            else:
-                error = 'Must Be Logged In to Create Documents'
-            
-        document.content = self.request.get('document_content')
-        title = escape(self.request.get('title'))
-        document.title = title
-        document.subtitle = escape(self.request.get('subtitle'))
-        document.filename = filename
-        document.put()
-         
-        mail.send_mail(
-            user.google and user.google.email() or 'postmaster@hanksandbox.appspotmail.com',
-            'hankster81@yahoo.com',
-            'Comment from %s' % document.authorname,
-            '%s wrote: \r\n\r\n"%s"' % (document.authorname, document.content),
-        )
-
-        self.redirect('/' + document.authorname + '/document/'+  filename + '/')
-        
-class Edit_Document(webapp.RequestHandler):
-    def get(self,name,filename):
-        user = get_user()
-        userdocuments = user.works
-        document = get_document(name, filename)
-        added_tags = [Tag.get_by_key_name(title) for title in  document.tags]
-        context = {
-                   'userdocuments':userdocuments,
-                   'added_tags':added_tags,
-                   'document':  document,
-                   'user':      user,
-                   'login':     users.create_login_url(self.request.uri),
-                   'logout':    users.create_logout_url(self.request.uri)
-                   }     
-        tmpl = path.join(path.dirname(__file__), 'templates/create.html')
-        self.response.out.write(template.render(tmpl, context))
-        
-class Delete_Document(webapp.RequestHandler):
-    def get(self,name,filename):
-        document = get_document(name,filename)
-        document.remove()
-        self.redirect('/user/' + name + '/')
-        
 class CommentBox(webapp.RequestHandler):
     
     def post(self):
@@ -480,6 +385,106 @@ class CommentHandler(webapp.RequestHandler):
                 '%s wrote: \r\n\r\n"%s"' % (commenter, comment.content),
             )
             self.redirect('..')
+
+class Create_Document(webapp.RequestHandler):
+    #this get should probably be merged with edit
+    def get(self):
+        
+        user = get_user()
+        userdocuments = user.works
+        context = {
+                   'userdocuments':userdocuments,
+                   'user':      user,
+                   'login':     users.create_login_url(self.request.uri),
+                   'logout':    users.create_logout_url(self.request.uri)
+                   }     
+        tmpl = path.join(path.dirname(__file__), 'templates/create.html')
+        self.response.out.write(template.render(tmpl, context))   
+        
+    def post(self):
+        
+        user = get_user()
+        existing_filename = self.request.get('existing_filename')
+        filename = self.request.get('filename')
+        filename = cleaner(filename)
+        username = self.request.get('username')
+        
+        # username only gets passed on an edit
+        if username:
+            document = get_document(username,existing_filename)
+        else:
+            # if new document uses existing filename this will happen
+            if get_document(user.username,filename):
+                document = get_document(user.username,filename)
+            else:
+                document = Document()
+            
+        tags_pre_pre = self.request.get_all('added_tag')
+        #create ancestors for pre ancestor tags (soon to be uneccessary)
+        
+        for tag in tags_pre_pre:
+            update = Tag.get_by_key_name(tag)
+            update.populate_ancestors()
+            update.put()
+            
+        tags_pre = [Tag.get_by_key_name(title).ancestors for title in tags_pre_pre]
+        tags = [item for sublist in tags_pre for item in sublist]
+        tags = remove_duplicates(tags)
+        if 'Meta' in tags:
+            if 'meta' not in document.type:
+                try:
+                    document.type.remove('not_meta')
+                except:
+                    pass
+                document.type.append('meta')
+        document.tags = tags
+        
+        if user:
+            if user.username:
+                document.author = user
+                document.authorname = user.username 
+            else:
+                error = 'Must Be Logged In to Create Documents'
+            
+        document.content = self.request.get('document_content')
+        title = escape(self.request.get('title'))
+        document.title = title
+        document.subtitle = escape(self.request.get('subtitle'))
+        document.filename = filename
+        document.put()
+         
+        mail.send_mail(
+            user.google and user.google.email() or 'postmaster@hanksandbox.appspotmail.com',
+            'hankster81@yahoo.com',
+            'Comment from %s' % document.authorname,
+            '%s wrote: \r\n\r\n"%s"' % (document.authorname, document.content),
+        )
+
+        self.redirect('/' + document.authorname + '/document/'+  filename + '/')
+
+class Delete_Document(webapp.RequestHandler):
+    def get(self,name,filename):
+        document = get_document(name,filename)
+        document.remove()
+        self.redirect('/user/' + name + '/')
+              
+class Edit_Document(webapp.RequestHandler):
+    def get(self,name,filename):
+        user = get_user()
+        userdocuments = user.works
+        document = get_document(name, filename)
+        added_tags = [Tag.get_by_key_name(title) for title in  document.tags]
+        context = {
+                   'userdocuments':userdocuments,
+                   'added_tags':added_tags,
+                   'document':  document,
+                   'user':      user,
+                   'login':     users.create_login_url(self.request.uri),
+                   'logout':    users.create_logout_url(self.request.uri)
+                   }     
+        tmpl = path.join(path.dirname(__file__), 'templates/create.html')
+        self.response.out.write(template.render(tmpl, context))
+        
       
 class Home(webapp.RequestHandler):
     
@@ -708,6 +713,7 @@ class UserPage(webapp.RequestHandler):
         essays = creator.works
         commentary = Commentary(page_user)
         context = {
+                   'rating_threshold': 1,
                    'commentary':commentary,
                    'essays':    essays,
                    'page_user': page_user,
@@ -726,6 +732,7 @@ class View_Document(webapp.RequestHandler):
         commentary = Commentary(name, filename)
 
         context = {
+            'rating_threshold': 1,
             'commentary': commentary,
             'document': document,
             'filename': filename,

@@ -63,86 +63,112 @@
 			event of deletion -->
 		<div id="outer_{{key}}">
 			
-			<!-- This script takes rating actions to the server. -->
+
 			<script type="text/javascript">
 				$(document).ready(function(){
+				  //	This script takes rating actions to the server. 
 				  $("a#rate_up{{key}}").click(function(){
 				    $("div#rate{{key}}").load('rate/',{
 				    	"rating":"up",
 				    	"key":"{{key}}",
 				    	});
 				  });
+				  //	This script takes rating actions to the server. 
 				  $("a#rate_down{{key}}").click(function(){
 				    $("div#rate{{key}}").load('rate/',{
 				    	"rating":"down",
 				    	"key":"{{key}}",
 				    	});
 				  });
+				  
+				  $('#header_{{key}}').click(function(){
+				  	$('#minimized_{{key}}').show()
+				  	$('#maximized_{{key}}').hide()
+				  })
+				  
+				  $('#minimized_{{key}}').click(function(){
+				  	$('#minimized_{{key}}').hide()
+				  	$('#maximized_{{key}}').show()
+				  })
+				
+				{% if comment.rating >= rating_threshold %}	
+					$('#minimized_{{key}}').hide()
+				{% else %}  
+					$('#maximized_{{key}}').hide()
+				{% endif %}
 				});		
 			</script>
-				
-			<div id="rate{{key}}">
-				<a href="javascript:;" title="Vote Up" id="rate_up{{key}}" class="rate rate_up"></a>
-				<a href="javascript:;" title="Vote Down" id="rate_down{{key}}" class="rate rate_down"></a>
-			</div>
 			
-			</br>
-			<div class="comment_header">{{comment.subject}}</div>		
-			<div class="comment_top">
-			    <small>[<i>{{ comment.date.ctime }}</i>]</small>
-				<b>
-					{% if comment.author %}
-						<code>{{ comment.author.username }}</code> 
-					{% else %}
-						<i>anonymous</i>
-					{% endif %}
-				</b>
-				wrote:<br>
-			</div>
+			<div id="maximized_{{key}}">
+				<div id="rate{{key}}">
+					<a href="javascript:;" title="Vote Up" id="rate_up{{key}}" class="rate rate_up"></a>
+					<a href="javascript:;" title="Vote Down" id="rate_down{{key}}" class="rate rate_down"></a>
+				</div>
+				
+				</br>
+				<div class="comment_header" id="header_{{key}}">
+					{{comment.subject}}
+				</div>		
+				<div class="comment_top">
+				    <small>[<i>{{ comment.date.ctime }}</i>]</small>
+					<b>
+						{% if comment.author %}
+							<code>{{ comment.author.username }}</code> 
+						{% else %}
+							<i>anonymous</i>
+						{% endif %}
+					</b>
+					wrote:<br>
+				</div>
 				
 				<div class="comment" id="body_{{key}}">
 					{% autoescape off %}
-						{{ comment.content}}
+						{{ comment.content }}
 					{% endautoescape %}
 				</div>
-			
-	
-			<script type="text/javascript">
-			$(document).ready(function(){
-			  $("button#post_reply{{key}}").click(function(){
-			    $("div#reply_box{{key}}").load(
-			    	'reply_box/'
-			    	,{
-			    	"key":"{{key}}",
-			    	},
-			    	function(){basic_MCE()}
-			    );
-			  });
-			});		
-			</script>
-			<div id="reply_box{{key}}">
-				<button id="post_reply{{key}}">Reply</button>
-			</div> 
-			{% ifequal user.username comment.author.username %}
+				
 				<script type="text/javascript">
-					$(document).ready(function(){
-					  $("button#edit_{{key}}").click(function(){
-					    $("div#body_{{key}}").load(
-					    	'reply_box/'
-					    	,{
-					    	"key":"{{key}}", "request":"edit",
-					    	},
-					    	function(){basic_MCE()}
-					    );
-					  });
-					});		
+				$(document).ready(function(){
+				  $("button#post_reply{{key}}").click(function(){
+				    $("div#reply_box{{key}}").load(
+				    	'reply_box/'
+				    	,{
+				    	"key":"{{key}}",
+				    	},
+				    	function(){basic_MCE()}
+				    );
+				  });
+				});		
 				</script>
-				<div id="edit_key{{key}}">
-					<button id="edit_{{key}}">edit</button>
+				<div id="reply_box{{key}}">
+					<button id="post_reply{{key}}">Reply</button>
 				</div> 
-			{% endifequal %}
-
-
+				{% ifequal user.username comment.author.username %}
+					<script type="text/javascript">
+						$(document).ready(function(){
+						  $("button#edit_{{key}}").click(function(){
+						    $("div#body_{{key}}").load(
+						    	'reply_box/'
+						    	,{
+						    	"key":"{{key}}", "request":"edit",
+						    	},
+						    	function(){basic_MCE()}
+						    );
+						  });
+						});		
+					</script>
+					<div id="edit_key{{key}}">
+						<button id="edit_{{key}}">edit</button>
+					</div> 
+				{% endifequal %}
+			</div>
+			
+			{% autoescape off %}	
+			<div class="minimized_comment" id="minimized_{{key}}">
+				<b>{{comment.subject}}:</b> {{ comment.stripped_content }}
+			</div>
+			{% endautoescape %}
+			
 	{% endfor %}
 	
 	<!-- Since outers are closed in next iteration, the final
