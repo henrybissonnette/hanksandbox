@@ -202,6 +202,7 @@ div.comment_top{
 }
 
 div.minimized_comment{
+	margin-top:15px;
 	cursor:pointer;
 	background-color: #8a9;
 	color:#fff;
@@ -225,7 +226,6 @@ div.comment {
 	color:black;
     margin: 1em 0;
 }
-
 
 
 

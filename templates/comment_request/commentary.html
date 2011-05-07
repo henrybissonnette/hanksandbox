@@ -65,22 +65,8 @@
 			
 
 			<script type="text/javascript">
-				$(document).ready(function(){
-				  //	This script takes rating actions to the server. 
-				  $("a#rate_up{{key}}").click(function(){
-				    $("div#rate{{key}}").load('rate/',{
-				    	"rating":"up",
-				    	"key":"{{key}}",
-				    	});
-				  });
-				  //	This script takes rating actions to the server. 
-				  $("a#rate_down{{key}}").click(function(){
-				    $("div#rate{{key}}").load('rate/',{
-				    	"rating":"down",
-				    	"key":"{{key}}",
-				    	});
-				  });
-				  
+
+			$(document).ready(function(){  
 				  $('#header_{{key}}').click(function(){
 				  	$('#minimized_{{key}}').show()
 				  	$('#maximized_{{key}}').hide()
@@ -96,20 +82,50 @@
 				{% else %}  
 					$('#maximized_{{key}}').hide()
 				{% endif %}
-				});		
+			});		
 			</script>
 			
 			<div id="maximized_{{key}}">
-				<div id="rate{{key}}">
-					<a href="javascript:;" title="Vote Up" id="rate_up{{key}}" class="rate rate_up"></a>
-					<a href="javascript:;" title="Vote Down" id="rate_down{{key}}" class="rate rate_down"></a>
-				</div>
+				
+				{% if comment.author.username == user.username or not user %}
+					<span class="rate">Rating: {{comment.rating}}</span>
+					{% else %}
+						
+					{% if user.username not in comment.raters %}
+						<script type="text/javascript">
+							$(document).ready(function(){
+							  //	This script takes rating actions to the server. 
+								  $("a#rate_up{{key}}").click(function(){
+								    $("div#rate{{key}}").load('rate/',{
+								    	"rating":"up",
+								    	"key":"{{key}}",
+								    	});
+								  });
+								  //	This script takes rating actions to the server. 
+								  $("a#rate_down{{key}}").click(function(){
+								    $("div#rate{{key}}").load('rate/',{
+								    	"rating":"down",
+								    	"key":"{{key}}",
+								    	});
+								  });	
+							});					
+						</script>
+						
+						<div id="rate{{key}}">
+							<a href="javascript:;" title="Vote Up" id="rate_up{{key}}" class="rate rate_up"></a>
+							<a href="javascript:;" title="Vote Down" id="rate_down{{key}}" class="rate rate_down"></a>
+						</div>
+						{% else %}
+						<span class="rate">Thanks for rating this comment. Rating: {{comment.rating}}</span>				
+					{% endif %}
+				{% endif %}
 				
 				</br>
 				<div class="comment_header" id="header_{{key}}">
 					{{comment.subject}}
 				</div>		
 				<div class="comment_top">
+
 				    <small>[<i>{{ comment.date.ctime }}</i>]</small>
 					<b>
 						{% if comment.author %}
@@ -122,6 +138,7 @@
 				</div>
 				
 				<div class="comment" id="body_{{key}}">
+
 					{% autoescape off %}
 						{{ comment.content }}
 					{% endautoescape %}
@@ -163,11 +180,11 @@
 				{% endifequal %}
 			</div>
 			
-			{% autoescape off %}	
+
 			<div class="minimized_comment" id="minimized_{{key}}">
 				<b>{{comment.subject}}:</b> {{ comment.stripped_content }}
 			</div>
-			{% endautoescape %}
+
 			
 	{% endfor %}
 	

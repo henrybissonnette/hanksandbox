@@ -169,6 +169,7 @@ class Commentary:
     
     def __init__(self, username, document_filename=None,document_title=None):
         
+        
         if document_filename:
             self.comments = get_document(username, document_filename).comments.order('-date')
         else:      
@@ -192,6 +193,7 @@ class Document(db.Model):
     
     author = db.ReferenceProperty(User, collection_name = 'works')
     authorname = db.StringProperty()
+    raters = db.StringListProperty()
     content = db.TextProperty()
     date = db.DateTimeProperty(auto_now_add=True)
     filename = db.StringProperty()
@@ -202,15 +204,22 @@ class Document(db.Model):
     type = db.StringListProperty(default=["not_meta"])
     
     def remove(self):
+        
+        ratings = self.ratings
+        for rating in ratings:
+            rating.delete()
+        
         replies = self.comments
         for reply in replies:
             reply.remove()
+            
         self.delete()
 
 class Comment(db.Model):
     """It might also be more elegant to 
     manage depth with a property here."""
     author = db.ReferenceProperty(User, collection_name = 'mycomments')
+    raters = db.StringListProperty()
     content = db.TextProperty()
     date = db.DateTimeProperty(auto_now_add=True)
     above = db.SelfReferenceProperty(collection_name='replies')
@@ -221,9 +230,15 @@ class Comment(db.Model):
     subject = db.StringProperty()
     
     def remove(self):
+        
+        ratings = self.ratings
+        for rating in ratings:
+            rating.delete()
+        
         children = self.replies
         for child in children:
             child.remove()
+            
         self.delete()
 
 class Mypage(db.Model):
@@ -276,7 +291,16 @@ class Tag(db.Model):
             child.exterminate()
         self.delete()
         
-                
+class Vote(db.Model):
+    user = db.ReferenceProperty(User, collection_name='ratings')
+    date = db.DateTimeProperty(auto_now_add=True)
+    value = db.IntegerProperty()
+    
+class VoteDocument(Vote):
+    document = db.ReferenceProperty(Document, collection_name='ratings')
+    
+class VoteComment(Vote):
+    comment = db.ReferenceProperty(Comment, collection_name='ratings')
             
     
 class Admin(webapp.RequestHandler):
@@ -512,24 +536,25 @@ class Home(webapp.RequestHandler):
 class Rating(webapp.RequestHandler):
     
     def post(self):
+        
         user = get_user()
         rating = self.request.get('rating')
         key = self.request.get('key')
         username = self.request.get('username')
         filename = self.request.get('filename')
-        logging.info('username: ' + username)
-        logging.info('filename: ' + filename)
         if key:
             object = Comment.get(db.Key(key))
         else:
             object = get_document(username,filename)
-        if rating == "up":
-            rated = 1
-            object.rating = object.rating + 1
-        else:
-            rated = 0
-            object.rating = object.rating - 1
-        object.put()
+        if not (user.username in object.raters or user == object.author or not user):
+            if rating == "up":
+                rated = 1
+                object.rating = object.rating + 1
+            else:
+                rated = 0
+                object.rating = object.rating - 1
+            object.raters.append(user.username)
+            object.put()
         rate_level = object.rating
         context = {
             'rating':    rate_level,
