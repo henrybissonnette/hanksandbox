@@ -544,17 +544,27 @@ class Rating(webapp.RequestHandler):
         filename = self.request.get('filename')
         if key:
             object = Comment.get(db.Key(key))
+            vote = CommentVote()
+            vote.comment = object
         else:
             object = get_document(username,filename)
+            vote = DocumentVote()
+            vote.document = object
+        vote.user = user
+            
         if not (user.username in object.raters or user == object.author or not user):
+
             if rating == "up":
-                rated = 1
                 object.rating = object.rating + 1
+                vote.value = 1
             else:
-                rated = 0
                 object.rating = object.rating - 1
+                vote.value = -1
+                
             object.raters.append(user.username)
+            vote.put()
             object.put()
+            
         rate_level = object.rating
         context = {
             'rating':    rate_level,
