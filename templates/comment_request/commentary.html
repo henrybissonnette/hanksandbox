@@ -22,7 +22,7 @@
 		    	"filename":"{{document.filename}}",
 		    	"authorname":"{{document.authorname}}",
 		    	{% else %}
-		    	"page_user":"{{page_user}}",
+		    	"page_user":"{{page_user.username}}",
 		    	{% endif %}
 		    	},
 		    	function(){basic_MCE()}
@@ -160,7 +160,7 @@
 				<div id="reply_box{{key}}">
 					<button id="post_reply{{key}}">Reply</button>
 				</div> 
-				{% if (user and user.username == comment.author.username) or (not comment.author and user.admin %}
+				{% if user and user.username == comment.author.username or not comment.author and user.admin %}
 					<script type="text/javascript">
 						$(document).ready(function(){
 						  $("button#edit_{{key}}").click(function(){

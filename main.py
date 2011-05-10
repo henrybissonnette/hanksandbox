@@ -184,21 +184,32 @@ class Commentary:
 class User(db.Model):
     
     admin = db.BooleanProperty(default=False)
+    circle = db.StringListProperty(default=[])
+    circlepermissions = db.StringListProperty(default=[])
     displayname = db.StringProperty()
     google = db.UserProperty()
+    invitations = db.StringListProperty(default=[])
+    invitees = db.StringListProperty(default=[])
     reputation = db.IntegerProperty(default=0)
     username = db.StringProperty()
+    
+    def drafts(self):
+        self.works.filter('draft ==', True)
+        
+    def publications(self):
+        self.works.filter('draft ==', False)
 
 class Document(db.Model):
     
     author = db.ReferenceProperty(User, collection_name = 'works')
     authorname = db.StringProperty()
-    raters = db.StringListProperty()
     content = db.TextProperty()
     date = db.DateTimeProperty(auto_now_add=True)
+    draft = db.BooleanProperty(default=True)
     filename = db.StringProperty()
     title = db.StringProperty()
     subtitle = db.StringProperty(multiline=True)
+    raters = db.StringListProperty()
     rating = db.IntegerProperty(default=0)
     tags = db.StringListProperty(default=[])
     type = db.StringListProperty(default=["not_meta"])
@@ -432,6 +443,8 @@ class Create_Document(webapp.RequestHandler):
         filename = self.request.get('filename')
         filename = cleaner(filename)
         username = self.request.get('username')
+        draft = self.request.get('draft')
+        logging.info('draft:' + draft)
         
         # username only gets passed on an edit
         if username:
@@ -475,6 +488,11 @@ class Create_Document(webapp.RequestHandler):
         document.title = title
         document.subtitle = escape(self.request.get('subtitle'))
         document.filename = filename
+        if draft == 'True':
+            document.draft = True
+        else:
+            logging.info('else happened')
+            document.draft = False
         document.put()
          
         mail.send_mail(
@@ -531,7 +549,32 @@ class Home(webapp.RequestHandler):
         tmpl = path.join(path.dirname(__file__), 'templates/home.html')
         self.response.out.write(template.render(tmpl, context))   
         
-
+class Invite(webapp.RequestHandler):
+    def post(self):
+        
+        user = get_user()
+        invitee = self.request.get('invitee')
+        invited = get_user(invitee)
+        user.invitees.append(invitee)
+        invited.invitations.append(user.username)
+        user.put()
+        invited.put()
+        
+class Invite_Handler(webapp.RequestHandler):
+    def post(self):
+        user = get_user()
+        accept = self.request.get('accept')
+        inviter = self.request.get('inviter')
+        user.invitations.remove(inviter)
+        requester = get_user(inviter)
+        requester.invitees.remove(user.username)
+        if accept == 'True':         
+            user.circlepermissions.append(inviter)            
+            requester.circle.append(user.username)
+        user.put()
+        requester.put()
+        
+        
         
 class Rating(webapp.RequestHandler):
     
@@ -743,7 +786,7 @@ class Username_Check(webapp.RequestHandler):
                 
 class UserPage(webapp.RequestHandler):
     def get(self, page_user):
-        creator = User.all().filter('username ==', page_user).fetch(1)[0]
+        creator = get_user(page_user)
         user = get_user()
         essays = creator.works
         commentary = Commentary(page_user)
@@ -751,7 +794,7 @@ class UserPage(webapp.RequestHandler):
                    'rating_threshold': 1,
                    'commentary':commentary,
                    'essays':    essays,
-                   'page_user': page_user,
+                   'page_user': creator,
                    'user':      user,
                    'login':     users.create_login_url(self.request.uri),
                    'logout':    users.create_logout_url(self.request.uri)
@@ -782,6 +825,8 @@ class View_Document(webapp.RequestHandler):
 
 application = webapp.WSGIApplication([
     
+    ('/invite_handler/', Invite_Handler),
+    ('/invite/', Invite),
     ('/availability/', Username_Check),
     ('/update_models/(.*)./', Update_Models),                                      
     ('.*/tag_(.*)/', TagManager),

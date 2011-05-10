@@ -2,7 +2,7 @@
 
 	
 	<form action="comment/" method=post>
-		Subject:<input type="text" name="subject" size=80 value="RE: {% if document %}{{document.title}}{% else %}{{page_user}}{% endif %}" /><br/>
+		Subject:<input type="text" name="subject" size=80 value="RE: {% if document %}{{document.title}}{% else %}{{page_user.username}}{% endif %}" /><br/>
 	    <textarea class="tinymce" name=content rows=5 cols=80></textarea>
 	    
 	    {% if authorname %}

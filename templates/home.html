@@ -15,10 +15,12 @@
 	<h3>Existing Documents</h3>
 	<ul>
 	{% for document in main_documents %}
+	{% if not document.draft %}
 		<li>
 			<a href="{{ document.authorname }}/document/{{ document.filename }}/">{{document.title}}</a><br/>
 			{% if document.subtitle %}{{document.subtitle}}{% endif %} <a href="/user/{{ document.author.username }}/" class="subtle">by {{document.authorname}}</a>
 		</li>
+	{% endif %}
 	{% endfor %}
 	</ul>
 	
@@ -28,10 +30,12 @@
 		
 	<ul>
 	{% for document in meta_documents %}
+	{% if not document.draft %}
 		<li>
 			<a href="{{ document.authorname }}/document/{{ document.filename }}/">{{document.title}}</a><br/>
 			{% if document.subtitle %}{{document.subtitle}}{% endif %} <a href="/user/{{ document.author.username }}/" class="subtle">by {{document.authorname}}</a>
 		</li>
+	{% endif %}
 	{% endfor %}
 	</ul>
 

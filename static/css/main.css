@@ -4,29 +4,39 @@
 
 
 div.bodycontent{
-    color: #576;
-    background: #fff;
-    padding: 0 5em;
-    margin: 0;
+	
+	background: #fff;
+    color: #774;
+    margin-left: 180px;
+    margin-right: 100px;
+  	border-color:#995;
+	border-style:solid;
+	border-width:1px;
+	padding-right:30px;
+	padding-left:30px;
+	padding-bottom:30px;
 
 }
 
 
 div.pageframe{
-	border-style:solid;
-	border-width:1px;
+	margin-left: 20px;
 	padding-bottom:40px;
+	width:100%;
 }
 
 
+
+
 body {
+	background: #eea;
     font-family: Verdana, Helvetica, sans-serif;
     height: 100%;
 }
 
 h2 {
-    border-top: 10px dotted #fff;
-    margin-top: 2em;
+    /*border-top: 10px dotted #fff;*/
+    /*margin-top: 2em;*/
 }
 
 /* Elements that Represent Passages of Text are Seriffed*/
@@ -36,17 +46,66 @@ div.comment,div.document{
 	font-family: "Times New Roman",Times,serif;
 }
 
+/******************sidebar**********************/
+#sidebar{
+	padding-top:3px;
+	padding-left:3px;
+	padding-bottom:10px;
+	color: #774;
+	background:#fff ;
+    float: left;
+    width: 160px;
+    border-color:#995;
+	border-style:solid;
+	border-width:1px;
 
+}
+
+.menu_head{
+
+	background: #fff;
+	color: 774;
+	border-bottom:1px solid;
+}
+h2.menu_head{
+	font-size:17px;
+}
+h3.menu_head{
+	font-size:15px;
+}
+
+.sidebar_link{
+	color:#995;
+	text-decoration: none;
+}
+
+.sidebar_link:hover{
+	color:#774;
+	text-decoration: none;
+}
 
 /***************Main Header*****************/
 
 div.pagetop {
+	margin-top:0px;
+	margin-bottom:100px;
+	margin-right:0px;
+	margin-left:0px;
     color: #fff;
-    background: #576;
+    background: #773;
     padding: 0 5em;
-    margin: 0;
-   /* height:100%; */
+    height:110px;
     overflow:hidden;
+}
+
+#pagetop_content{
+	margin-top:20px;
+    margin-left: 150px;
+}
+
+.headeritem{
+	margin-top:0px;
+	margin-bottom:0px;
 }
 
 /************************************************/
@@ -61,6 +120,10 @@ a.subtle{
 a.subtle:hover{
 	color:#687;
 	text-decoration: none;
+}
+
+.clickable{
+	cursor:pointer;	
 }
 
 /****************Rating*************************/
@@ -119,7 +182,7 @@ a.creator{
 
 a.home{
 
-	font-size:40px;
+	font-size:50px;
 	color:#dfe;
 	text-decoration: none;
 }
@@ -137,8 +200,10 @@ a.div_close{
 
 
 div.bottomlinks{
-	float: right;
-	padding-bottom:50px;
+
+	padding-top: 2%;
+	text-align: center;
+	clear: both;
 }
 
 /**************Tag System********************/
@@ -189,7 +254,7 @@ div.nested{
 
 div.comment_header{
 	cursor:pointer;
-	background-color: #576;
+	background-color: #774;
 	color:#fff;
 	padding: 2px;
 	margin-top: 2px;
@@ -198,13 +263,13 @@ div.comment_header{
 
 div.comment_top{
 	margin-top:10px;
-	background: #dfe;
+	background: #eeb;
 }
 
 div.minimized_comment{
 	margin-top:15px;
 	cursor:pointer;
-	background-color: #8a9;
+	background-color: #bb7;
 	color:#fff;
 	height:20px;
 	overflow:hidden;

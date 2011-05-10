@@ -69,7 +69,7 @@
 		<input type="hidden" name="added_tag" class="include_{{tag.title}}" value="{{tag.title}}"/>
 		</div>
 		{% endfor%}
-		
+		<input type="checkbox" name="draft" value="True" {% if document.draft or not document %}checked{% endif %} /> Mark as Draft <br />
 		<input type="hidden" name="username" value="{{document.author.username}}"/>
 		<input type="hidden" name="existing_filename" value="{{document.filename}}"/>
 	    <textarea name=document_content rows=20 cols=100>{{document.content}}</textarea>

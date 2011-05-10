@@ -18,37 +18,47 @@
 <body>
 	
 	<div class="pagetop">
-		<b>
-			<a href="/home" title="Don't worry, this is just a placeholder until the site has a name." class="home">Essay.com</a>
-				
-			{% if user %}
-				Hello {{ user.username }}!
-				[<a class="header" href="{{ logout }}">sign out</a>]
-				<a class="header" href="/user/{{ user.username }}/">MyPage</a>
-			{% else %}
-				[<a class="header" href="{{ login }}">sign in</a>]
-			{% endif %}
-			<a href="/admin/" class="header">admin</a>
-			<!--this has problems if your not a user
-			{% comment %}
-			{% if user.admin %}
+		<div id="pagetop_content">
+			<b>
+				<a href="/home" title="Don't worry, this is just a placeholder until the site has a name." class="home headeritem">Essay.com</a>
+					
+				{% if user %}
+					Hello {{ user.username }}!
+					[<a class="header headeritem" href="{{ logout }}">sign out</a>]
+					<a class="header headeritem" href="/user/{{ user.username }}/">MyPage</a>
+				{% else %}
+					[<a class="header headeritem" href="{{ login }}">sign in</a>]
+				{% endif %}
 				<a href="/admin/" class="header">admin</a>
-			{% endif %}
-			{% endcomment%}
-			-->
-		</b>
+				<!--this has problems if your not a user
+				{% comment %}
+				{% if user.admin %}
+					<a href="/admin/" class="header">admin</a>
+				{% endif %}
+				{% endcomment%}
+				-->
+			</b>
+		</div>
 	</div>
 	
 	<div class="pageframe">
+		
+		<div id="sidebar">
+			{% block sidebar %}
+			{% endblock %}
+		</div>
+		
 		<div class="bodycontent">
 		    {% block content %}
 		    {% endblock %}
 	    </div>
-
-    </div>
-    <div class="bottomlinks">
-	<a href="/meta/">Meta</a>|
+  
+    	<br/>
+	    <div class="bottomlinks">
+			<a  href="/meta/">Meta</a>|
+		</div>
 	</div>
+	
 </body>
 </html>
 

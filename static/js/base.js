@@ -78,4 +78,31 @@ function array_remove(array, element)
 		return array;
 	}
 	
+//clicking on 'controler' reveals 'revealed'. Both should be strings.	
+//initial state is visible if 'hidden' = false
+function reveal_controller(controller, element, hidden)
+	{
+		
+		$(document).ready(function(){
+			$(controller).addClass('clickable menu_head')
+			if (hidden === false){}
+			else
+			{
+				$(element).hide();
+			}
+			
+			$(controller).click(function(){
+				if ($(element).is(":visible"))
+				{
+					$(element).hide();
+				}
+				else
+				{
+					$(element).show();
+				}
+				
+			})
+		})
+	}
+	
 basic_MCE()
