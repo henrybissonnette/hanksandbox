@@ -45,7 +45,25 @@ indexes:
 
 - kind: Comment
   properties:
+  - name: author
+  - name: date
+    direction: desc
+
+- kind: Comment
+  properties:
   - name: user_page
+  - name: date
+    direction: desc
+
+- kind: Document
+  properties:
+  - name: author
+  - name: date
+    direction: desc
+
+- kind: Document
+  properties:
+  - name: type
   - name: date
     direction: desc
 

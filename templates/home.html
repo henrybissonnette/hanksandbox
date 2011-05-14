@@ -12,31 +12,25 @@
 	<h1>The future long-form publication site X</h1>
 
 	
-	<h3>Existing Documents</h3>
-	<ul>
-	{% for document in main_documents %}
-	{% if not document.draft %}
-		<li>
-			<a href="{{ document.authorname }}/document/{{ document.filename }}/">{{document.title}}</a><br/>
-			{% if document.subtitle %}{{document.subtitle}}{% endif %} <a href="/user/{{ document.author.username }}/" class="subtle">by {{document.authorname}}</a>
-		</li>
+	<h1>Existing Documents</h1>
+
+	{% for doc in main_documents %}
+	{% if not doc.draft %}
+	{% include 'stream_doc.html'%}
 	{% endif %}
 	{% endfor %}
-	</ul>
+
 	
 	<h1>Meta Pages</h1>
 	<p>This site is under construction. If you have bugs to report, would like to discuss features that need to be added, 
 		or you have design input, check out or contribute to the Meta Pages.</p>
 		
-	<ul>
-	{% for document in meta_documents %}
-	{% if not document.draft %}
-		<li>
-			<a href="{{ document.authorname }}/document/{{ document.filename }}/">{{document.title}}</a><br/>
-			{% if document.subtitle %}{{document.subtitle}}{% endif %} <a href="/user/{{ document.author.username }}/" class="subtle">by {{document.authorname}}</a>
-		</li>
+
+	{% for doc in meta_documents %}
+	{% if not doc.draft %}
+	{% include 'stream_doc.html'%}
 	{% endif %}
 	{% endfor %}
-	</ul>
+
 
 {% endblock %}

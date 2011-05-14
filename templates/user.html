@@ -5,7 +5,7 @@
 {% endblock title%}
 
 {% block sidebar %}
-
+<!--begin user circle menu-->
 {% if user.username == page_user.username %}
 	<script type="text/javascript">
 		reveal_controller('h2#circle','#circle_div')
@@ -15,10 +15,10 @@
 		reveal_controller('h3#myinvitations','#myinvitations_div')
 	</script>
 	<h2 id="circle">Writer's Circle</h2>
-	<div id="circle_div">
+	<div class="menu" id="circle_div">
 		{% if user.circle %}
 		<h3 id="mycircle" title="users who belong to your writers circle">My Writer's Circle</h3>
-		<div id="mycircle_div">
+		<div class="menu" id="mycircle_div">
 			{% for member in user.circle %}
 			<a href="/user/{{ member }}/" class="sidebar_link">{{member}}</a>
 			{% endfor %}
@@ -27,7 +27,7 @@
 		
 		{% if user.circlepermissions %}
 		<h3 id="mypermissions" title="users whose circles you belong to" >My Circle Permissions</h3>
-		<div id="mypermissions_div">
+		<div class="menu" id="mypermissions_div">
 			{% for member in user.circlepermissions %}
 			<a href="/user/{{ member }}/" class="sidebar_link">{{member}}</a>
 			{% endfor %}
@@ -36,7 +36,7 @@
 		
 		{% if user.invitees %}
 		<h3 id="myinvitees" title="people you've invited to join your writer's circle">Invitees</h3>
-		<div id="myinvitees_div">
+		<div class="menu" id="myinvitees_div">
 			{% for invitee in user.invitees %}
 			<a href="/user/{{ invitee }}/" class="sidebar_link">{{invitee}}</a>
 			{% endfor %}
@@ -45,9 +45,9 @@
 	
 		{% if user.invitations %}
 		<h3 id="myinvitations" title="the following people want you to join their writer's circle">Invitations</h3>
-		<div id="myinvitations_div">
+		<div class="menu" id="myinvitations_div">
 			{% for invite in user.invitations %}
-				<div id="{{invite}}">
+				<div class="menu" id="{{invite}}">
 					<script type="text/javascript">
 						$(document).ready(function(){
 							
@@ -98,8 +98,53 @@
 			{% endfor %}
 		{% endif %}
 	</div>
+	<hr class="menu"/>
+	<script type="text/javascript">
+		reveal_controller('h2#mysubscriptions','#mysubscriptions_div')
+		reveal_controller('h3#your_subscriptions','#your_subscriptions_div')
+		reveal_controller('h3#your_subscribers','#your_subscribers_div')
+	</script>
+	
+	<h2 id="mysubscriptions" class="menu_head">Subscriptions</h2>
+	<div class="menu" id="mysubscriptions_div">
+		<h3 id="your_subscriptions" class="menu_header">Your Subscriptions</h2>
+		<div class="menu" id="your_subscriptions_div">
+			
+			{% if page_user.subscriptions_user %}
+				Users:
+				
+				{% for subscribee in page_user.subscriptions_user %}
+				<a href="/user/{{ subscribee }}/" class="sidebar_link">{{subscribee}}</a>
+				{% endfor %}
+			{% endif %}
+			{% if page_user.subscriptions_tag %}
+				Tags:
+				<hr/>
+				{% for tag in page_user.subscriptions_tag %}
+				<a href="/tag/" class="sidebar_link">{{tag}}</a>
+				{% endfor %}
+			{% endif %}
+			{% if not page_user.subscriptions_user and not page_user.subscriptions_tag %}
+				You have no subscriptions.
+			{% endif %}
+			
+			
+		</div>
+		<h3 id="your_subscribers" class="menu_header">Your Subscribers</h2>
+		<div class="menu" id="your_subscribers_div">
+			{% if page_user.subscribers %}
+				{% for subscriber in page_user.subscribers %}
+				<a href="/user/{{ subscriber }}/" class="sidebar_link">{{subscriber}}</a>
+				{% endfor %}
+			{% else %}
+				You have no subscribers.
+			{% endif %}
+		</div>
+	</div>
+	
 {% endif %}
-
+<!--end user circle menu-->
+<!--begin invitation dialog-->
 {% if user.username != page_user.username %}
 	{% if page_user.username not in user.circle and page_user.username not in user.invitees %}
 		<script type="text/javascript">
@@ -138,9 +183,70 @@
 		{% endif %}
 		
 	{% endif %}
-{% endif %}
 
+	
+	<script type="text/javascript">
+		reveal_controller('h2#subscribe','#subscribe_div')
+		$(document).ready(function(){
+				var data = { 'subscriptions' : [], 'page_user':'{{page_user.username}}'};
+				
+				$('#submit_subscribe').click(function(){
+						
+						$("#subscribe_div input:checked").each(function() {
+						  data['subscriptions'].push($(this).val());	
+						});		
+		
+						$.ajax({
+							type: "POST",
+							url: "/subscription_handler/",
+							data: data,
+							success: function(message){
+								$('#subscribe_outer_div').ajaxComplete(function(event,request,settings){
+									$(this).html('<span>message</span>')				
+								})
+							}
+						})				
+				})
+						
+			})	
+	</script>
+	
+	<div id="subscribe_outer_div">
+		<h2 id="subscribe" class="menu_head" title="recieve notifications about new content by this user">
+			{% if page_user.username in user.subscriptions_user %}Subscription{% else %}Subscribe{% endif %}</h2>
+			<div id="subscribe_div">
+			<table>
+			<tr>
+				<td class="sidebar_table">Event</td>
+				<td class="sidebar_table" title="recieve notifications in your subscription stream">Subscribe</td>
+				<td class="sidebar_table" title="recieve notifications by email">Email</td>
+			</tr>
+			<tr>
+				<td class="sidebar_table" title="when user publishes new documents">Document</td>
+				<td class="sidebar_table" ><input type="checkbox" name="subscribe_publish" value="subscribe_publish"
+					{% if page_user.username in user.subscriptions_document %}checked{%endif%}/></td>
+				<td class="sidebar_table" ><input type="checkbox" name="email_publish" value="email_publish" 
+					{% if user.username in page_user.subscribers_document %}checked{%endif%}/></td>
+			</tr>
+			<tr>
+				<td class="sidebar_table" title="when user leaves new comments">Comment</td>
+				<td class="sidebar_table" ><input type="checkbox" name="subscribe_comment" value="subscribe_comment"
+					{% if page_user.username in user.subscriptions_comment %}checked{%endif%}/></td>
+				<td class="sidebar_table" ><input type="checkbox" name="email_comment" value="email_comment"
+					{% if user.username in page_user.subscribers_comment %}checked{%endif%}/></td>
+			</tr>
+		</table>
+			<a href="javascript:;" class="sidebar_table rate subtle" id="submit_subscribe">
+				{% if page_user.username in user.subscriptions_user %}Save Settings{% else %}Subscribe Now{% endif %}</a>
+		</div>
+	</div>
+	
+	<!--begin subscribe-->
+{% endif %}
 {% endblock %}
+
+
+
 
 {% block main_content %}
 
@@ -148,40 +254,99 @@
 
 <h1> Welcome to {{ page_user.username }}'s Page </h1>
 
-
+<div class="left_half">
 
 
 <h2> {{ page_user.username }}'s Essays </h2>		
 {% ifequal page_user.username user.username %}
 <a href="/create">Create</a>
 {% endifequal %}
-	<ul>
-	{% for essay in essays %}
-	{% if not essay.draft %}
-			<li><a href="/{{ page_user.username }}/document/{{ essay.filename }}/">
-			{{ essay.title }}</a><br/>
-			{% if essay.subtitle %}{{essay.subtitle}}{% endif %} 
-			{% if essay.draft %}draft!{% endif %}
-			</li>
+
+	{% for doc in essays %}
+	{% if not doc.draft %}
+	{% include 'stream_doc.html'%}
 	{% endif %}
 	{% endfor %}
-	</ul>
 
-{% if user.username in page_user.cirlce or page_user.username == user.username %}
+
+{% if user.username in page_user.circle or page_user.username == user.username %}
 <h2> {{ page_user.username }}'s Drafts </h2>	
 
-	<ul>
-	{% for draft in essays %}
-	{% if draft.draft %}
-		<li><a href="/{{ page_user }}/document/{{ essay.filename }}/">
-			{{ draft.title }}</a><br/>
-			{% if draft.subtitle %}{{essay.subtitle}}{% endif %} 
-			</li>
+	{% for doc in essays %}
+	{% if doc.draft %}
+	{% include 'stream_doc.html'%}
 	{% endif %}
 	{% endfor %}
-	</ul>
+
 
 {% endif %}
+
+</div>
+
+<div class="right_half">
+	<h2> {{ page_user.username }}'s Subscription Stream </h2>
+	{% for item in page_user.fetch_stream %}
+		{% if item.title %}
+		
+			<div class="stream_item" id="{{item.title}}">
+				<div class="stream_header">
+				{{item.date}}- <a href="/user/{{item.author.username}}/">{{item.author.username}}</a> published
+				</div>
+				<div class="stream_title">{{item.title}}</div>
+				<div class="stream_subtitle">{{item.subtitle}}</div>
+				{% if item.get_description %}
+				<div class="stream_description">{{item.get_description}}</div>
+				{% else %}
+				<div class="stream_description">{{item.get_stripped}}</div>
+				{% endif %}
+			</div>
+			
+		{% else %}
+		
+		<div class="stream_item" id="{{item.key}}">
+			
+			<div class="stream_header">
+			<a href="/user/{{item.author.username}}/">{{item.author.username}}</a> replied to 
+			{% if item.get_page_object.username %}
+			<a href="/user/{{item.get_page_object.username}}/">{{item.get_page_object.username}}</a>'s page 
+			{% else %}
+			<a href="/{{item.get_page_object.author.username}}/document/{{item.get_page_object.filename}}/">{{item.get_page_object.title}}</a>
+			{% endif %}
+			</div>
+			
+			<script type="text/javascript">
+				$(document).ready(function(){
+					$('#comment_link_{{item.key}}').click(function(){
+					window.location.href = 
+						{% if item.get_page_object.username %}
+							"/user/{{item.get_page_object.username}}/#{{item.key}}bookmark"
+						{% else %}
+							"/{{item.get_page_object.author.username}}/document/{{item.get_page_object.filename}}/#{{item.key}}bookmark"
+						{% endif %};
+					})
+				})
+			</script>
+			<div class="comment_header" id="comment_link_{{item.key}}">
+				{{item.subject}}
+			</div>		
+			<div class="comment_top">
+
+			    <small>[<i>{{ item.date.ctime }}</i>]</small>
+				<b>
+						<code>{{ item.author.username }}</code> 
+				</b>
+				wrote:<br>
+			</div>
+				
+			<div class="comment" >
+				{% autoescape off %}
+					{{ item.content }}
+				{% endautoescape %}
+			</div>
+		</div>
+		{% endif %}
+	{% endfor %}
+</div>
 
 {% endblock main_content %}
 

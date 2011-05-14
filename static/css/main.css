@@ -4,7 +4,7 @@
 
 
 div.bodycontent{
-	
+		
 	background: #fff;
     color: #774;
     margin-left: 180px;
@@ -15,11 +15,13 @@ div.bodycontent{
 	padding-right:30px;
 	padding-left:30px;
 	padding-bottom:30px;
+	min-width:600px;
 
 }
 
 
 div.pageframe{
+	
 	margin-left: 20px;
 	padding-bottom:40px;
 	width:100%;
@@ -39,20 +41,60 @@ h2 {
     /*margin-top: 2em;*/
 }
 
-/* Elements that Represent Passages of Text are Seriffed*/
+/***************many element presentation standards********************/
 
-div.comment,div.document{
+/* Elements that Represent Passages of Text are Seriffed*/
+div.comment,div#document,h1.document,h2.document,.stream_title,.stream_subtitle, .stream_description{
 	color:#000;
 	font-family: "Times New Roman",Times,serif;
+}
+/* rounded box with shadow */
+#sidebar,div.bodycontent,div.pagetop{
+	
+-moz-border-radius: 10px;
+-webkit-border-radius: 10px;
+box-shadow: -3px 3px 5px #700;
+
+}
+
+/* rounded box withOUT shadow */
+div.minimized_comment,div.stream_item{
+	
+-moz-border-radius: 10px;
+-webkit-border-radius: 10px;
+
+}
+
+/* rounded box top */
+div.comment_header{
+	
+-moz-border-radius-topleft: 10px;
+-webkit-border-top-left-radius: 10px;
+
+-moz-border-radius-topright: 10px;
+-webkit-border-top-right-radius: 10px;
+}
+
+/* rounded box bottom */
+div.comment{
+	
+-moz-border-radius-bottomleft: 10px;
+-webkit-border-bottom-left-radius: 10px;
+
+-moz-border-radius-bottomright: 10px;
+-webkit-border-bottom-right-radius: 10px;
 }
 
 /******************sidebar**********************/
 #sidebar{
+	
 	padding-top:3px;
 	padding-left:3px;
+	padding-right: 3px;
 	padding-bottom:10px;
 	color: #774;
 	background:#fff ;
+	font-size:10px;
     float: left;
     width: 160px;
     border-color:#995;
@@ -61,10 +103,21 @@ div.comment,div.document{
 
 }
 
+div.menu{
+	margin-left:6px;
+}
+
+hr.menu{
+	margin-top:10px;
+	height: 3px;
+	width:50%;
+	color:#774;
+}
+
 .menu_head{
 
 	background: #fff;
-	color: 774;
+	color: #774;
 	border-bottom:1px solid;
 }
 h2.menu_head{
@@ -84,6 +137,10 @@ h3.menu_head{
 	text-decoration: none;
 }
 
+.sidebar_table{
+	font-size:10px;
+}
+
 /***************Main Header*****************/
 
 div.pagetop {
@@ -98,9 +155,16 @@ div.pagetop {
     overflow:hidden;
 }
 
+a.home{
+
+	font-size:50px;
+	color:#eec;
+	text-decoration: none;
+}
+
 #pagetop_content{
 	margin-top:20px;
-    margin-left: 150px;
+	margin-left: 180px;
 }
 
 .headeritem{
@@ -113,12 +177,12 @@ div.pagetop {
 /*************************************************/
 
 a.subtle{
-	color:#ced;
+	color:#995;
 	text-decoration: none;
 }
 
 a.subtle:hover{
-	color:#687;
+	color:#774;
 	text-decoration: none;
 }
 
@@ -126,9 +190,41 @@ a.subtle:hover{
 	cursor:pointer;	
 }
 
+
+/****************Document***************************/
+
+h1.document, h2.document{
+	max-width:900px;
+	min-width:600px;
+	margin-left:auto;
+	margin-right:auto;
+	text-align: center;
+}
+
+h1.document{
+	margin-top:100px;
+	font-variant: small-caps;
+}
+
+h2.document{
+	font-style:italic;
+}
+
+div#document{
+	font-size:18px;
+	max-width:900px;
+	min-width:600px;
+	margin-right:auto;
+	margin-left:auto;
+	text-align: left;
+	padding-top:50px;
+	padding-bottom:100px;
+}
+
 /****************Rating*************************/
 
 .rate {
+	margin-right:3px;
 	float: right;
 }
 
@@ -162,33 +258,26 @@ near the top of all pages associated with a particular
 user */
 
 h1.creator{
+	text-align:center;
+	width:600px;
 	font-size:60px;
 	margin-left:auto;
 	margin-right:auto;
 	font-variant: small-caps;
-}
-
-h1.creator {
 	color:#aaa;
 }
 
 
+
+
 a.creator{
 	text-decoration: none;
-	color:#dfe;
+	color:#eec;
 }
 
-
-
-a.home{
-
-	font-size:50px;
-	color:#dfe;
-	text-decoration: none;
-}
 
 a.header {
-    color: #dfe;
+    color: #eec;
 }
 
 a.div_close{
@@ -240,7 +329,8 @@ a.reply:hover,a.reply:active
 	}
 
 div.nested{
-	width:96%;
+
+	margin-right:20px;
 	position:relative;
 	left:20px;
 	border-left-style:dotted;
@@ -257,6 +347,7 @@ div.comment_header{
 	background-color: #774;
 	color:#fff;
 	padding: 2px;
+	padding-left:5px;
 	margin-top: 2px;
 	margin-bottom: -8px;
 }
@@ -267,6 +358,7 @@ div.comment_top{
 }
 
 div.minimized_comment{
+	padding-left:5px;
 	margin-top:15px;
 	cursor:pointer;
 	background-color: #bb7;
@@ -287,10 +379,55 @@ div.comment {
 	padding-bottom:10px;
 	padding-right:10px;
 	padding-left:10px;
-	background-color:#dfe;
+	background-color:#ffd;
 	color:black;
-    margin: 1em 0;
 }
 
+div.commentary{
+	clear:both;
+}
 
+/***********user page*****************/
 
+div.right_half{
+	margin-left:45%;
+	border-left:solid;
+	padding-left:10px;
+}
+
+div.left_half{
+	float:left;
+	width:40%;
+}
+/***********subscription stream************/
+
+.stream_header{
+	border-bottom:solid 2px black;
+	padding-bottom:2px;
+	margin-bottom:2px;
+}
+
+.stream_title{
+	font-size:20px;
+	font-variant: small-caps;
+}
+
+.stream_subtitle{
+	font-style:italic;
+	padding-bottom:5px;
+
+}
+
+.stream_description{
+	border-top:dotted 1px;
+}
+
+div.stream_item{
+	box-shadow: -2px 2px 3px #700;
+	border:solid 1px;
+	overflow:hidden;
+	padding:5px;
+	max-height:125px;
+	margin-bottom:5px;
+	/*border-bottom:dotted;/*
+}

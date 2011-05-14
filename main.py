@@ -4,7 +4,8 @@ use_library('django', '1.2')
 
 from os import path
 from google.appengine.api import mail, memcache, users
-from google.appengine.ext import db, webapp
+from google.appengine.ext import webapp
+from google.appengine.ext import db
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
 from cgi import escape
@@ -28,7 +29,7 @@ def get_document(name, filename, title=None):
     except:
         return None
 
-def get_documents(tag_list=[], tag_not_list=[], type=None):
+def get_documents(tag_list=[], tag_not_list=[], number=1000, type=None):
     """ tag_list should be a string list of tags """
         
     document_query = Document.all()
@@ -38,7 +39,7 @@ def get_documents(tag_list=[], tag_not_list=[], type=None):
         document_query.filter("tags ==",tag)
     for tag in tag_not_list:
         document_query.filter("tags !=",tag)
-    documents = document_query.fetch(1000)
+    documents = document_query.order('-date').fetch(number)
     return documents
 
 def admincheck():
@@ -191,6 +192,20 @@ class User(db.Model):
     invitations = db.StringListProperty(default=[])
     invitees = db.StringListProperty(default=[])
     reputation = db.IntegerProperty(default=0)
+    # people who subscribe to me in some way
+    subscribers = db.StringListProperty(default=[])
+    # people who subscribe to my documents by email
+    subscribers_document=db.StringListProperty(default=[])
+    # people who subscribe to my comments by email
+    subscribers_comment=db.StringListProperty(default=[])
+    # people I subscribe to
+    subscriptions_user = db.StringListProperty(default=[])
+    # people whose comments go in my stream
+    subscriptions_comment = db.StringListProperty(default=[])
+    # people whose documents go in my stream
+    subscriptions_document = db.StringListProperty(default=[])
+    # tags I subscribe to
+    subscriptions_tag = db.StringListProperty(default=[])
     username = db.StringProperty()
     
     def drafts(self):
@@ -198,6 +213,19 @@ class User(db.Model):
         
     def publications(self):
         self.works.filter('draft ==', False)
+        
+    def fetch_stream(self,number=10):
+        documents=[]
+        for name in self.subscriptions_comment:
+            subscribee = get_user(name)
+            documents.extend(Comment.all().filter('author ==',subscribee).order('-date').fetch(number))
+        for name in self.subscriptions_document:
+            subscribee = get_user(name)
+            documents.extend(Document.all().filter('author ==',subscribee).order('-date').fetch(number))
+        for tag in self.subscriptions_tag:
+            documents.extend(get_documents([tag],number=number))
+        ordered = sorted(documents, key=lambda document: document.date, reverse=True)
+        return ordered[:number]
 
 class Document(db.Model):
     
@@ -205,14 +233,30 @@ class Document(db.Model):
     authorname = db.StringProperty()
     content = db.TextProperty()
     date = db.DateTimeProperty(auto_now_add=True)
+    _description=db.StringProperty(default = '')
     draft = db.BooleanProperty(default=True)
     filename = db.StringProperty()
     title = db.StringProperty()
-    subtitle = db.StringProperty(multiline=True)
+    subtitle = db.StringProperty(default='')
     raters = db.StringListProperty()
     rating = db.IntegerProperty(default=0)
     tags = db.StringListProperty(default=[])
     type = db.StringListProperty(default=["not_meta"])
+    
+    def get_stripped(self):
+        stripped = strip_tags(self.content)
+        #for n in range(stripped.length):
+            #if stripped[n] =='&':
+                #stripped = stripped[:n]+stripped[n+5:]
+        return stripped
+    
+    def set_description(self, words):
+        words = strip_tags(words)
+        words = words[:150]
+        self._description=words
+        
+    def get_description(self):
+        return self._description
     
     def remove(self):
         
@@ -239,6 +283,14 @@ class Comment(db.Model):
     rating = db.IntegerProperty(default=0)
     stripped_content = db.TextProperty()
     subject = db.StringProperty()
+    
+    def get_page_object(self):
+        if self.above:
+            return self.above.get_page_object()
+        if self.article:
+            return self.article
+        if self.user_page:
+            return self.user_page
     
     def remove(self):
         
@@ -496,7 +548,7 @@ class Create_Document(webapp.RequestHandler):
         document.put()
          
         mail.send_mail(
-            user.google and user.google.email() or 'postmaster@hanksandbox.appspotmail.com',
+            'postmaster@hanksandbox.appspotmail.com',
             'hankster81@yahoo.com',
             'Comment from %s' % document.authorname,
             '%s wrote: \r\n\r\n"%s"' % (document.authorname, document.content),
@@ -587,11 +639,11 @@ class Rating(webapp.RequestHandler):
         filename = self.request.get('filename')
         if key:
             object = Comment.get(db.Key(key))
-            vote = CommentVote()
+            vote = VoteComment()
             vote.comment = object
         else:
             object = get_document(username,filename)
-            vote = DocumentVote()
+            vote = VoteDocument()
             vote.document = object
         vote.user = user
             
@@ -674,6 +726,71 @@ class ReplyBox(webapp.RequestHandler):
             context['edit']=edit
         tmpl = path.join(path.dirname(__file__), 'templates/comment_request/reply_box.html')
         self.response.out.write(template.render(tmpl, context)) 
+        
+class Subscription_Handler(webapp.RequestHandler):
+             
+    def post(self):
+        flag=None
+        user = get_user()
+        subscriptions = self.request.get_all('subscriptions[]')
+        page_user = self.request.get('page_user')
+        subscribee = get_user(page_user)
+        
+        if not subscriptions:
+            if user.username in subscribee.subscribers:
+                    subscribee.subscribers.remove(user.username)
+
+            if subscribee.username in user.subscriptions_user:
+                    user.subscriptions_user.remove(subscribee.username)
+
+            message = 'This user has been removed from your subscriptions.'    
+        else:
+            if user.username not in subscribee.subscribers:
+                    subscribee.subscribers.append(user.username)
+                    flag = 1
+
+            if subscribee.username not in user.subscriptions_user:
+                    user.subscriptions_user.append(subscribee.username)
+                    flag = 1
+               
+        if flag:
+            message = 'This user has been added to your subscriptions.' 
+        else:
+            message = 'Your settings have been saved.'
+        
+        if 'subscribe_publish' in subscriptions:
+            if not page_user in user.subscriptions_document:
+                user.subscriptions_document.append(page_user)
+        else:
+            if page_user in user.subscriptions_document:
+                user.subscriptions_document.remove(page_user)
+                
+        if 'email_publish' in subscriptions:
+            if not user.username in subscribee.subscribers_document:
+                subscribee.subscribers_document.append(user.username)
+        else:
+            if user.username in subscribee.subscribers_document:
+                subscribee.subscribers_document.remove(user.username)
+                
+        if 'subscribe_comment' in subscriptions:
+            if not page_user in user.subscriptions_comment:
+                user.subscriptions_comment.append(page_user)
+        else:
+            if page_user in user.subscriptions_comment:
+                user.subscriptions_comment.remove(page_user)
+        
+        if 'email_comment' in subscriptions:
+            if not user.username in subscribee.subscribers_comment:
+                subscribee.subscribers_comment.append(user.username)
+        else:
+            if user.username in subscribee.subscribers_comment:
+                subscribee.subscribers_comment.remove(user.username)
+        
+        subscribee.put()
+        user.put()
+        
+        self.response.out.write(message)
+        
         
 class TagManager(webapp.RequestHandler):
     def post(self, request):
@@ -825,6 +942,7 @@ class View_Document(webapp.RequestHandler):
 
 application = webapp.WSGIApplication([
     
+    ('/subscription_handler/', Subscription_Handler),
     ('/invite_handler/', Invite_Handler),
     ('/invite/', Invite),
     ('/availability/', Username_Check),

@@ -1,0 +1,29 @@
+			
+			
+		
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#{{doc.filename}}').addClass('clickable')
+			$('#{{doc.filename}}').click(function(){
+			window.location.href = "/{{doc.author.username}}/document/{{doc.filename}}/";
+			})
+		})
+	</script>
+			
+	<div class="stream_item" id="{{doc.filename}}">
+		
+		<div class="stream_header">
+			{{doc.date}}- <a href="/user/{{item.author.username}}/">{{doc.author.username}}</a> 
+		</div>
+		
+		<div class="stream_title">{{doc.title}}</div>
+		
+		<div class="stream_subtitle">{{doc.subtitle}}</div>
+		
+		{% if doc.get_description %}
+			<div class="stream_description">{{doc.get_description}}</div>
+		{% else %}
+			<div class="stream_description">{{doc.get_stripped}}</div>
+		{% endif %}
+		
+	</div>

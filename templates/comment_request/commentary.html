@@ -8,7 +8,7 @@
 	
 {% endblock main_content %}
 
-
+<div class="commentary">
 	<h2>Comments</h2>
 	<hr>
 
@@ -129,7 +129,7 @@
 				    <small>[<i>{{ comment.date.ctime }}</i>]</small>
 					<b>
 						{% if comment.author %}
-							<code>{{ comment.author.username }}</code> 
+							<a href="/user/{{ comment.author.username }}" id="{{comment.key}}bookmark"><code>{{ comment.author.username }}</code></a> 
 						{% else %}
 							<i>anonymous</i>
 						{% endif %}
@@ -182,7 +182,7 @@
 			
 
 			<div class="minimized_comment" id="minimized_{{key}}">
-				<b>{{comment.subject}}:</b> {{ comment.stripped_content }}
+				<b id="{{comment.key}}bookmark">{{comment.subject}}:</b> {{ comment.stripped_content }}
 			</div>
 
 			
@@ -198,5 +198,5 @@
 		</div></div>
 	{% endfor %}
 
-
+</div>
 {% endblock content %}
