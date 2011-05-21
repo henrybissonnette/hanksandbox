@@ -1,4 +1,4 @@
-
+# coding: utf-8 
 from google.appengine.dist import use_library
 use_library('django', '1.2')
 
@@ -10,7 +10,9 @@ from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
 from cgi import escape
 from django.utils.html import strip_tags
-import os, re, logging, sys
+import os, re, logging, sys,datetime
+import messages
+
 
 
 def get_document(name, filename, title=None):
@@ -90,9 +92,18 @@ def get_user(name=None):
     return user
 
 def cleaner(value, deletechars = ' `~!@#$%^&*()+={[}]|\"\':;?/>.<,'):
+    value = strip_tags(value)
     for c in deletechars:
         value = value.replace(c,'')
     return value;
+
+def is_document(object):
+    try:
+        test = object.filename
+        test = object.subtitle
+        return True
+    except:
+        return False
 
 def remove_duplicates(seq, idfun=None): 
    # order preserving
@@ -188,6 +199,7 @@ class User(db.Model):
     circle = db.StringListProperty(default=[])
     circlepermissions = db.StringListProperty(default=[])
     displayname = db.StringProperty()
+    email_log = db.ListProperty(db.Key,default=[])
     google = db.UserProperty()
     invitations = db.StringListProperty(default=[])
     invitees = db.StringListProperty(default=[])
@@ -206,7 +218,11 @@ class User(db.Model):
     subscriptions_document = db.StringListProperty(default=[])
     # tags I subscribe to
     subscriptions_tag = db.StringListProperty(default=[])
+    object_type = db.StringProperty(default = 'User')
     username = db.StringProperty()
+    
+    def get_url(self):
+        return '/user/'+self.username+'/'
     
     def drafts(self):
         self.works.filter('draft ==', True)
@@ -215,15 +231,21 @@ class User(db.Model):
         self.works.filter('draft ==', False)
         
     def fetch_stream(self,number=10):
+
         documents=[]
+        horizon = datetime.datetime.now()-datetime.timedelta(weeks=1)
+        
         for name in self.subscriptions_comment:
             subscribee = get_user(name)
-            documents.extend(Comment.all().filter('author ==',subscribee).order('-date').fetch(number))
+            documents.extend(Comment.all().filter('author ==',subscribee).filter('date >=', horizon).order('-date').fetch(number))
+            
         for name in self.subscriptions_document:
             subscribee = get_user(name)
-            documents.extend(Document.all().filter('author ==',subscribee).order('-date').fetch(number))
+            documents.extend(Document.all().filter('author ==',subscribee).filter('date >=', horizon).order('-date').fetch(number))
+            
         for tag in self.subscriptions_tag:
             documents.extend(get_documents([tag],number=number))
+            
         ordered = sorted(documents, key=lambda document: document.date, reverse=True)
         return ordered[:number]
 
@@ -236,18 +258,28 @@ class Document(db.Model):
     _description=db.StringProperty(default = '')
     draft = db.BooleanProperty(default=True)
     filename = db.StringProperty()
-    title = db.StringProperty()
-    subtitle = db.StringProperty(default='')
+    object_type = db.StringProperty(default = 'Document')
     raters = db.StringListProperty()
     rating = db.IntegerProperty(default=0)
+    subscribers = db.StringListProperty(default=[])
+    subtitle = db.StringProperty(default='')
     tags = db.StringListProperty(default=[])
+    title = db.StringProperty()
     type = db.StringListProperty(default=["not_meta"])
     
+    def get_url(self):
+        return '/'+self.author.username+'/document/'+self.filename+'/'
+    
     def get_stripped(self):
+        
         stripped = strip_tags(self.content)
-        #for n in range(stripped.length):
+        #logging.info('stripped 1: '+stripped)
+        #for n in range(len(stripped)):
+            #logging.info('n = '+ n)
             #if stripped[n] =='&':
+                #logging.info('found')
                 #stripped = stripped[:n]+stripped[n+5:]
+        #logging.info('stripped 2: '+stripped)
         return stripped
     
     def set_description(self, words):
@@ -257,6 +289,14 @@ class Document(db.Model):
         
     def get_description(self):
         return self._description
+    
+    def set_subscriber(self, subscriber, add=True):
+        "Subscriber should be a username."
+        if add==True and not subscriber in self.subscribers:
+            self.subscribers.append(subscriber)
+        if add==False and subscriber in self.subscribers:
+            self.subscribers.remove(subscriber)
+            
     
     def remove(self):
         
@@ -283,6 +323,11 @@ class Comment(db.Model):
     rating = db.IntegerProperty(default=0)
     stripped_content = db.TextProperty()
     subject = db.StringProperty()
+    subscribers = db.StringListProperty(default=[])
+    
+    def get_stripped(self):
+        self.stripped_content=strip_tags(self.content)
+        return self.stripped_content
     
     def get_page_object(self):
         if self.above:
@@ -404,6 +449,7 @@ class CommentBox(webapp.RequestHandler):
 class CommentHandler(webapp.RequestHandler):
     def post(self):
         comment_type = self.request.get('comment_type')
+        new = False
         
         if comment_type == 'delete':
             self_key = self.request.get('key')
@@ -427,7 +473,7 @@ class CommentHandler(webapp.RequestHandler):
             if comment_type=='edit':
                 pass
             else:
-                
+                new = True
                 # replies to other comments get handled by if
                 if comment_type=='reply':
                     above_key = self.request.get('key')
@@ -453,8 +499,19 @@ class CommentHandler(webapp.RequestHandler):
                 comment.subject = subject
             else:
                 comment.subject = 'RE:'+ fallback_subject
+              
+            user = get_user()  
             
-            user = get_user()
+            subscribe = self.request.get('subscribe')
+
+            if subscribe == 'subscribe':
+                if not user.username in comment.subscribers:
+                    comment.subscribers.append(user.username)
+            else:
+                if user.username in comment.subscribers:
+                    comment.subscribers.remove(user.username)
+     
+            
             if user:
                 if user.username:
                     comment.author = user
@@ -463,14 +520,43 @@ class CommentHandler(webapp.RequestHandler):
                 commenter = 'anonymous'
                 
             comment.content = self.request.get('content')
+            comment.get_stripped()
             comment.put()
-            
-            mail.send_mail(
-                'postmaster@hanksandbox.appspotmail.com',
-                'hankster81@yahoo.com',
-                'Comment from %s' % commenter,
-                '%s wrote: \r\n\r\n"%s"' % (commenter, comment.content),
-            )
+            if new:
+                if user:
+                    for subscriber in comment.author.subscribers_comment:
+                        sub = get_user(subscriber)
+                        mail.send_mail(
+                            'postmaster@hanksandbox.appspotmail.com',
+                            sub.google.email(),
+                            'New Comment by %s' % comment.author.username,
+                            messages.email_comment(comment),
+                            html = messages.email_comment_html(comment)
+                        )
+                if comment.above :
+                    if comment.above.subscribers:
+                        for subscriber in comment.above.subscribers:
+                            sub = get_user(subscriber)
+                            mail.send_mail(
+                                'postmaster@hanksandbox.appspotmail.com',
+                                sub.google.email(),
+                                'New reply to %s' % comment.above.subject,
+                                messages.email_comment(comment),
+                                html = messages.email_comment_html(comment)
+                            )
+                
+                if is_document(comment.get_page_object()):
+                    if comment.get_page_object().subscribers:
+                        for subscriber in comment.get_page_object().subscribers:
+                            sub = get_user(subscriber)
+                            mail.send_mail(
+                                'postmaster@hanksandbox.appspotmail.com',
+                                sub.google.email(),
+                                'New reply to %s' % comment.get_page_object().title,
+                                messages.email_comment(comment),
+                                html = messages.email_comment_html(comment)
+                            )
+                        
             self.redirect('..')
 
 class Create_Document(webapp.RequestHandler):
@@ -491,23 +577,32 @@ class Create_Document(webapp.RequestHandler):
     def post(self):
         
         user = get_user()
+        new = False
         existing_filename = self.request.get('existing_filename')
         filename = self.request.get('filename')
         filename = cleaner(filename)
+        subscribe = self.request.get('subscribe')
+        description = self.request.get('description')
+        description = cleaner(description,deletechars = '`~@#^*{[}]|/><)')
         username = self.request.get('username')
         draft = self.request.get('draft')
-        logging.info('draft:' + draft)
         
         # username only gets passed on an edit
         if username:
             document = get_document(username,existing_filename)
         else:
+            new = True
             # if new document uses existing filename this will happen
             if get_document(user.username,filename):
                 document = get_document(user.username,filename)
             else:
                 document = Document()
-            
+        
+        if subscribe == 'subscribe':
+            document.set_subscriber(user.username)
+        else:
+            document.set_subscriber(user.username,False)
+               
         tags_pre_pre = self.request.get_all('added_tag')
         #create ancestors for pre ancestor tags (soon to be uneccessary)
         
@@ -540,19 +635,26 @@ class Create_Document(webapp.RequestHandler):
         document.title = title
         document.subtitle = escape(self.request.get('subtitle'))
         document.filename = filename
+        document.set_description(description)
         if draft == 'True':
             document.draft = True
         else:
-            logging.info('else happened')
+            if document.draft == True:
+                new = True
             document.draft = False
         document.put()
-         
-        mail.send_mail(
-            'postmaster@hanksandbox.appspotmail.com',
-            'hankster81@yahoo.com',
-            'Comment from %s' % document.authorname,
-            '%s wrote: \r\n\r\n"%s"' % (document.authorname, document.content),
-        )
+       
+        if new and not document.draft:
+            logging.info('if happened')
+            for subscriber in user.subscribers_document:
+                sub = get_user(subscriber)
+                mail.send_mail(
+                    'postmaster@hanksandbox.appspotmail.com',
+                    sub.google.email(),
+                    'New document by %s' % document.authorname,
+                    messages.email_document(document),
+                    html = messages.email_document_html(document)
+                )
 
         self.redirect('/' + document.authorname + '/document/'+  filename + '/')
 
@@ -927,6 +1029,7 @@ class View_Document(webapp.RequestHandler):
         commentary = Commentary(name, filename)
 
         context = {
+
             'rating_threshold': 1,
             'commentary': commentary,
             'document': document,

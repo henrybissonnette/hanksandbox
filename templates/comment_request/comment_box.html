@@ -16,6 +16,9 @@
 	    
 	    <input type="hidden" name="comment_type" value="top_level">
 	    <input type=submit value="Comment">
+	    {% if user %}
+	    <input type=checkbox name="subscribe" value="subscribe"><span title="Recieve email notifications if someone replies to this comment.">Follow</span></input>
+	    {% endif %}
 	</form>
 	
 

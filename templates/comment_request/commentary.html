@@ -129,7 +129,7 @@
 				    <small>[<i>{{ comment.date.ctime }}</i>]</small>
 					<b>
 						{% if comment.author %}
-							<a href="/user/{{ comment.author.username }}" id="{{comment.key}}bookmark"><code>{{ comment.author.username }}</code></a> 
+							<a href="/user/{{ comment.author.username }}/" id="{{comment.key}}bookmark"><code>{{ comment.author.username }}</code></a> 
 						{% else %}
 							<i>anonymous</i>
 						{% endif %}
@@ -169,8 +169,12 @@
 						    	,{
 						    	"key":"{{key}}", "request":"edit",
 						    	},
-						    	function(){basic_MCE()}
+						    	function(){
+						    		basic_MCE();
+						    		$("button#edit_{{key}}").hide()
+						    		}
 						    );
+						    
 						  });
 						});		
 					</script>

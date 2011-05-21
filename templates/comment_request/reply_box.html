@@ -1,23 +1,35 @@
 			
 			
 			{% if edit %}
+			
 			<form class="hidden {{key}}" action="comment/" method=post>
 				Subject:<input type="text" name="subject" size=80 value="{{edit.subject}}" /><br/>
 			    <textarea name=content rows=3 cols=80>{{edit.content}}</textarea>
 			    <input type="hidden" name="key" value="{{key}}" />
 			    <input type="hidden" name="comment_type" value="edit" />
 			    <br/><input type=submit value="Edit" />
+			    {% if user %}
+			    <input type=checkbox name="subscribe" value="subscribe" {% if user.username in edit.subscribers %}checked{%endif%}>
+			    	Recieve email notifications if someone replies to this comment.
+			    </input>
+			    {% endif %}
 			</form>
 			<script type="text/javascript">
 			divtrigger("button#delete_{{key}}","div#outer_{{key}}",'comment/',{"key":"{{key}}","comment_type":"delete"},"Delete this comment?")
 			</script>
 			<button id="delete_{{key}}">Delete</button>
+			
 			{% else %}
+			
 			<form class="hidden {{key}}" action="comment/" method=post>
 				Subject:<input type="text" name="subject" size=80 value="RE: {{above.subject}}" /><br/>
 			    <textarea name=content rows=3 cols=80></textarea>
 			    <input type="hidden" name="key" value="{{key}}" />
 			    <input type="hidden" name="comment_type" value="reply" />
 			    <br/><input type=submit value="Reply" />
+			    {% if user %}
+			    <input type=checkbox name="subscribe" value="subscribe" checked>Recieve email notifications if someone replies to this comment.</input>
+			    {% endif %}
 			</form>
+			
 			{% endif %}

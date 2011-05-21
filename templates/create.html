@@ -63,6 +63,10 @@
 			<tr>
 				<td>Subtitle (optional): </td><td><input id="create_input" type="text" name="subtitle" size=80 value="{{document.subtitle}}" /></td>
 			</tr>
+			<tr>
+				<td>Description: </td><td><input type="text" name="description" size=80 value="{{document.get_description}}" 
+					title="Used in streams and search results. Use it to attract readers who will be interested in your content. Max 150 characters. No special characters or HTML tags allowed."/></td>
+			</tr>
 		</table>
 		{% for tag in added_tags %}
 		<div class="include_{{tag.title}}">
@@ -78,6 +82,9 @@
 	    value={% if document %}"Save"{% else %}"Create"{% endif %}
 	    onClick="return validate_filename()"
 	    />
+	    <input type=checkbox name="subscribe" value="subscribe" {% if user.username in document.subscribers %}checked{%endif%}>
+	    	<span title="Recieve email notifications if someone replies to this Document.">Follow</span>
+	    </input>
 	</form>
 	
 	<br/>
@@ -90,6 +97,17 @@
 		</script> 	
 		<button  title="Use tags to identify your topic" id="browse_tags" class="subtlebutton">Add Tags</button>
 	</div>
+	
+	<script type="text/javascript">
+	$(document).ready(function(){
+			$('#cancel_button').click(function(){
+				var agree=confirm('You are about to close this document without saving. Continue?');
+				if (agree)
+					window.history.back();
+			})
+		})	
+	</script>
+	<button id="cancel_button" >Cancel</button>
 	
 	{% if document %}
 	<form action="delete/" method="get">

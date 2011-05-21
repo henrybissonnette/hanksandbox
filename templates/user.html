@@ -98,6 +98,7 @@
 			{% endfor %}
 		{% endif %}
 	</div>
+
 	<hr class="menu"/>
 	<script type="text/javascript">
 		reveal_controller('h2#mysubscriptions','#mysubscriptions_div')
@@ -145,7 +146,7 @@
 {% endif %}
 <!--end user circle menu-->
 <!--begin invitation dialog-->
-{% if user.username != page_user.username %}
+{% if user.username != page_user.username and user %}
 	{% if page_user.username not in user.circle and page_user.username not in user.invitees %}
 		<script type="text/javascript">
 			$(document).ready(function(){
@@ -285,62 +286,49 @@
 
 <div class="right_half">
 	<h2> {{ page_user.username }}'s Subscription Stream </h2>
-	{% for item in page_user.fetch_stream %}
-		{% if item.title %}
-		
-			<div class="stream_item" id="{{item.title}}">
-				<div class="stream_header">
-				{{item.date}}- <a href="/user/{{item.author.username}}/">{{item.author.username}}</a> published
-				</div>
-				<div class="stream_title">{{item.title}}</div>
-				<div class="stream_subtitle">{{item.subtitle}}</div>
-				{% if item.get_description %}
-				<div class="stream_description">{{item.get_description}}</div>
-				{% else %}
-				<div class="stream_description">{{item.get_stripped}}</div>
-				{% endif %}
-			</div>
-			
+	{% for doc in page_user.fetch_stream %}
+		{% if doc.title %}
+			{% include 'stream_doc.html'%}		
 		{% else %}
 		
-		<div class="stream_item" id="{{item.key}}">
+		<div class="stream_item" id="{{doc.key}}">
 			
 			<div class="stream_header">
-			<a href="/user/{{item.author.username}}/">{{item.author.username}}</a> replied to 
-			{% if item.get_page_object.username %}
-			<a href="/user/{{item.get_page_object.username}}/">{{item.get_page_object.username}}</a>'s page 
+			<a href="/user/{{doc.author.username}}/">{{doc.author.username}}</a> replied to 
+			{% if doc.get_page_object.username %}
+			<a href="/user/{{doc.get_page_object.username}}/">{{doc.get_page_object.username}}</a>'s page 
 			{% else %}
-			<a href="/{{item.get_page_object.author.username}}/document/{{item.get_page_object.filename}}/">{{item.get_page_object.title}}</a>
+			<a href="/{{doc.get_page_object.author.username}}/document/{{doc.get_page_object.filename}}/">{{doc.get_page_object.title}}</a>
 			{% endif %}
 			</div>
 			
 			<script type="text/javascript">
 				$(document).ready(function(){
-					$('#comment_link_{{item.key}}').click(function(){
+					$('#comment_link_{{doc.key}}').click(function(){
 					window.location.href = 
-						{% if item.get_page_object.username %}
-							"/user/{{item.get_page_object.username}}/#{{item.key}}bookmark"
+						{% if doc.get_page_object.username %}
+							"/user/{{doc.get_page_object.username}}/#{{doc.key}}bookmark"
 						{% else %}
-							"/{{item.get_page_object.author.username}}/document/{{item.get_page_object.filename}}/#{{item.key}}bookmark"
+							"/{{doc.get_page_object.author.username}}/document/{{doc.get_page_object.filename}}/#{{doc.key}}bookmark"
 						{% endif %};
 					})
 				})
 			</script>
-			<div class="comment_header" id="comment_link_{{item.key}}">
-				{{item.subject}}
+			<div class="comment_header" id="comment_link_{{doc.key}}">
+				{{doc.subject}}
 			</div>		
 			<div class="comment_top">
 
-			    <small>[<i>{{ item.date.ctime }}</i>]</small>
+			    <small>[<i>{{ doc.date.ctime }}</i>]</small>
 				<b>
-						<code>{{ item.author.username }}</code> 
+						<code>{{ doc.author.username }}</code> 
 				</b>
 				wrote:<br>
 			</div>
 				
 			<div class="comment" >
 				{% autoescape off %}
-					{{ item.content }}
+					{{ doc.content }}
 				{% endautoescape %}
 			</div>
 		</div>
