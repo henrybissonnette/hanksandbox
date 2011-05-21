@@ -1,5 +1,5 @@
 			
-			
+			<div id="replybox{{key}}">
 			{% if edit %}
 			
 			<form class="hidden {{key}}" action="comment/" method=post>
@@ -19,6 +19,16 @@
 			</script>
 			<button id="delete_{{key}}">Delete</button>
 			
+			<script type="text/javascript">
+				$(document).ready(function(){
+					$('#cancel_reply{{key}}').click(function(){
+						$('#replybox{{key}}').remove()
+						$("#original{{key}}").show()
+						$("button#edit_{{key}}").show()
+					})
+				})
+			</script>
+			
 			{% else %}
 			
 			<form class="hidden {{key}}" action="comment/" method=post>
@@ -32,4 +42,16 @@
 			    {% endif %}
 			</form>
 			
+			<script type="text/javascript">
+				$(document).ready(function(){
+					$('#cancel_reply{{key}}').click(function(){
+						$('#replybox{{key}}').remove()
+						$("#post_reply{{key}}").show()
+					})
+				})
+			</script>
+			
 			{% endif %}
+
+			<button id="cancel_reply{{key}}">Cancel</button>
+			</div>

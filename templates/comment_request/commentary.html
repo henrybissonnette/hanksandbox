@@ -25,14 +25,18 @@
 		    	"page_user":"{{page_user.username}}",
 		    	{% endif %}
 		    	},
-		    	function(){basic_MCE()}
+		    	function(){
+		    		basic_MCE();
+		    		$('#post_comment').hide()
+		    		}
 		    );
 		  });
 		});		
 		</script>
 			
+		
+		<button id="post_comment">Post a Comment</button> 
 		<div id="comment_box">
-			<button id="post_comment">Post a Comment</button> 
 		</div>
 
 	{% for comment, key, depth in commentary.comment_data %}
@@ -138,11 +142,37 @@
 				</div>
 				
 				<div class="comment" id="body_{{key}}">
-
+					<div id="original{{key}}">
 					{% autoescape off %}
 						{{ comment.content }}
 					{% endautoescape %}
+					</div>					
 				</div>
+				
+				{% if user and user.username == comment.author.username or not comment.author and user.admin %}
+					<script type="text/javascript">
+						$(document).ready(function(){
+							$('<div id="edit_{{key}}"></div>').insertAfter('#original{{key}}')
+							$('<button id="edit_{{key}}">edit</button>').insertAfter('#body_{{key}}')
+						  $("button#edit_{{key}}").click(function(){
+						    $("div#edit_{{key}}").load(
+						    	'reply_box/'
+						    	,{
+						    	"key":"{{key}}", "request":"edit",
+						    	},
+						    	function(){
+						    		basic_MCE();
+						    		$("button#edit_{{key}}").hide()
+						    		$("#original{{key}}").hide()
+						    		}
+						    );
+						    
+						  });
+						});		
+					</script>
+					
+
+				{% endif %}
 				
 				<script type="text/javascript">
 				$(document).ready(function(){
@@ -152,36 +182,17 @@
 				    	,{
 				    	"key":"{{key}}",
 				    	},
-				    	function(){basic_MCE()}
+				    	function(){
+				    		basic_MCE();
+				    		$("#post_reply{{key}}").hide()
+				    		}
 				    );
 				  });
 				});		
 				</script>
-				<div id="reply_box{{key}}">
-					<button id="post_reply{{key}}">Reply</button>
-				</div> 
-				{% if user and user.username == comment.author.username or not comment.author and user.admin %}
-					<script type="text/javascript">
-						$(document).ready(function(){
-						  $("button#edit_{{key}}").click(function(){
-						    $("div#body_{{key}}").load(
-						    	'reply_box/'
-						    	,{
-						    	"key":"{{key}}", "request":"edit",
-						    	},
-						    	function(){
-						    		basic_MCE();
-						    		$("button#edit_{{key}}").hide()
-						    		}
-						    );
-						    
-						  });
-						});		
-					</script>
-					<div id="edit_key{{key}}">
-						<button id="edit_{{key}}">edit</button>
-					</div> 
-				{% endif %}
+				<button id="post_reply{{key}}">Reply</button>
+				<div id="reply_box{{key}}"></div> 
+
 			</div>
 			
 

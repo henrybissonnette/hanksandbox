@@ -1,6 +1,6 @@
 	
 
-	
+	<div id="commentbox">
 	<form action="comment/" method=post>
 		Subject:<input type="text" name="subject" size=80 value="RE: {% if document %}{{document.title}}{% else %}{{page_user.username}}{% endif %}" /><br/>
 	    <textarea class="tinymce" name=content rows=5 cols=80></textarea>
@@ -20,5 +20,15 @@
 	    <input type=checkbox name="subscribe" value="subscribe"><span title="Recieve email notifications if someone replies to this comment.">Follow</span></input>
 	    {% endif %}
 	</form>
-	
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#cancel_comment').click(function(){
+				$('#commentbox').remove()
+				$('#post_comment').show()
+			})
+		})
+	</script>
+	<button id="cancel_comment">Cancel</button>
+	</div>
 
