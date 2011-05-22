@@ -1,7 +1,7 @@
 			
-			<div id="replybox{{key}}">
+
 			{% if edit %}
-			
+			<div id="editbox{{key}}">
 			<form class="hidden {{key}}" action="comment/" method=post>
 				Subject:<input type="text" name="subject" size=80 value="{{edit.subject}}" /><br/>
 			    <textarea name=content rows=3 cols=80>{{edit.content}}</textarea>
@@ -21,16 +21,16 @@
 			
 			<script type="text/javascript">
 				$(document).ready(function(){
-					$('#cancel_reply{{key}}').click(function(){
-						$('#replybox{{key}}').remove()
+					$('#cancel_edit{{key}}').click(function(){
+						$('#editbox{{key}}').remove()
 						$("#original{{key}}").show()
 						$("button#edit_{{key}}").show()
 					})
 				})
 			</script>
-			
+			<button id="cancel_edit{{key}}">Cancel</button>
 			{% else %}
-			
+			<div id="replybox{{key}}">
 			<form class="hidden {{key}}" action="comment/" method=post>
 				Subject:<input type="text" name="subject" size=80 value="RE: {{above.subject}}" /><br/>
 			    <textarea name=content rows=3 cols=80></textarea>
@@ -50,8 +50,8 @@
 					})
 				})
 			</script>
-			
+			<button id="cancel_reply{{key}}">Cancel</button>
 			{% endif %}
 
-			<button id="cancel_reply{{key}}">Cancel</button>
+			
 			</div>
