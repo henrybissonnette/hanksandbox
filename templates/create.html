@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "comment_request/commentary.html" %}
 {% block title %}
 	{% if document %}
 		Edit {{document.title}}
@@ -7,7 +7,7 @@
 	{% endif %}
 {% endblock %}
 
-{% block content %}
+{% block main_content %}
 
 	<script type="text/javascript">
 		var forbidden = "`~!@#$%^&*()+={}[]\\|:;\"\'<>,. ";

@@ -565,6 +565,7 @@ class Create_Document(webapp.RequestHandler):
         
         user = get_user()
         userdocuments = user.works
+        
         context = {
                    'userdocuments':userdocuments,
                    'user':      user,
@@ -670,7 +671,12 @@ class Edit_Document(webapp.RequestHandler):
         userdocuments = user.works
         document = get_document(name, filename)
         added_tags = [Tag.get_by_key_name(title) for title in  document.tags]
+        
+        commentary = Commentary(user.username,document.filename)
+        
         context = {
+                   'rating_threshold': 1,
+                   'commentary': commentary,
                    'userdocuments':userdocuments,
                    'added_tags':added_tags,
                    'document':  document,
