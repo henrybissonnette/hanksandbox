@@ -6,6 +6,7 @@
 //still needs to be independently loaded with ajaxed forms
 function basic_MCE()
 	{
+		
 		tinyMCE.init({
 		        mode : "textareas",
 			    theme : "advanced",
@@ -22,6 +23,8 @@ function basic_MCE()
 
 		});			    
 	}
+	
+
 
 		
 // shorthand for a .load into a div using an optional confirmation
@@ -110,4 +113,4 @@ function reveal_controller(controller, element, hidden)
 		})
 	}
 	
-basic_MCE()
+
