@@ -265,6 +265,8 @@ class Document(db.Model):
     subtitle = db.StringProperty(default='')
     tags = db.StringListProperty(default=[])
     title = db.StringProperty()
+    views = db.IntegerProperty(default=0)
+    viewers = db.StringListProperty(default=[])
     type = db.StringListProperty(default=["not_meta"])
     
     def get_url(self):
@@ -309,6 +311,14 @@ class Document(db.Model):
             reply.remove()
             
         self.delete()
+        
+    def set_view(self):
+        self.views += 1
+        user = get_user()
+        if not user.username in self.viewers:
+            self.viewers.append(user.username)
+        self.put()
+            
 
 class Comment(db.Model):
     """It might also be more elegant to 
@@ -1032,6 +1042,7 @@ class View_Document(webapp.RequestHandler):
     def get(self, name, filename, reply_id=None):
         user = get_user()
         document = get_document(name, filename)
+        document.set_view()
         commentary = Commentary(name, filename)
 
         context = {
