@@ -4,7 +4,125 @@
 {{ page_user.username }}'s Page
 {% endblock title%}
 
-{% block sidebar %}
+{% block tabs %}
+	<script type="text/javascript">
+		tabular('#tab_connect','#connect','maintabs')
+		tabular('#tab_documents','#frontpage','maintabs',true)
+	</script>
+	<div class="tabs">
+ 		<ul class="tabs">
+			<li id="tab_documents">Documents</li>
+			<li id="tab_connect">Connect</li>
+		</ul>
+
+ 
+	</div>
+{% endblock %}
+
+{% block main_content %}
+
+
+{% comment %}
+----------------------------------------------------------------------------
+-----------------------------FRONT PAGE-------------------------------------
+----------------------------------------------------------------------------
+{% endcomment %}
+<div id="frontpage">
+
+<h1> Welcome to {{ page_user.username }}'s Page </h1>
+
+<div class="left_half">
+
+
+<h2> {{ page_user.username }}'s Essays </h2>		
+{% ifequal page_user.username user.username %}
+<a href="/create">Create</a>
+{% endifequal %}
+
+	{% for doc in essays %}
+	{% if not doc.draft %}
+	{% include 'stream_doc.html'%}
+	{% endif %}
+	{% endfor %}
+
+
+{% if user.username in page_user.circle or page_user.username == user.username %}
+<h2> {{ page_user.username }}'s Drafts </h2>	
+
+	{% for doc in essays %}
+	{% if doc.draft %}
+	{% include 'stream_doc.html'%}
+	{% endif %}
+	{% endfor %}
+
+
+{% endif %}
+
+</div>
+
+<div class="right_half">
+	<h2> {{ page_user.username }}'s Subscription Stream </h2>
+	{% for doc in page_user.fetch_stream %}
+		{% if doc.title %}
+			{% include 'stream_doc.html'%}		
+		{% else %}
+		
+		<div class="stream_item" id="{{doc.key}}">
+			
+			<div class="stream_header">
+			<a href="/user/{{doc.author.username}}/">{{doc.author.username}}</a> replied to 
+			{% if doc.get_page_object.username %}
+			<a href="/user/{{doc.get_page_object.username}}/">{{doc.get_page_object.username}}</a>'s page 
+			{% else %}
+			<a href="/{{doc.get_page_object.author.username}}/document/{{doc.get_page_object.filename}}/">{{doc.get_page_object.title}}</a>
+			{% endif %}
+			</div>
+			
+			<script type="text/javascript">
+				$(document).ready(function(){
+					$('#comment_link_{{doc.key}}').click(function(){
+					window.location.href = 
+						{% if doc.get_page_object.username %}
+							"/user/{{doc.get_page_object.username}}/#{{doc.key}}bookmark"
+						{% else %}
+							"/{{doc.get_page_object.author.username}}/document/{{doc.get_page_object.filename}}/#{{doc.key}}bookmark"
+						{% endif %};
+					})
+				})
+			</script>
+			<div class="comment_header" id="comment_link_{{doc.key}}">
+				{{doc.subject}}
+			</div>		
+			<div class="comment_top">
+
+			    <small>[<i>{{ doc.date.ctime }}</i>]</small>
+				<b>
+						<code>{{ doc.author.username }}</code> 
+				</b>
+				wrote:<br>
+			</div>
+				
+			<div class="comment" >
+				{% autoescape off %}
+					{{ doc.content }}
+				{% endautoescape %}
+			</div>
+		</div>
+		{% endif %}
+	{% endfor %}
+</div>
+
+</div>
+
+{% comment %}
+----------------------------------------------------------------------------
+-----------------------------CONNECT----------------------------------------
+----------------------------------------------------------------------------
+{% endcomment %}
+
+<div id="connect">
+<div class="left_half">
+
 <!--begin user circle menu-->
 {% if user.username == page_user.username %}
 	<script type="text/javascript">
@@ -244,96 +362,7 @@
 	
 	<!--begin subscribe-->
 {% endif %}
-{% endblock %}
-
-
-
-
-{% block main_content %}
-
-
-
-<h1> Welcome to {{ page_user.username }}'s Page </h1>
-
-<div class="left_half">
-
-
-<h2> {{ page_user.username }}'s Essays </h2>		
-{% ifequal page_user.username user.username %}
-<a href="/create">Create</a>
-{% endifequal %}
-
-	{% for doc in essays %}
-	{% if not doc.draft %}
-	{% include 'stream_doc.html'%}
-	{% endif %}
-	{% endfor %}
-
-
-{% if user.username in page_user.circle or page_user.username == user.username %}
-<h2> {{ page_user.username }}'s Drafts </h2>	
-
-	{% for doc in essays %}
-	{% if doc.draft %}
-	{% include 'stream_doc.html'%}
-	{% endif %}
-	{% endfor %}
-
-
-{% endif %}
-
 </div>
-
-<div class="right_half">
-	<h2> {{ page_user.username }}'s Subscription Stream </h2>
-	{% for doc in page_user.fetch_stream %}
-		{% if doc.title %}
-			{% include 'stream_doc.html'%}		
-		{% else %}
-		
-		<div class="stream_item" id="{{doc.key}}">
-			
-			<div class="stream_header">
-			<a href="/user/{{doc.author.username}}/">{{doc.author.username}}</a> replied to 
-			{% if doc.get_page_object.username %}
-			<a href="/user/{{doc.get_page_object.username}}/">{{doc.get_page_object.username}}</a>'s page 
-			{% else %}
-			<a href="/{{doc.get_page_object.author.username}}/document/{{doc.get_page_object.filename}}/">{{doc.get_page_object.title}}</a>
-			{% endif %}
-			</div>
-			
-			<script type="text/javascript">
-				$(document).ready(function(){
-					$('#comment_link_{{doc.key}}').click(function(){
-					window.location.href = 
-						{% if doc.get_page_object.username %}
-							"/user/{{doc.get_page_object.username}}/#{{doc.key}}bookmark"
-						{% else %}
-							"/{{doc.get_page_object.author.username}}/document/{{doc.get_page_object.filename}}/#{{doc.key}}bookmark"
-						{% endif %};
-					})
-				})
-			</script>
-			<div class="comment_header" id="comment_link_{{doc.key}}">
-				{{doc.subject}}
-			</div>		
-			<div class="comment_top">
-
-			    <small>[<i>{{ doc.date.ctime }}</i>]</small>
-				<b>
-						<code>{{ doc.author.username }}</code> 
-				</b>
-				wrote:<br>
-			</div>
-				
-			<div class="comment" >
-				{% autoescape off %}
-					{{ doc.content }}
-				{% endautoescape %}
-			</div>
-		</div>
-		{% endif %}
-	{% endfor %}
 </div>
 
 {% endblock main_content %}

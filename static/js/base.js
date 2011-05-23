@@ -113,4 +113,27 @@ function reveal_controller(controller, element, hidden)
 		})
 	}
 	
-
+function tabular(controller, element, groupname ,initial)
+	{
+		
+		$(document).ready(function(){
+			if(initial){
+				$(controller).addClass('selected')
+			}
+			else{
+				$(controller).addClass('unselected')
+				$(element).hide();
+			}
+			$(controller).addClass('tab');
+			$(element).addClass(groupname);
+		
+			$(controller).click(function(){
+				$('.selected').addClass('unselected');
+				$('.selected').removeClass('selected');
+				$(controller).addClass('selected');
+				$(controller).removeClass('unselected');
+				$('.'+groupname).hide();
+				$(element).show();
+			})
+		})
+	}
