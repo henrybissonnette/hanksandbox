@@ -33,8 +33,10 @@ main =Template(u'''
     
      /***** MAIN *****/
      
-    #main{
-    background:#d1d1d1,
+    #frame{
+    border:solid 10px #d1d1d1,
+    border-right:100px;
+    border-bottom:100px;
     }
     
     #mainhead{
@@ -199,7 +201,7 @@ def email_comment_html(comment):
     <a href="authorurl" target="_blank">${author}</a> 
     <a href="${urllink}" target="_blank">responded</a> to 
     <a href="${urllink}" target="_blank">${page}</a>
-    <div class="subject"><a href="${urllink}" target="_blank">${subject}</a></div>
+    <div class="subject">${subject}</div>
     <div class="info_comment">At ${date} ${author} wrote:</div>
     <p class="comment_content">${body}</p>
     </div>
