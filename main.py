@@ -13,7 +13,7 @@ from django.utils.html import strip_tags
 import os, re, logging, sys,datetime
 import messages
 
-
+domainstring='http://hanksandbox.appspot.com/'
 
 def get_document(name, filename, title=None):
 
@@ -222,7 +222,7 @@ class User(db.Model):
     username = db.StringProperty()
     
     def get_url(self):
-        return '/user/'+self.username+'/'
+        return domainstring+'user/'+self.username+'/'
     
     def drafts(self):
         self.works.filter('draft ==', True)
@@ -270,7 +270,7 @@ class Document(db.Model):
     type = db.StringListProperty(default=["not_meta"])
     
     def get_url(self):
-        return '/'+self.author.username+'/document/'+self.filename+'/'
+        return domainstring+self.author.username+'/document/'+self.filename+'/'
     
     def get_stripped(self):
         
@@ -315,8 +315,12 @@ class Document(db.Model):
     def set_view(self):
         self.views += 1
         user = get_user()
-        if not user.username in self.viewers:
-            self.viewers.append(user.username)
+        try:
+            user.username
+            if not user.username in self.viewers:
+                self.viewers.append(user.username)
+        except:
+            pass
         self.put()
             
 
@@ -365,6 +369,8 @@ class Mypage(db.Model):
     header = db.StringProperty()
     subtitle = db.StringProperty()
     blurb = db.TextProperty()
+    def get_url(self):
+        return domainstring+'user/'+self.username+'/'
     
 class Tag(db.Model):
     """ Tags should be instantiated with their title as a key_name """
@@ -518,8 +524,9 @@ class CommentHandler(webapp.RequestHandler):
                 if not user.username in comment.subscribers:
                     comment.subscribers.append(user.username)
             else:
-                if user.username in comment.subscribers:
-                    comment.subscribers.remove(user.username)
+                if user:
+                    if user.username in comment.subscribers:
+                        comment.subscribers.remove(user.username)
      
             
             if user:

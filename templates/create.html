@@ -7,6 +7,21 @@
 	{% endif %}
 {% endblock %}
 
+{% block tabs %}
+	<script type="text/javascript">
+		tabular('#tab_write','#write','maintabs',true)
+		tabular('#tab_tag','#tag','maintabs')
+	</script>
+	<div class="tabs">
+ 		<ul class="tabs">
+			<li id="tab_write">Write</li>
+			<li id="tab_tag">Tag</li>
+		</ul>
+
+ 
+	</div>
+{% endblock %}
+
 {% block main_content %}
 
 	<script type="text/javascript">
@@ -51,7 +66,12 @@
 		}
 	</script>
 
-
+{% comment %}
+----------------------------------------------------------------------------
+--------------------------------WRITE---------------------------------------
+----------------------------------------------------------------------------
+{% endcomment %}
+	<div id="write">
 	<h1 class="embed">{% if document %}Edit{% else %}Create{% endif %}</h1>
 	<form action="/create"  method=post>
 		<table>
@@ -74,34 +94,26 @@
 		<input type="hidden" name="added_tag" class="include_{{tag.title}}" value="{{tag.title}}"/>
 		</div>
 		{% endfor%}
-		<input type="checkbox" name="draft" value="True" {% if document.draft or not document %}checked{% endif %} /> Mark as Draft <br />
 		<input type="hidden" name="username" value="{{document.author.username}}"/>
 		<input type="hidden" name="existing_filename" value="{{document.filename}}"/>
 	    <textarea name=document_content rows=20 cols=100>{{document.content}}</textarea>
 	    <br>
+	    <input type="checkbox" name="draft" value="True" {% if document.draft or not document %}checked{% endif %} /> Mark as Draft | 
+	    <input type=checkbox name="subscribe" value="subscribe" {% if user.username in document.subscribers or not edit %}checked{%endif%}>
+	    	<span>Recieve email notifications if someone replies to this Document.</span>
+	    </input>
+	    <br/>
 	    <input type=submit 
 	    value={% if document %}"Save"{% else %}"Create"{% endif %}
 	    onClick="return validate_filename()"
 	    />
-	    <input type=checkbox name="subscribe" value="subscribe" {% if user.username in document.subscribers %}checked{%endif%}>
-	    	<span title="Recieve email notifications if someone replies to this Document.">Follow</span>
-	    </input>
+
+
 	</form>
-	
-	<br/>
-	<div id="added_tags">{% include 'tag_request/addto.html' %}</div>
-	<div id="tags">
-		
-			
-		<script type="text/javascript">
-			divtrigger("button#browse_tags","div#tags",'tag_base/',{"user_type":"user"})
-		</script> 	
-		<button  title="Use tags to identify your topic" id="browse_tags" class="subtlebutton">Add Tags</button>
-	</div>
 	
 	<script type="text/javascript">
 	$(document).ready(function(){
-			$('#cancel_button').click(function(){
+		$('#cancel_button').click(function(){
 				var agree=confirm('You are about to close this document without saving. Continue?');
 				if (agree)
 					window.history.back();
@@ -115,5 +127,25 @@
 		<input type="submit" value="Delete" title="Permanently delete this document." onClick="return confirmSubmit('Do you want to permanently delete this document?')"/>
 	</form>
 	{% endif %}
+	</div>
+{% comment %}
+----------------------------------------------------------------------------
+--------------------------------TAG-----------------------------------------
+----------------------------------------------------------------------------
+{% endcomment %}
+	<div id="tag">
+		<div id="added_tags">{% include 'tag_request/addto.html' %}</div>
+		<div id="tags">
+			
+				
+			<script type="text/javascript">
+				divtrigger("button#browse_tags","div#tags",'tag_base/',{"user_type":"user"})
+			</script> 	
+			<button  title="Use tags to identify your topic" id="browse_tags" class="subtlebutton">Add Tags</button>
+		</div>
+		
+
+	</div>
+
 	
 {% endblock %}

@@ -1,11 +1,19 @@
 # coding: utf-8 
 from string import Template
+import logging
 
 domainstring='http://hanksandbox.appspot.com/'
 
-
+##################################################
+#         STYLE SHEET
+#
     
-style =u'''
+main =Template(u'''
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
      <style type="text/css">
      /* Client-specific Styles */
      #outlook a{padding:0;} /* Force Outlook to provide a "view in browser" button. */
@@ -21,6 +29,12 @@ style =u'''
     
     body{
     max-width:600px;
+    }
+    
+     /***** MAIN *****/
+     
+    #main{
+    background:#d1d1d1,
     }
     
     #mainhead{
@@ -84,54 +98,58 @@ style =u'''
     background-color:#eee;
     }
    
-    </style>'''
+    </style>
     
-
+    </head>
+    <html>
+    <body>
+    <div id="frame">
+        <h1 id="mainhead">Essay.com</h1>
+        ${content}
+    </div>
+    </body>
+    </html>
+    ''')
+    
+########################################################
+#               EMAIL DOCUMENT INFO
+#
 
 def email_document(document):
     email_document = Template(u"""
     At ${date} ${author} published:
-    Title: ${title} Link:${domain}/${author}/document/${filename}/
+    Title: ${title} Link:${url}
     Description: ${description}
     """)
     return email_document.substitute(
                                      date=str(document.date),
                                      author=document.author.username,
-                                     domain=domainstring,
-                                     filename=document.filename,
+                                     url=document.get_url(),
                                      title=document.title,
                                      description = document.get_description()
                                      )
 
 def email_document_html(document):
     email_document = Template(u"""
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        ${stylesheet}
-    </head>
-    <html>
-    <body>
-    <h1 id="mainhead">Essay.com</h1>
     <div class="document">
     <span class="info">At ${date} ${author} published:</span><br/><hr/>
     <a href="${domain}/${author}/document/${filename}/" target="_blank"><h1 class="title">${title}</h1></a>
     <p class="description">${description}</p>
     </div>
-    </body>
-    </html>
     """)
-    return email_document.substitute(
-                                     stylesheet=style,
+    htmlcontent =  email_document.substitute(
                                      date=str(document.date),
                                      author=document.author.username,
-                                     domain=domainstring,
-                                     filename=document.filename,
+                                     url=document.get_url(),
                                      title=document.title,
                                      description = document.get_description()
                                      )
-    
+    return main.substitute(content=htmlcontent)
+   
+##########################################################
+#             EMAIL COMMENT INFO
+#  
+  
 def email_comment(comment):
     email_comment = Template(u"""
     ${author} commented on ${pageobject}: Link:${urllink}
@@ -143,55 +161,78 @@ def email_comment(comment):
     """)
     
     url = comment.get_page_object().get_url()
+    
+    try: 
+        comment.get_page_object().subtitle
+        regarding = comment.get_page_object().title
+    except: 
+        regarding = comment.get_page_object().creator.username
+    
+    try:
+        authorurlfetch=comment.author.get_url()
+        authorfetch=comment.author.username
+    except:
+        authorurlfetch = ''
+        authorfetch='anonymous'
         
     if len(comment.stripped_content)>300:
         content = comment.stripped_content[:300]+'... follow link to read the rest of '+comment.author+'\'s comment.'
     else:
         content = comment.stripped_content
+        
+
     
     return email_comment.substitute(
                                      date=str(comment.date),
-                                     author=comment.author.username,
+                                     author=authorfetch,
                                      urllink=url,
                                      subject=comment.subject,
-                                     pageobject=comment.get_page_object,
+                                     pageobject=regarding,
                                      body = content
                                      )
 
+    
+
 def email_comment_html(comment):
     email_comment = Template(u"""
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        ${stylesheet}
-    </head>
-    <html>
-    <body>
-    <h1 id="mainhead">Essay.com</h1>
     <div class="comment">
+    <a href="authorurl" target="_blank">${author}</a> 
+    <a href="${urllink}" target="_blank">responded</a> to 
+    <a href="${urllink}" target="_blank">${page}</a>
     <div class="subject"><a href="${urllink}" target="_blank">${subject}</a></div>
     <div class="info_comment">At ${date} ${author} wrote:</div>
     <p class="comment_content">${body}</p>
     </div>
-    </body>
-    </html>
     """)
     
     url = comment.get_page_object().get_url()
+    
+    try: 
+        comment.get_page_object().subtitle
+        regarding = comment.get_page_object().title
+    except: 
+        regarding = comment.get_page_object().creator.username
         
+    try:
+        authorurlfetch=comment.author.get_url()
+        authorfetch=comment.author.username
+    except:
+        authorurlfetch = ''
+        authorfetch='anonymous'
+
     if len(comment.stripped_content)>300:
-        content = comment.stripped_content[:300]+'... follow link to read the rest of '+comment.author+'\'s comment.'
+        content = comment.stripped_content[:300]+'... follow link to read the rest of '+comment.author.username+'\'s comment.'
     else:
         content = comment.stripped_content
     
-    return email_comment.substitute(
-                                     stylesheet=style,
+    htmlcontent = email_comment.substitute(
+                                     page = regarding,
                                      date=str(comment.date),
-                                     author=comment.author.username,
+                                     author=authorfetch,
+                                     authorurl=authorurlfetch,
                                      urllink=url,
                                      subject=comment.subject,
-                                     pageobject=comment.get_page_object,
                                      body = content
                                      )
+    return main.substitute(content=htmlcontent)
                                      
