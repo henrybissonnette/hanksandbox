@@ -13,6 +13,36 @@
 		</a></h1>
 
 	<div id="document_info" class="rate">
+		{% if user and user.username != document.author.username and not document.key in user.favorites %}
+			<div class="rate" id="favorite_div">
+			<script type="text/javascript">
+				$(document).ready(function(){			
+					$('#favorite').click(function(){	
+												
+							$.ajax({
+								type: "POST",
+								url: "/favorite/",
+								data: "document=" + "{{document.key}}",
+								success: function(){
+									$('#favorite_div').ajaxComplete(function(event,request,settings){
+										$(this).html('favorite')				
+									})
+								}
+							})				
+					})
+							
+				})	
+			</script>
+			<button id="favorite">Favorite</button>
+			</div>
+			{% endif %}
+			{% if user and user.username != document.author.username and document.key in user.favorites %}
+			<div class="rate" id="favorite_div">
+			favorite
+			</div>
+		{% endif %}
+		<br/>
+		
 		{% if not document.draft %}
 			{% if document.authorname == user.username  or not user %}
 				<span>Rating: {{document.rating}}</span>

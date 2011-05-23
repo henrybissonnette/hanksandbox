@@ -124,15 +124,15 @@ function tabular(controller, element, groupname ,initial)
 				$(controller).addClass('unselected')
 				$(element).hide();
 			}
-			$(controller).addClass('tab');
-			$(element).addClass(groupname);
+			$(controller).addClass(groupname+' tab');
+			$(element).addClass(groupname+' tabbed');
 		
 			$(controller).click(function(){
-				$('.selected').addClass('unselected');
-				$('.selected').removeClass('selected');
+				$('.selected.'+groupname).addClass('unselected');
+				$('.selected.'+groupname).removeClass('selected');
 				$(controller).addClass('selected');
 				$(controller).removeClass('unselected');
-				$('.'+groupname).hide();
+				$('.tabbed.'+groupname).hide();
 				$(element).show();
 			})
 		})

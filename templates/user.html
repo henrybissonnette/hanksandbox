@@ -61,6 +61,28 @@
 </div>
 
 <div class="right_half">
+	{% comment %}
+	-----------------------------------------------------------------------------------
+	-----------------------------Right Column Tabs-------------------------------------
+	{% endcomment %}	
+	
+	<script type="text/javascript">
+		tabular('#tab_stream','#the_stream','rightcolumntabs', true)
+		tabular('#tab_favorites','#favorites','rightcolumntabs')
+	</script>
+	<div class="bodytabs">
+ 		<ul class="tabs">
+			<li id="tab_stream">Stream</li>
+			<li id="tab_favorites">Favorites</li>
+		</ul>
+	</div>
+	
+	{% comment %}
+	----------------------------------------------------------------------------
+	-----------------------------STREAM-----------------------------------------
+	{% endcomment %}
+	<div id="the_stream">
+	
 	<h2> {{ page_user.username }}'s Subscription Stream </h2>
 	{% for doc in page_user.fetch_stream %}
 		{% if doc.title %}
@@ -110,6 +132,19 @@
 		</div>
 		{% endif %}
 	{% endfor %}
+	
+	</div>
+	{% comment %}
+	----------------------------------------------------------------------------
+	-----------------------------FAVORITES--------------------------------------
+	{% endcomment %}
+	<div id="favorites">
+		<h2> {{ page_user.username }}'s Favorites </h2>
+		{% for doc in page_user.fetch_favorites %}
+				{% include 'stream_doc.html'%}		
+		{% endfor %}	
+	</div>
+	
 </div>
 
 </div>

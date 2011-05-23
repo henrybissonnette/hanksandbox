@@ -186,6 +186,12 @@ div.comment{
 }
 
 /*******************TABS************************/
+
+div.bodytabs{
+	border-bottom:solid 1px #999;
+	padding-left:60px;
+}
+
 div.tabs{
 	margin-left:120px;
 }
@@ -203,17 +209,19 @@ li.tab{
 }
 
 .selected{
+	border-color:#aaa;
 	border-top:solid 1px;
 	border-left:solid 3px;
 	border-right:solid 1px;
+	border-bottom:solid 1px #fff;
 	color#000;
-	border-color:#aaa;
 	background:#fff;	
 }
 
 .unselected{
 	border-color:#fff;
 	border:solid 1px;
+	border-bottom:none;
 	border-left:solid 3px;
 }
 .unselected:hover{

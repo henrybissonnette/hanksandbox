@@ -200,6 +200,7 @@ class User(db.Model):
     circlepermissions = db.StringListProperty(default=[])
     displayname = db.StringProperty()
     email_log = db.ListProperty(db.Key,default=[])
+    favorites = db.ListProperty(db.Key,default=[])
     google = db.UserProperty()
     invitations = db.StringListProperty(default=[])
     invitees = db.StringListProperty(default=[])
@@ -221,6 +222,20 @@ class User(db.Model):
     object_type = db.StringProperty(default = 'User')
     username = db.StringProperty()
     
+    def add_favorite(self, document):
+        if not document.key in self.favorites:
+            self.favorites.append(document.key())
+        if not self.username in document.favorites:
+            document.favorites.append(self.username)
+        document.put()
+        self.put()
+        
+    def fetch_favorites(self):
+        favorites = []
+        for key in self.favorites:
+            favorites.append(Document.get(key))
+        return favorites
+            
     def get_url(self):
         return domainstring+'user/'+self.username+'/'
     
@@ -257,6 +272,7 @@ class Document(db.Model):
     date = db.DateTimeProperty(auto_now_add=True)
     _description=db.StringProperty(default = '')
     draft = db.BooleanProperty(default=True)
+    favorites = db.StringListProperty(default=[])
     filename = db.StringProperty()
     object_type = db.StringProperty(default = 'Document')
     raters = db.StringListProperty()
@@ -704,6 +720,12 @@ class Edit_Document(webapp.RequestHandler):
         tmpl = path.join(path.dirname(__file__), 'templates/create.html')
         self.response.out.write(template.render(tmpl, context))
         
+class Favorite(webapp.RequestHandler):
+    def post(self):
+        key = self.request.get('document')
+        document = Document.get(key)
+        user = get_user()
+        user.add_favorite(document)
       
 class Home(webapp.RequestHandler):
     
@@ -1069,6 +1091,7 @@ class View_Document(webapp.RequestHandler):
 
 application = webapp.WSGIApplication([
     
+    ('/favorite/',Favorite),
     ('/subscription_handler/', Subscription_Handler),
     ('/invite_handler/', Invite_Handler),
     ('/invite/', Invite),
