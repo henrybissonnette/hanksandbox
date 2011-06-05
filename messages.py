@@ -34,7 +34,8 @@ main =Template(u'''
      /***** MAIN *****/
      
     #frame{
-    border:solid 10px #d1d1d1,
+    border:solid 20px;
+    border-color: #d1d1d1;
     border-right:100px;
     border-bottom:100px;
     }

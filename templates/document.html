@@ -12,76 +12,7 @@
 		{{document.author.username}}{% if document.draft %} : draft{% endif %}
 		</a></h1>
 
-	<div id="document_info" class="rate">
-		{% if user and user.username != document.author.username and not document.key in user.favorites %}
-			<div class="rate" id="favorite_div">
-			<script type="text/javascript">
-				$(document).ready(function(){			
-					$('#favorite').click(function(){	
-												
-							$.ajax({
-								type: "POST",
-								url: "/favorite/",
-								data: "document=" + "{{document.key}}",
-								success: function(){
-									$('#favorite_div').ajaxComplete(function(event,request,settings){
-										$(this).html('favorite')				
-									})
-								}
-							})				
-					})
-							
-				})	
-			</script>
-			<button id="favorite">Favorite</button>
-			</div>
-			{% endif %}
-			{% if user and user.username != document.author.username and document.key in user.favorites %}
-			<div class="rate" id="favorite_div">
-			favorite
-			</div>
-		{% endif %}
-		<br/>
-		
-		{% if not document.draft %}
-			{% if document.authorname == user.username  or not user %}
-				<span>Rating: {{document.rating}}</span>
-			{% else %}
-				
-				
-					{% if user.username in document.raters %}
-					<span class="rate">Thanks for your feedback. Rating: {{document.rating}}</span>
-					{% else %}
-							<!-- This script takes rating actions to the server. -->
-							<script type="text/javascript">
-								$(document).ready(function(){
-								  $("a#document_rate_up").click(function(){
-								    $("div#rate").load('rate/',{
-								    	"rating":"up",
-								    	"filename":"{{document.filename}}",
-								    	"username":"{{document.author.username}}",
-								    	});
-								  });
-								  $("a#document_rate_down").click(function(){
-								    $("div#rate").load('rate/',{
-								    	"rating":"down",
-								    	"filename":"{{document.filename}}",
-								    	"username":"{{document.author.username}}",
-								    	});
-								  });
-								});		
-							</script>
-							
-					<div class="rate" id="rate">
-						<a href="javascript:;" title="Vote Document Up" id="document_rate_up" class="rate_up"></a>
-						<a href="javascript:;" title="Vote Document Down" id="document_rate_down" class="rate_down"></a>
-					</div>	
-					{% endif %}
-			{% endif %}
-		{% endif %}
-		<br/>
-		Views: {{document.views}}
-	</div>
+	
 	
 	
 	<h1 class="document" >{{document.title}}</h1>
@@ -105,5 +36,107 @@
 			<input type="submit" value="edit"/>
 		</form>
 	{% endifequal %}
+	
+
+	{% comment %}
+	---------------------------------------------------------------------------------
+	------------------------------------DOC INFO-------------------------------------
+	{% endcomment %}
+	
+	<div id="document_info" >
+		
+	{% comment %}
+	------------------------------------FAVORITE-------------------------------------
+	{% endcomment %}
+	
+		{% if user and user.username != document.author.username and not document.key in user.favorites %}
+
+			<script type="text/javascript">
+				$(document).ready(function(){			
+					$('#favorite').click(function(){	
+												
+							$.ajax({
+								type: "POST",
+								url: "/favorite/",
+								data: "document=" + "{{document.key}}",
+								success: function(){
+									$('#favorite_div').ajaxComplete(function(event,request,settings){
+										$(this).html('favorite')				
+									})
+								}
+							})				
+					})
+							
+				})	
+			</script>
+			<div id="favorite_div" class="docinfoitem">
+			<button id="favorite" >Favorite</button>
+			</div>
+			{% endif %}
+			{% if user and user.username != document.author.username and document.key in user.favorites %}
+			<div class="docinfoitem" id="favorite_div">
+			favorite
+			</div>
+		{% endif %}
+		
+		{% comment %}
+		------------------------------------VIEWS-------------------------------------
+		{% endcomment %}
+		
+		<span class="docinfoitem">Views: {{document.views}}</span>
+		<br/>
+		
+		{% comment %}
+		------------------------------------RATINGS-------------------------------------
+		{% endcomment %}
+		
+		{% if not document.draft %}
+			{% if document.authorname == user.username  or not user %}
+				<span class="docinfoitem">Rating: {{document.rating}}</span>
+			{% else %}
+				
+				
+					{% if user.username in document.raters %}
+					<span class="docinfoitem">Thanks for your feedback. Rating: {{document.rating}}</span>
+					{% else %}
+							<!-- This script takes rating actions to the server. -->
+							<script type="text/javascript">
+								$(document).ready(function(){
+								  $("a#document_rate_up").click(function(){
+								    $("div#rate").load('rate/',{
+								    	"rating":"up",
+								    	"filename":"{{document.filename}}",
+								    	"username":"{{document.author.username}}",
+								    	});
+								  });
+								  $("a#document_rate_down").click(function(){
+								    $("div#rate").load('rate/',{
+								    	"rating":"down",
+								    	"filename":"{{document.filename}}",
+								    	"username":"{{document.author.username}}",
+								    	});
+								  });
+								});		
+							</script>
+							
+					<div class="docinfoitem" id="rate">
+						<a href="javascript:;" title="Vote Document Up" id="document_rate_up" class="rate_up"></a>
+						<a href="javascript:;" title="Vote Document Down" id="document_rate_down" class="rate_down"></a>
+					</div>	
+					{% endif %}
+			{% endif %}
+		{% endif %}
+		<br/>
+		
+		{% comment %}
+		------------------------------------FACEBOOK-------------------------------------
+		{% endcomment %}
+		
+		
+		<iframe src="http://www.facebook.com/plugins/like.php?href=http://hanksandbox.appspot.com/{{document.author.username}}/document/{{document.filename}}/"
+        scrolling="no" frameborder="0"
+        class="facebook docinfoitem"></iframe>
+        
+	</div>
 
 {% endblock main_content %}
