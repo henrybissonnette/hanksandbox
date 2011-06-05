@@ -8,6 +8,13 @@
 
 {% block main_content %}
 
+
+	{% comment %}
+	---------------------------------------------------------------------------------
+	------------------------------------DOCUMENT-------------------------------------
+	---------------------------------------------------------------------------------
+	{% endcomment %}
+	
 	<h1 class="creator"><a title="Visit {{document.author.username}}'s  Page" class="creator" href="/user/{{document.author.username}}/">
 		{{document.author.username}}{% if document.draft %} : draft{% endif %}
 		</a></h1>
@@ -79,18 +86,20 @@
 			</div>
 		{% endif %}
 		
-		{% comment %}
-		------------------------------------VIEWS-------------------------------------
-		{% endcomment %}
-		
-		<span class="docinfoitem">Views: {{document.views}}</span>
-		<br/>
-		
-		{% comment %}
-		------------------------------------RATINGS-------------------------------------
-		{% endcomment %}
-		
 		{% if not document.draft %}
+		
+			{% comment %}
+			------------------------------------VIEWS-------------------------------------
+			{% endcomment %}
+			
+			<span class="docinfoitem">Views: {{document.views}}</span>
+			<br/>
+			
+			{% comment %}
+			------------------------------------RATINGS-------------------------------------
+			{% endcomment %}
+			
+
 			{% if document.authorname == user.username  or not user %}
 				<span class="docinfoitem">Rating: {{document.rating}}</span>
 			{% else %}
@@ -125,18 +134,26 @@
 					</div>	
 					{% endif %}
 			{% endif %}
-		{% endif %}
-		<br/>
 		
-		{% comment %}
-		------------------------------------FACEBOOK-------------------------------------
-		{% endcomment %}
-		
-		
-		<iframe src="http://www.facebook.com/plugins/like.php?href=http://hanksandbox.appspot.com/{{document.author.username}}/document/{{document.filename}}/"
-        scrolling="no" frameborder="0"
-        class="facebook docinfoitem"></iframe>
-        
+			<br/>
+			
+			{% comment %}
+			------------------------------------FACEBOOK-------------------------------------
+			{% endcomment %}
+					
+			<iframe src="http://www.facebook.com/plugins/like.php?href=http://hanksandbox.appspot.com/{{document.author.username}}/document/{{document.filename}}/"
+	        scrolling="no" frameborder="0"
+	        class="facebook docinfoitem"></iframe>
+	        
+        {% endif %}
 	</div>
+	
+	{% comment %}
+	---------------------------------------------------------------------------------
+	------------------------------------EDIT-----------------------------------------
+	---------------------------------------------------------------------------------
+	{% endcomment %}
+	
+	
 
 {% endblock main_content %}

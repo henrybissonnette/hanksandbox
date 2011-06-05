@@ -13,7 +13,7 @@ from django.utils.html import strip_tags
 import os, re, logging, sys,datetime
 import messages
 
-domainstring='http://hanksandbox.appspot.com/'
+domainstring='http://essayhost.appspot.com/'
 
 def get_document(name, filename, title=None):
 
@@ -181,11 +181,13 @@ class Commentary:
     
     def __init__(self, username, document_filename=None,document_title=None):
         
-        
-        if document_filename:
-            self.comments = get_document(username, document_filename).comments.order('-date')
+        document = get_document(username, document_filename)
+
+        if document:
+            self.comments = document.comments.order('-date')
         else:      
             self.comments = get_user(username).mypagecomments.order('-date')
+            
         self.comment_tree = self.prepare_reply_tree(self.comments)
         self.delta =  self.delta_builder(self.comment_tree[1])  
         self.sum_delta = [1] * sum([item for sublist in self.delta for item in sublist])
@@ -329,15 +331,16 @@ class Document(db.Model):
         self.delete()
         
     def set_view(self):
-        self.views += 1
-        user = get_user()
-        try:
-            user.username
-            if not user.username in self.viewers:
-                self.viewers.append(user.username)
-        except:
-            pass
-        self.put()
+        if not self.draft:
+            self.views += 1
+            user = get_user()
+            try:
+                user.username
+                if not user.username in self.viewers:
+                    self.viewers.append(user.username)
+            except:
+                pass
+            self.put()
             
 
 class Comment(db.Model):
@@ -347,6 +350,7 @@ class Comment(db.Model):
     raters = db.StringListProperty()
     content = db.TextProperty()
     date = db.DateTimeProperty(auto_now_add=True)
+    draft = db.BooleanProperty(default=False)
     above = db.SelfReferenceProperty(collection_name='replies')
     article = db.ReferenceProperty(Document,collection_name='comments')
     user_page = db.ReferenceProperty(User, collection_name='mypagecomments')
@@ -497,7 +501,7 @@ class CommentHandler(webapp.RequestHandler):
                 self_key = self.request.get('key')
                 comment = db.get(self_key)
             else:
-                comment = Comment()
+                comment = Comment()             
             # subject handles comment topics
             subject = self.request.get('subject')
             # this if skips the above assignment
@@ -554,13 +558,21 @@ class CommentHandler(webapp.RequestHandler):
                 
             comment.content = self.request.get('content')
             comment.get_stripped()
+            
+            try:
+                if comment.get_page_object().draft:
+                    comment.draft=True
+            except: 
+                pass
+            
             comment.put()
+            
             if new:
                 if user:
                     for subscriber in comment.author.subscribers_comment:
                         sub = get_user(subscriber)
                         mail.send_mail(
-                            'postmaster@hanksandbox.appspotmail.com',
+                            'postmaster@essayhost.appspotmail.com',
                             sub.google.email(),
                             'New Comment by %s' % comment.author.username,
                             messages.email_comment(comment),
@@ -571,7 +583,7 @@ class CommentHandler(webapp.RequestHandler):
                         for subscriber in comment.above.subscribers:
                             sub = get_user(subscriber)
                             mail.send_mail(
-                                'postmaster@hanksandbox.appspotmail.com',
+                                'postmaster@essayhost.appspotmail.com',
                                 sub.google.email(),
                                 'New reply to %s' % comment.above.subject,
                                 messages.email_comment(comment),
@@ -583,7 +595,7 @@ class CommentHandler(webapp.RequestHandler):
                         for subscriber in comment.get_page_object().subscribers:
                             sub = get_user(subscriber)
                             mail.send_mail(
-                                'postmaster@hanksandbox.appspotmail.com',
+                                'postmaster@essayhost.appspotmail.com',
                                 sub.google.email(),
                                 'New reply to %s' % comment.get_page_object().title,
                                 messages.email_comment(comment),
@@ -683,7 +695,7 @@ class Create_Document(webapp.RequestHandler):
             for subscriber in user.subscribers_document:
                 sub = get_user(subscriber)
                 mail.send_mail(
-                    'postmaster@hanksandbox.appspotmail.com',
+                    'postmaster@essayhost.appspotmail.com',
                     sub.google.email(),
                     'New document by %s' % document.authorname,
                     messages.email_document(document),
@@ -1012,6 +1024,7 @@ class TagManager(webapp.RequestHandler):
         if request == 'base':
             user_type = self.request.get('user_type')
             root_tags = Tag.all().filter('parent_tag ==', None).fetch(100)
+            logging.info('root_tags: '+str(root_tags))
             context = {
                        'user_type':user_type,
                        'tags': root_tags,

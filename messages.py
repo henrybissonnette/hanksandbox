@@ -2,7 +2,7 @@
 from string import Template
 import logging
 
-domainstring='http://hanksandbox.appspot.com/'
+domainstring='http://essayhost.appspot.com/'
 
 ##################################################
 #         STYLE SHEET
