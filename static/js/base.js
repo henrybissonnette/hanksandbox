@@ -137,3 +137,17 @@ function tabular(controller, element, groupname ,initial)
 			})
 		})
 	}
+/////////////////////////////////////////////////////////////////
+/*template should contain a string with unique replacibles
+  and a context which is an array of items to be replaced and 
+  their replacements. The replacibles should be surrounded with %s
+ */
+function template(string, context)
+	{
+		for(var i=0;i<context.length;i++)
+		{
+			var re = new RegExp('%'+context[i][0]+'%','g')
+			string = string.replace(re,context[i][1])
+		} 
+		return string;
+	} 

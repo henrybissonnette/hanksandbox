@@ -42,6 +42,11 @@ a.subtle,a.subtle:hover{
 	cursor:pointer;	
 }
 
+.fullpage{
+	margin-top: 30px;
+	margin-bottom: 30px;
+	min-height: 500px;
+}
 
 /***************many element presentation standards********************/
 /*********************************************************************/
@@ -434,6 +439,10 @@ div.bottomlinks{
 
 .toprule{
     border-top: 1px dotted;
+}
+
+.subtlebutton{
+	margin-top: 20px;
 }
 
 /****************Comment*********************/

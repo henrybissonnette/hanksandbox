@@ -276,6 +276,7 @@ class Document(db.Model):
     draft = db.BooleanProperty(default=True)
     favorites = db.StringListProperty(default=[])
     filename = db.StringProperty()
+    leaftags = db.StringListProperty(default=[])
     object_type = db.StringProperty(default = 'Document')
     raters = db.StringListProperty()
     rating = db.IntegerProperty(default=0)
@@ -286,6 +287,42 @@ class Document(db.Model):
     views = db.IntegerProperty(default=0)
     viewers = db.StringListProperty(default=[])
     type = db.StringListProperty(default=["not_meta"])
+    
+    def add_tags(self, taglist):
+        
+        self.leaftags = []
+        self.tags = []
+        skip=False
+        for tag in taglist:
+            
+            tagObject= Tag.get_by_key_name(tag)
+            
+            try:              
+                Tag.get_by_key_name(tag)
+                real=True
+            except:
+                pass
+            if real:
+                if tag in self.tags:
+                    pass
+                else:
+                    for leaftag in self.leaftags:
+                        if tag in Tag.get_by_key_name(leaftag).descendants:
+                            self.leaftags.remove(leaftag)               
+                    self.leaftags.append(tag)
+                    ancestry = tagObject.ancestors
+                    ancestry.append(tag)
+                    self.tags.extend(ancestry)
+                    self.tags = remove_duplicates(self.tags)
+                    if 'Meta' in self.tags:
+                        if 'meta' not in self.type:
+                            try:
+                                self.type.remove('not_meta')
+                            except:
+                                pass
+                            self.type.append('meta')                    
+
+        self.put()
     
     def get_url(self):
         return domainstring+self.author.username+'/document/'+self.filename+'/'
@@ -309,6 +346,12 @@ class Document(db.Model):
         
     def get_description(self):
         return self._description
+    
+    def get_leaftags(self):
+        return [Tag.get_by_key_name(title) for title in self.leaftags]
+    
+    def get_tags(self):
+        return [Tag.get_by_key_name(title) for title in self.tags]
     
     def set_subscriber(self, subscriber, add=True):
         "Subscriber should be a username."
@@ -397,20 +440,38 @@ class Tag(db.Model):
     parent_tag = db.SelfReferenceProperty(collection_name='children')
     title = db.StringProperty()
     ancestors = db.StringListProperty()
+    descendants = db.StringListProperty()
+    
+    def set_descendants(self,passive=False):
+        descendants = []
+        for child in self.children:
+            family = child.set_descendants(True)
+            descendants.extend(family)
+        if passive:
+            descendants.append(self.title)
+            return descendants
+        else:
+            self.descendants = descendants
+            self.put()
+        
+    
+    def get_ancestors(self):
+        return [Tag.get_by_key_name(title) for title in self.ancestors]
     
     def populate_ancestors(self, ancestry = None):
         if not ancestry:
             if self.parent_tag:               
-                ancestry = [self.title, self.parent_tag.title]
+                ancestry = [self.parent_tag.title]
                 return self.populate_ancestors(ancestry)
             else:
-                self.ancestors = [self.title]
+                self.ancestors = []
         else:
             if Tag.get_by_key_name(ancestry[-1]).parent_tag:
                 ancestry.append(Tag.get_by_key_name(ancestry[-1]).parent_tag.title)
                 return self.populate_ancestors(ancestry)
             else:
                 self.ancestors = ancestry
+        self.put()
                 
     def populate_descendants(self, descendants = None):
         if not descendants:
@@ -421,6 +482,7 @@ class Tag(db.Model):
                 return descendants
             else:
                 return descendants
+        self.put()
             
     def exterminate(self):
         references = Document.all().filter('tags =', self.title).fetch(1000)
@@ -648,26 +710,16 @@ class Create_Document(webapp.RequestHandler):
             document.set_subscriber(user.username)
         else:
             document.set_subscriber(user.username,False)
-               
-        tags_pre_pre = self.request.get_all('added_tag')
-        #create ancestors for pre ancestor tags (soon to be uneccessary)
         
-        for tag in tags_pre_pre:
-            update = Tag.get_by_key_name(tag)
-            update.populate_ancestors()
-            update.put()
-            
-        tags_pre = [Tag.get_by_key_name(title).ancestors for title in tags_pre_pre]
-        tags = [item for sublist in tags_pre for item in sublist]
-        tags = remove_duplicates(tags)
-        if 'Meta' in tags:
-            if 'meta' not in document.type:
-                try:
-                    document.type.remove('not_meta')
-                except:
-                    pass
-                document.type.append('meta')
-        document.tags = tags
+        #################################################
+        # Handling Tags
+        
+        tags = self.request.get_all('added_tag')
+        logging.info('tags: '+str(tags))
+        document.add_tags(tags)
+        
+        # End Tags
+        ######################################################
         
         if user:
             if user.username:
@@ -967,6 +1019,7 @@ class TagManager(webapp.RequestHandler):
             if parent_title:
                 tag.parent_tag = Tag.get_by_key_name(parent_title)
             tag.populate_ancestors()
+            tag.set_descendants()
             tag.put() 
                 
             self.redirect('..')
@@ -1034,6 +1087,7 @@ class TagManager(webapp.RequestHandler):
                   
         if request == 'remove':
             removed = self.request.get('title')
+            logging.info('title: '+title)
             Tag.get_by_key_name(removed).exterminate()
             
             context = {}

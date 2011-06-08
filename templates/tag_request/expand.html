@@ -1,5 +1,10 @@
 
-	<!-- X: allows user to close a branch in the tag tree (only if not top level tag)-->
+	{% comment %}
+	-----------------------------------------------------------------
+	--- the  following handles the X that will close this expansion
+	--- and all subexpansions.
+	{% endcomment %}
+	
 	{% if parent_title %}
 		<script type="text/javascript">
 			//sets up the close div button
@@ -29,7 +34,12 @@
 	{% endif %}
 	<!-- X: END -->
 
-
+	{% comment %}
+	-----------------------------------------------------------------
+	--- Here begins the expansion itself. 
+	--- It consists of a list of tags, each several interactions.
+	{% endcomment %}
+	
 	<ul>
 		<!-- NEW: This code enables the administrative new tag button -->
 		{% ifequal user_type "admin"%}
@@ -45,7 +55,7 @@
 				<li id="{{tag.title}}">
 					{% if not tag.children.0 and user_type != 'admin' %}
 					<!-- EXPAND: enables the expansion of the tag tree to view current tag's children. -->
-					{{tag.title}}
+					{{tag.title}} 
 
 					{% else %}
 					<script type="text/javascript">
@@ -57,7 +67,7 @@
 
 					</script> 
 					
-					<a href="javascript:;"  title="view children" id="branch{{tag.title}}">{{tag.title}}</a>
+					<a href="javascript:;"  title="view children" id="branch{{tag.title}}">{{tag.title}}</a> 
 					{% endif %}
 					<!-- EXPAND: END -->
 					
@@ -96,6 +106,7 @@
 					<!-- ADD: END -->
 					
 					{% ifequal user_type "admin"%}
+					<!-- REMOVE: BEGIN -->
 					<script type="text/javascript">
 					divtrigger("a#remove{{tag.title}}","div#{% if parent_title %}expand_{{parent_title}}{% else %}self_{{tag.title}}{% endif %}",
 					'tag_remove/',{"title":"{{tag.title}}"},"Delete this tag and all of its children?")
