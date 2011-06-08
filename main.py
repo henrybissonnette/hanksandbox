@@ -1008,12 +1008,10 @@ class TagManager(webapp.RequestHandler):
         user = get_user()
         #if not user.admin:
             #self.redirect('/home')
-            
+         
         if request == 'create':
             create_title = cleaner(self.request.get('new_title').replace(' ','_'))
             parent_title = self.request.get('parent_title')
-            logging.info('create_title: ' + create_title)
-            logging.info('parent_title: ' + parent_title)
             tag = Tag(key_name=create_title)
             tag.title = create_title
             if parent_title:
@@ -1021,17 +1019,32 @@ class TagManager(webapp.RequestHandler):
             tag.populate_ancestors()
             tag.set_descendants()
             tag.put() 
+            
+            if user.admin:
+                user_type='admin' 
+            if parent_title:              
+                parent = tag.parent_tag
+                tags = parent.children.order('title')
                 
-            self.redirect('..')
-                
-            #parent_tag = Tag.get_by_key_name(parent_title)
-            #sister_tags = parent_tag.children
-            #context = {
-            #    'tags':     sister_tags,
-            #    'title':    create_title,
-            #   }  
-            #tmpl = path.join(path.dirname(__file__), 'templates/tag_request/expand.html')
-            #self.response.out.write(template.render(tmpl, context))
+                context = {
+                    'user':     user,
+                    'parent':   parent,
+                    'user_type':user_type,
+                    'tags':     tags,
+                    'parent_title':    parent.title,
+                   }  
+                tmpl = path.join(path.dirname(__file__), 'templates/tag_request/expand.html')
+                self.response.out.write(template.render(tmpl, context))  
+            else:
+                root_tags = Tag.all().filter('parent_tag ==', None).fetch(100)
+                context = {
+                           'user':     user,
+                           'user_type':user_type,
+                           'tags': root_tags,
+                           }
+                tmpl = path.join(path.dirname(__file__), 'templates/tag_request/base.html')
+                self.response.out.write(template.render(tmpl, context))
+
             
         if request == 'newform':
             new_title = self.request.get('title')
@@ -1046,9 +1059,9 @@ class TagManager(webapp.RequestHandler):
             user_type = self.request.get('user_type')
             expand_title = self.request.get('title')
             parent = Tag.get_by_key_name(expand_title)
-            tag = Tag.get_by_key_name(expand_title)
-            tags = tag.children.order('title')
+            tags = parent.children.order('title')
             context = {
+                'user':     user,
                 'parent':   parent,
                 'user_type':user_type,
                 'tags':     tags,
@@ -1068,7 +1081,6 @@ class TagManager(webapp.RequestHandler):
             
         if request == 'addto':
             added_tags_pre = self.request.get('added_tags')
-            logging.info('added_tags: '+ str(added_tags_pre))
             added_tags = [Tag.get_by_key_name(title) for title in  eval(added_tags_pre)]
             context = {'added_tags':added_tags}
             tmpl = path.join(path.dirname(__file__), 'templates/tag_request/addto.html')
@@ -1077,8 +1089,8 @@ class TagManager(webapp.RequestHandler):
         if request == 'base':
             user_type = self.request.get('user_type')
             root_tags = Tag.all().filter('parent_tag ==', None).fetch(100)
-            logging.info('root_tags: '+str(root_tags))
             context = {
+                       'user':     user,
                        'user_type':user_type,
                        'tags': root_tags,
                        }
@@ -1087,7 +1099,6 @@ class TagManager(webapp.RequestHandler):
                   
         if request == 'remove':
             removed = self.request.get('title')
-            logging.info('title: '+title)
             Tag.get_by_key_name(removed).exterminate()
             
             context = {}

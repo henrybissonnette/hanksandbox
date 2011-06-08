@@ -37,16 +37,17 @@
 	{% comment %}
 	-----------------------------------------------------------------
 	--- Here begins the expansion itself. 
-	--- It consists of a list of tags, each several interactions.
+	--- It consists of a list of tags, each with several interactions.
 	{% endcomment %}
 	
 	<ul>
 		<!-- NEW: This code enables the administrative new tag button -->
-		{% ifequal user_type "admin"%}
+		{% if user.admin %}
 		<div id="new{{parent_title}}" class="new_tag">
 			{% include 'newbutton.html' %}
 		</div>
-		{% endifequal %}
+		{% endif %}
+
 		<!-- NEW: END -->
 		
 		{% for tag in tags %}
