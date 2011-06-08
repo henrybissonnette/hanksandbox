@@ -512,8 +512,11 @@ class VoteComment(Vote):
 class Admin(webapp.RequestHandler):
     def get(self):
         user = get_user()
-        #if not user.admin:
-                #self.redirect('/home')
+        if user:
+            if not user.admin:
+                    self.redirect('/home')
+        else:
+            self.redirect('/home')
         
         context = {
                    'user':      user,
@@ -890,14 +893,9 @@ class Register(webapp.RequestHandler):
         if user:
             if user.username:
                 self.redirect('/home')
-        if not user:
-            if users.get_current_user():
-                user = User()
-                user.google = users.get_current_user()
-                user.put()
-            else: 
+        else:
+            if not users.get_current_user():
                 self.redirect(users.create_login_url(self.request.uri))
-        
 
         context = {
                     'user':      user,
@@ -909,6 +907,7 @@ class Register(webapp.RequestHandler):
             
     def post(self):
         user = get_user()
+        user = User()
         user.google = users.get_current_user()
         name = self.request.get('username')
         name = cleaner(name)

@@ -29,16 +29,14 @@
 					[<a class="header headeritem" href="{{ logout }}">sign out</a>]
 					<a class="header headeritem" href="/user/{{ user.username }}/">MyPage</a>
 				{% else %}
-					[<a class="header headeritem" href="{{ login }}">sign in</a>]
+					[<a class="header headeritem" href="{{ login }}">sign in</a>] or
+					<a class="header headeritem" href="/register">Register</a>
 				{% endif %}
-				<a href="/admin/" class="header">admin</a>
-				<!--this has problems if your not a user
-				{% comment %}
+
 				{% if user.admin %}
 					<a href="/admin/" class="header">admin</a>
 				{% endif %}
-				{% endcomment%}
-				-->
+
 			</b>
 		</div>
 	</div>
