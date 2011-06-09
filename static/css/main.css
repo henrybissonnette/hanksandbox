@@ -356,17 +356,21 @@ div#document{
 }
 
 #document_info{
+	max-width:600px;
+	border: dotted 1px #aaa;
+	padding:10px;
 	margin-top: 20px;
 }
 
 .docinfoitem{
 	margin-top:5px
 	margin-left:30px;
+	margin-bottom:5px;
 }
 
 .facebook{
 	margin-top:10px;
-	margin-bottom:-100px;
+	margin-bottom:-130px;
 	/*border:none; 
 	width:450px; 
 	height:80px*/

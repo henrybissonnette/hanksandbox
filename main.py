@@ -10,7 +10,7 @@ from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
 from cgi import escape
 from django.utils.html import strip_tags
-import os, re, logging, sys,datetime
+import os, re, logging, sys,datetime,math
 import messages
 
 domainstring='http://essayhost.appspot.com/'
@@ -200,13 +200,14 @@ class User(db.Model):
     admin = db.BooleanProperty(default=False)
     circle = db.StringListProperty(default=[])
     circlepermissions = db.StringListProperty(default=[])
+    date = db.DateTimeProperty(auto_now_add=True)
     displayname = db.StringProperty()
     email_log = db.ListProperty(db.Key,default=[])
     favorites = db.ListProperty(db.Key,default=[])
     google = db.UserProperty()
     invitations = db.StringListProperty(default=[])
     invitees = db.StringListProperty(default=[])
-    reputation = db.IntegerProperty(default=0)
+    reputation = db.IntegerProperty(default=1)
     # people who subscribe to me in some way
     subscribers = db.StringListProperty(default=[])
     # people who subscribe to my documents by email
@@ -223,6 +224,10 @@ class User(db.Model):
     subscriptions_tag = db.StringListProperty(default=[])
     object_type = db.StringProperty(default = 'User')
     username = db.StringProperty()
+    
+    def get_age(self):
+        age = datetime.datetime.now()-self.date
+        return age.days
     
     def add_favorite(self, document):
         if not document.key in self.favorites:
@@ -265,6 +270,43 @@ class User(db.Model):
             
         ordered = sorted(documents, key=lambda document: document.date, reverse=True)
         return ordered[:number]
+    
+    def set_reputation(self):
+        
+        reputation=1
+        myworks = self.works.fetch(1000)
+        mycomments = self.mycomments
+        total_views = 0
+        
+
+                    
+        for document in myworks:
+            reputation = reputation + 4*document.rating
+            total_views = total_views + document.views
+        
+        for comment in mycomments: 
+            reputation = reputation + comment.rating
+            
+        if self.get_age() < 100:
+            reputation = reputation*math.sqrt(self.get_age())/10
+            
+        reputation = (math.sqrt(reputation)/100)*97
+            
+        prolificity = len(myworks)
+        if prolificity >= 1:
+            reputation = reputation + 1           
+            if prolificity >= 10:
+                reputation = reputation + 1
+                if total_views/prolificity <= 20:
+                    reputation = reputation - 2
+                if prolificity >= 30:
+                    reputation = reputation + 1 
+                    if total_views/prolificity <= 30:
+                        reputation = reputation - 2
+                        
+        self.reputation = int(reputation)    
+        self.put()
+        
 
 class Document(db.Model):
     
@@ -350,6 +392,20 @@ class Document(db.Model):
     def get_leaftags(self):
         return [Tag.get_by_key_name(title) for title in self.leaftags]
     
+    def set_rating(self):
+        votes = self.ratings 
+        rating = 0;
+        view_mass = 0;
+        for viewer in self.viewers:
+            user_view = get_user(viewer)
+            view_mass =  view_mass + (1+user_view.reputation)
+        for vote in votes:
+            rating = rating + vote.value*(1+vote.user.reputation)
+        rating = rating/view_mass
+        self.rating = rating
+        self.put()
+            
+    
     def get_tags(self):
         return [Tag.get_by_key_name(title) for title in self.tags]
     
@@ -413,6 +469,14 @@ class Comment(db.Model):
             return self.article
         if self.user_page:
             return self.user_page
+        
+    def set_rating(self):
+        votes = self.ratings
+        rating = 0;
+        for vote in votes:
+            rating = rating + vote.value*(1+vote.user.reputation)
+        self.rating = rating
+        self.put()
     
     def remove(self):
         
@@ -501,13 +565,15 @@ class Vote(db.Model):
     user = db.ReferenceProperty(User, collection_name='ratings')
     date = db.DateTimeProperty(auto_now_add=True)
     value = db.IntegerProperty()
+    current_rating = db.IntegerProperty()
     
 class VoteDocument(Vote):
     document = db.ReferenceProperty(Document, collection_name='ratings')
+    type = db.StringProperty(default = 'document')
     
 class VoteComment(Vote):
     comment = db.ReferenceProperty(Comment, collection_name='ratings')
-            
+    type = db.StringProperty(default = 'comment')        
     
 class Admin(webapp.RequestHandler):
     def get(self):
@@ -859,30 +925,34 @@ class Rating(webapp.RequestHandler):
             object = get_document(username,filename)
             vote = VoteDocument()
             vote.document = object
-        vote.user = user
+        if not user.username in object.raters:
             
-        if not (user.username in object.raters or user == object.author or not user):
-
-            if rating == "up":
-                object.rating = object.rating + 1
-                vote.value = 1
-            else:
-                object.rating = object.rating - 1
-                vote.value = -1
+            vote.user = user
+            
+            if not (user.username in object.raters or user == object.author or not user):
+    
+                if rating == "up":
+                    vote.value = 1
+                else:
+                    vote.value = -1
+                    
+                object.raters.append(user.username)
+                vote.current_rating = object.rating
+                vote.put()
+                object.set_rating()
+                object.author.set_reputation()
+                object.author.put()
+                object.put()
                 
-            object.raters.append(user.username)
-            vote.put()
-            object.put()
-            
-        rate_level = object.rating
-        context = {
-            'rating':    rate_level,
-            'user':      user,
-            'login':     users.create_login_url(self.request.uri),
-            'logout':    users.create_logout_url(self.request.uri)
-           }  
-        tmpl = path.join(path.dirname(__file__), 'templates/rated.html')
-        self.response.out.write(template.render(tmpl, context))  
+            rate_level = object.rating
+            context = {
+                'rating':    rate_level,
+                'user':      user,
+                'login':     users.create_login_url(self.request.uri),
+                'logout':    users.create_logout_url(self.request.uri)
+               }  
+            tmpl = path.join(path.dirname(__file__), 'templates/rated.html')
+            self.response.out.write(template.render(tmpl, context))  
         
 
         

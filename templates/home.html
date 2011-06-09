@@ -7,28 +7,31 @@
 {% block content %}
 	
 
-	<h1>The future long-form publication site X</h1>
-
+	<h1>EssayHost</h1>
+	<div class="left_half">
 	
-	<h1>Existing Documents</h1>
-
-	{% for doc in main_documents %}
-	{% if not doc.draft %}
-	{% include 'stream_doc.html'%}
-	{% endif %}
-	{% endfor %}
-
+		<h1>Recent Documents</h1>
 	
-	<h1>Meta Pages</h1>
-	<p>This site is under construction. If you have bugs to report, would like to discuss features that need to be added, 
-		or you have design input, check out or contribute to the Meta Pages.</p>
-		
-
-	{% for doc in meta_documents %}
-	{% if not doc.draft %}
-	{% include 'stream_doc.html'%}
-	{% endif %}
-	{% endfor %}
+		{% for doc in main_documents %}
+		{% if not doc.draft %}
+		{% include 'stream_doc.html'%}
+		{% endif %}
+		{% endfor %}
+	</div>
+	
+	
+	<div class="right_half">
+		<h1>Meta</h1>
+		<p>This site is under construction. If you have bugs to report, would like to discuss features that need to be added, 
+			or you have design input, check out or contribute to the Meta Pages.</p>
+			
+	
+		{% for doc in meta_documents %}
+		{% if not doc.draft %}
+		{% include 'stream_doc.html'%}
+		{% endif %}
+		{% endfor %}
+	</div>
 
 
 {% endblock %}
