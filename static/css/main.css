@@ -293,6 +293,34 @@ h3.menu_head{
 .sidebar_table{
 	font-size:10px;
 }
+/************************************************/
+/******************left outer column**********************/
+.l_outer{
+	float:left;
+	max-width:80px;
+	padding: 5px;
+}
+
+.l_outer a{
+	color = #aaa;
+}
+
+.l_outer a:hover{
+	color = #ccc;	
+}
+
+.l_outer a:visited{
+	color = #444;	
+}
+
+.l_outer a:active{
+	color = #000;	
+}
+
+.l_outer ul{
+	list-style-type: none;
+	margin-left = -30px;
+}
 
 /***************Main Header*****************/
 
@@ -572,4 +600,10 @@ div.stream_item{
 	max-height:125px;
 	margin-bottom:5px;
 	/*border-bottom:dotted;/*
+}
+
+/********************Document Browser (by tag)***************************/
+
+.tag_button{
+	color:#0ff;
 }

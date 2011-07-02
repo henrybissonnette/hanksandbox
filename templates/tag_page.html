@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}
+	{{maintag.title}}
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block leftside %}
+	<div class="l_outer">
+		
+		<ul>
+			
+			<li>
+				<a href="/home/">Home</a>
+			</li>
+			
+			<li>
+			{% for ancestor in maintag.get_ancestors %}
+			<a href="/tag/{{ancestor.title}}/">{{ancestor.title}}</a>
+			{% endfor %}
+			</li>
+			
+			<li>
+				<hr/>
+				{{maintag.title}}
+				<hr/>
+			</li>
+
+		
+			<li>
+			{% for child in maintag.get_children %}
+				<a href="/tag/{{child.title}}/">{{child.title}}</a>
+			{% endfor %}
+			</li>
+		</ul>
+	
+	</div>
+{% endblock %}
+
+{% block content %}
+
+	<h1>{{ maintag.title }}</h1>
+
+	{% for doc in maintag.get_documents%}
+	{% if not document.draft %}
+	{% include 'stream_doc.html'%}
+	{% endif %}
+	{% endfor %}
+
+
+{% endblock %}

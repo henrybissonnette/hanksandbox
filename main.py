@@ -522,20 +522,24 @@ class Tag(db.Model):
     def get_ancestors(self):
         return [Tag.get_by_key_name(title) for title in self.ancestors]
     
-    def populate_ancestors(self, ancestry = None):
+    def set_ancestors(self, ancestry = None):
         if not ancestry:
-            if self.parent_tag:               
+            if self.parent_tag:              
                 ancestry = [self.parent_tag.title]
-                return self.populate_ancestors(ancestry)
+                return self.set_ancestors(ancestry)
             else:
                 self.ancestors = []
         else:
             if Tag.get_by_key_name(ancestry[-1]).parent_tag:
                 ancestry.append(Tag.get_by_key_name(ancestry[-1]).parent_tag.title)
-                return self.populate_ancestors(ancestry)
+                return self.set_ancestors(ancestry)
             else:
                 self.ancestors = ancestry
         self.put()
+        
+    def get_children(self):
+        children = Tag.all().filter('parent_tag ==',self).fetch(1000)
+        return children
                 
     def populate_descendants(self, descendants = None):
         if not descendants:
@@ -547,6 +551,9 @@ class Tag(db.Model):
             else:
                 return descendants
         self.put()
+            
+    def get_documents(self):
+        return get_documents([self.title])
             
     def exterminate(self):
         references = Document.all().filter('tags =', self.title).fetch(1000)
@@ -871,7 +878,10 @@ class Home(webapp.RequestHandler):
                 self.redirect('/register')
         main_documents = get_documents(type='not_meta')
         meta_documents = get_documents(type='meta')
+        root_tags = Tag.all().filter('parent_tag ==',None).fetch(1000)
+        logging.info('root tags: '+str(root_tags))
         context = {
+                   'root_tags': root_tags,
                    'meta_documents': meta_documents,
                    'main_documents': main_documents,
                     'user':      user,
@@ -1085,7 +1095,7 @@ class TagManager(webapp.RequestHandler):
             tag.title = create_title
             if parent_title:
                 tag.parent_tag = Tag.get_by_key_name(parent_title)
-            tag.populate_ancestors()
+            tag.set_ancestors()
             tag.set_descendants()
             tag.put() 
             
@@ -1174,6 +1184,22 @@ class TagManager(webapp.RequestHandler):
             tmpl = path.join(path.dirname(__file__), 'templates/tag_request/empty.html')
             self.response.out.write(template.render(tmpl, context))
             
+class Tag_Page(webapp.RequestHandler):
+    def get(self, maintag):
+        user = get_user()
+        tagobj = Tag.get_by_key_name(maintag)
+        tagobj.set_ancestors()
+        context = {
+               'user': user,
+               'maintag':tagobj,
+               'login':     users.create_login_url(self.request.uri),
+               'logout':    users.create_logout_url(self.request.uri)
+               }     
+        tmpl = path.join(path.dirname(__file__), 'templates/tag_page.html')
+        self.response.out.write(template.render(tmpl, context))  
+        
+        
+            
 class Update_Models(webapp.RequestHandler):
     def post(self, request):
         adminboot()
@@ -1238,6 +1264,7 @@ class View_Document(webapp.RequestHandler):
 
 application = webapp.WSGIApplication([
     
+    ('/tag/(.+)/',Tag_Page),
     ('/favorite/',Favorite),
     ('/subscription_handler/', Subscription_Handler),
     ('/invite_handler/', Invite_Handler),

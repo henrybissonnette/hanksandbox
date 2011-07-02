@@ -4,11 +4,26 @@
 	Essay Home
 {% endblock %}
 
-{% block content %}
-	
 
-	<h1>EssayHost</h1>
-	<div class="left_half">
+
+{% block leftside %}
+	<div class="l_outer">
+		
+		<ul>		
+			<li>
+			{% for child in root_tags %}
+				<a href="/tag/{{child.title}}/">{{child.title}}</a>
+			{% endfor %}
+			</li>
+		</ul>
+	
+	</div>
+{% endblock %}
+
+{% block content %}
+<script type="text/javascript" >name="Meta"</script>
+
+	<div id="hello" class="left_half">
 	
 		<h1>Recent Documents</h1>
 	
@@ -17,6 +32,9 @@
 		{% include 'stream_doc.html'%}
 		{% endif %}
 		{% endfor %}
+		
+
+		
 	</div>
 	
 	

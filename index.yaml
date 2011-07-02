@@ -70,6 +70,12 @@ indexes:
 
 - kind: Document
   properties:
+  - name: tags
+  - name: date
+    direction: desc
+
+- kind: Document
+  properties:
   - name: type
   - name: date
     direction: desc
