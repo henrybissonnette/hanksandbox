@@ -11,7 +11,7 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from cgi import escape
 from django.utils.html import strip_tags
 import os, re, logging, sys,datetime,math
-import messages
+import messages, json
 
 domainstring='http://essayhost.appspot.com/'
 
@@ -277,9 +277,7 @@ class User(db.Model):
         myworks = self.works.fetch(1000)
         mycomments = self.mycomments
         total_views = 0
-        
-
-                    
+            
         for document in myworks:
             reputation = reputation + 4*document.rating
             total_views = total_views + document.views
@@ -540,6 +538,11 @@ class Tag(db.Model):
     def get_children(self):
         children = Tag.all().filter('parent_tag ==',self).fetch(1000)
         return children
+    
+    def get_childNames(self):
+        children = Tag.all().filter('parent_tag ==',self).fetch(1000)
+        returnChildren = [child.title for child in children]
+        return returnChildren
                 
     def populate_descendants(self, descendants = None):
         if not descendants:
@@ -1081,6 +1084,41 @@ class Subscription_Handler(webapp.RequestHandler):
         
         self.response.out.write(message)
         
+class Tag_Browser(webapp.RequestHandler):
+    def post(self):        
+        
+        focal = self.request.get('tag')
+        obj = {}
+        if focal != 'root':
+            focalTag = Tag.get_by_key_name(focal)
+            obj['focal_tag']=focalTag.title
+            obj['path']=focalTag.ancestors
+            obj['children']=focalTag.get_childNames()
+                       
+            docs=focalTag.get_documents()
+        else:
+            obj['children']=[child.title for child in Tag.all().filter('parent_tag ==',None).fetch(1000)]
+            obj['focal_tag']=None
+            obj['path']=None
+            
+            docs = get_documents()
+        documents = []
+        for doc in docs:
+            newDoc = {}
+            newDoc['title']=str(doc.title)
+            newDoc['description']=doc.get_description()
+            newDoc['author']=doc.authorname
+            newDoc['date']=str(doc.date)
+            newDoc['filename']=doc.filename
+            newDoc['key']=str(doc.key())
+            documents.append(newDoc)
+        obj['documents']=documents
+        
+        logging.info(str(obj))
+        jsonObj = json.dumps(obj)
+
+            
+        self.response.out.write(jsonObj)
         
 class TagManager(webapp.RequestHandler):
     def post(self, request):
@@ -1263,7 +1301,7 @@ class View_Document(webapp.RequestHandler):
         self.response.out.write(template.render(tmpl, context))          
 
 application = webapp.WSGIApplication([
-    
+    ('/tag_browser/',Tag_Browser),
     ('/tag/(.+)/',Tag_Page),
     ('/favorite/',Favorite),
     ('/subscription_handler/', Subscription_Handler),

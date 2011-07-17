@@ -6,12 +6,12 @@
 
 div.bodycontent{
 
-    margin-left: 100px;
+    margin-left: 120px;
     margin-right: 100px;
   	border-color:#995;
 	border-style:solid;
 	border-width:1px;
-	padding:30px;
+	padding:50px;
 	min-width:600px;
 
 }
@@ -297,8 +297,10 @@ h3.menu_head{
 /******************left outer column**********************/
 .l_outer{
 	float:left;
-	max-width:80px;
+	margin-left:-40px;
+	max-width:140px;
 	padding: 5px;
+	overflow:hidden;
 }
 
 .l_outer a{
@@ -577,6 +579,7 @@ div.left_half{
 }
 
 .stream_title{
+	font-weight:bold;
 	font-size:24px;
 	font-variant: small-caps;
 }
@@ -603,6 +606,7 @@ div.stream_item{
 }
 
 /********************Document Browser (by tag)***************************/
+
 
 .tag_button{
 	color:#0ff;

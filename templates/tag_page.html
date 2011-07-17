@@ -13,12 +13,12 @@
 		<ul>
 			
 			<li>
-				<a href="/home/">Home</a>
+				<a href="/home/" title='return to top'>Home</a>
 			</li>
 			
 			<li>
 			{% for ancestor in maintag.get_ancestors %}
-			<a href="/tag/{{ancestor.title}}/">{{ancestor.title}}</a>
+			<a href="/tag/{{ancestor.title}}/" title='{{ancestor.title}}'>{{ancestor.title}}</a>
 			{% endfor %}
 			</li>
 			
@@ -31,7 +31,7 @@
 		
 			<li>
 			{% for child in maintag.get_children %}
-				<a href="/tag/{{child.title}}/">{{child.title}}</a>
+				<a href="/tag/{{child.title}}/" title='{{child.title}}'>{{child.title}}</a>
 			{% endfor %}
 			</li>
 		</ul>

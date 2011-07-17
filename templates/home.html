@@ -4,7 +4,9 @@
 	Essay Home
 {% endblock %}
 
-
+{% block scripts %}
+<script type="text/javascript" src="/static/js/tag_browser.js"></script>
+{% endblock %}
 
 {% block leftside %}
 	<div class="l_outer">
@@ -12,7 +14,7 @@
 		<ul>		
 			<li>
 			{% for child in root_tags %}
-				<a href="/tag/{{child.title}}/">{{child.title}}</a>
+				<a href="/tag/{{child.title}}/" title='{{child.title}}'>{{child.title}}</a>
 			{% endfor %}
 			</li>
 		</ul>
@@ -34,6 +36,9 @@
 		{% endfor %}
 		
 
+	<div id="tag_browser">
+		A tag browser is available for javascript enabled user agents. You may use the links on the left side to browse articles by tag.
+	</div>
 		
 	</div>
 	

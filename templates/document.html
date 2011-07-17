@@ -6,6 +6,18 @@
 {{document.title}}
 {% endblock title%}
 
+{% block leftside %}
+	<div class="l_outer">
+		<ul>						
+			<li>
+			{% for tag in document.get_leaftags %}
+			<a href="/tag/{{tag.title}}/" title='{{tag.title}}'>{{tag.title}}</a>
+			{% endfor %}
+			</li>
+		</ul>
+	</div>
+{% endblock %}
+
 {% block tabs %}
 	{% if user.username == document.author.username %}
 	<script type="text/javascript">
