@@ -602,12 +602,56 @@ div.stream_item{
 	padding:5px;
 	max-height:125px;
 	margin-bottom:5px;
-	/*border-bottom:dotted;/*
+	/*border-bottom:dotted;*/
 }
 
 /********************Document Browser (by tag)***************************/
 
 
+
 .tag_button{
-	color:#0ff;
+	cursor:pointer;
+	margin:5px;
+	border:solid 1px;
+	padding: 5px;
 }
+
+.tag_button:hover{
+	cursor:pointer;
+	margin:5px;
+	padding: 5px;
+	background:#333;
+	color:#fff;
+	
+}
+
+.path_button{
+	background:#bbb;
+	color:#fff
+}
+
+.focal_button{
+	background:#333;
+	color:#fff;
+}
+
+.child_button{
+	border:solid 3px #333;
+}
+
+.browser_children{
+	padding: 10px;
+	margin-top: 5px;
+}
+
+.browser_documents{
+	overflow:scroll;
+}
+
+.browser_path{
+	padding-bottom:10px;
+	border-bottom: solid 1px;
+}
+
+
+

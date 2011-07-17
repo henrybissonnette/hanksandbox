@@ -70,6 +70,26 @@ indexes:
 
 - kind: Document
   properties:
+  - name: draft
+  - name: date
+    direction: desc
+
+- kind: Document
+  properties:
+  - name: draft
+  - name: tags
+  - name: date
+    direction: desc
+
+- kind: Document
+  properties:
+  - name: draft
+  - name: type
+  - name: date
+    direction: desc
+
+- kind: Document
+  properties:
   - name: tags
   - name: date
     direction: desc

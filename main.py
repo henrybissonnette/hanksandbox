@@ -11,7 +11,8 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from cgi import escape
 from django.utils.html import strip_tags
 import os, re, logging, sys,datetime,math
-import messages, json
+import messages
+from django.utils import simplejson as json
 
 domainstring='http://essayhost.appspot.com/'
 
@@ -41,6 +42,7 @@ def get_documents(tag_list=[], tag_not_list=[], number=1000, type=None):
         document_query.filter("tags ==",tag)
     for tag in tag_not_list:
         document_query.filter("tags !=",tag)
+    document_query.filter("draft ==",False)
     documents = document_query.order('-date').fetch(number)
     return documents
 

@@ -59,17 +59,16 @@ function tag_browser(location, data){
 
 	this.display_path = function(){
 		if(data['path']){
-			var root_tag = new tag_button('root',location)
+			var root_tag = new tag_button('root',location,'path')
 			root_tag.display(location+'_path')
+			
 			for (i=0;i<data['path'].length;i++){
-				var new_tag = new tag_button(data['path'][i],location)
-				new_tag.className='tag_button path_button'
+				var new_tag = new tag_button(data['path'][i],location,'path')
 				new_tag.display(location+'_path')
 				}
 			var bar = document.createTextNode('|')
 			document.getElementById(location+'_path').appendChild(bar)
-			var new_tag = new tag_button(data['focal_tag'],location)
-			new_tag.className='tag_button focal_button'
+			var new_tag = new tag_button(data['focal_tag'],location,'focal')
 			new_tag.display(location+'_path')
 		}
 
@@ -77,8 +76,7 @@ function tag_browser(location, data){
 	
 	this.display_children = function(){
 		for (i=0;i<data['children'].length;i++){
-			var new_tag = new tag_button(data['children'][i],location)
-			new_tag.className='tag_button child_button'
+			var new_tag = new tag_button(data['children'][i],location,'child')
 			new_tag.display(location+'_children')
 			}
 	}
@@ -113,19 +111,22 @@ function tag_browser(location, data){
 
 /********************************************************
  * tag_button creates a button that will occupy the top
- * spaces of the document browser.
+ * spaces of the document browser. The button needs three
+ * arguments:
+ * ARGUMENT: name - string - must be valid tag name
+ * ARGUMENT: browser_div - string - id of location to be 
+ * 	loaded on click
+ * ARGUMENT: type - string - path, focal, or child
  *******************************************************/
 
-function tag_button(name,browser_div) {
+function tag_button(name,browser_div, type) {
 
-	var resultsContainer = document.createElement('button')
+	var resultsContainer = document.createElement('span')
 			
 	state = ""
 	this.name = name
 	resultsContainer.innerHTML = this.name
-	//resultsContainer.setAttribute('href','/tag/'+this.name+'/')
-	//resultsContainer.setAttribute('class','tag_button '+name+'_button')
-	resultsContainer.className='tag_button '
+	resultsContainer.className = 'tag_button '+type+'_button'
 	resultsContainer.id = name+'_button'
 		
 	this.display = function(location_id) {
