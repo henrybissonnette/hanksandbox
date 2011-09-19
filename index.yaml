@@ -46,6 +46,13 @@ indexes:
 - kind: Comment
   properties:
   - name: article
+  - name: draft
+  - name: date
+    direction: desc
+
+- kind: Comment
+  properties:
+  - name: article
   - name: draft==
   - name: date
     direction: desc

@@ -14,7 +14,7 @@
 		<ul>		
 			<li>
 			{% for child in root_tags %}
-				<a href="/tag/{{child.title}}/" title='{{child.title}}'>{{child.title}}</a>
+				<a href="/tag/{{child.title}}/" title='{{child.title}}'>{{child.title}}</a><br/>
 			{% endfor %}
 			</li>
 		</ul>
@@ -25,36 +25,42 @@
 {% block content %}
 <script type="text/javascript" >name="Meta"</script>
 
-	<div id="hello" class="left_half">
-	
-		<h1>Recent Documents</h1>
-	
-		{% for doc in main_documents %}
-		{% if not doc.draft %}
-		{% include 'stream_doc.html'%}
-		{% endif %}
-		{% endfor %}
-		
-
-	<div id="tag_browser">
-		A tag browser is available for javascript enabled user agents. You may use the links on the left side to browse articles by tag.
-	</div>
-		
-	</div>
-	
-	
-	<div class="right_half">
-		<h1>Meta</h1>
-		<p>This site is under construction. If you have bugs to report, would like to discuss features that need to be added, 
-			or you have design input, check out or contribute to the Meta Pages.</p>
+	<div>
 			
-	
-		{% for doc in meta_documents %}
-		{% if not doc.draft %}
-		{% include 'stream_doc.html'%}
-		{% endif %}
-		{% endfor %}
+		{% comment %}
+		-----------------------------------------------------------------------------------
+		-----------------------------Left Column Tabs-------------------------------------
+		{% endcomment %}	
+		
+		<script type="text/javascript">
+			tabular('#tab_recent','#recent','leftcolumntabs', true)
+			tabular('#tab_browse','#browse','leftcolumntabs')
+		</script>
+		<div class="bodytabs">
+	 		<ul class="tabs">
+				<li id="tab_recent">Recent Documents</li>
+				<li id="tab_browse">Browse by Tag</li>
+			</ul>
+		</div>
+		<div id="recent">
+			<h1>Recent Documents</h1>
+		
+			{% for doc in main_documents %}
+			{% if not doc.draft %}
+			{% include 'stream_doc.html'%}
+			{% endif %}
+			{% endfor %}
+		</div>	
+		<div id="browse">
+			<h1>Browse by Tag</h1>
+			<div id="tag_browser" class="tag_browser">
+				A tag browser is available for javascript enabled user agents. You may use the links on the left side to browse articles by tag.
+				
+			</div>
+		</div>	
 	</div>
+	
+
 
 
 {% endblock %}

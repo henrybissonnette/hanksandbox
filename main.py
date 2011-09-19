@@ -121,7 +121,18 @@ def remove_duplicates(seq, idfun=None):
        result.append(item)
    return result
 
-
+class CommentaryObj:
+    """
+    Intended to replace the awkward code of the commentary object. Should 
+    an object that is perfectly JSON compatible and gives all the info necessary
+    to perform arbitrarily complex comment filtering. 
+    STRUCTURE:
+    Comment - dictionary
+        Children - list of child CommentaryObjs
+        
+    """
+    
+    
 class Commentary:
     """commentary needs to be supplied with a user and also, optionally, 
     a document. In the event that you supply a document commentary 
@@ -183,10 +194,10 @@ class Commentary:
     
     def __init__(self, username, document_filename=None,document_title=None):
         
-        document = get_document(username, document_filename)
-
-        if document:
-            self.comments = document.comments.order('-date')
+        if document_filename:
+            document = get_document(username, document_filename)
+            draftCheck = document.draft
+            self.comments = document.comments.order('-date').filter('draft ==',draftCheck)
         else:      
             self.comments = get_user(username).mypagecomments.order('-date')
             
@@ -366,8 +377,11 @@ class Document(db.Model):
 
         self.put()
     
-    def get_url(self):
-        return domainstring+self.author.username+'/document/'+self.filename+'/'
+    def get_url(self,includeDomain=False):
+        if includeDomain:
+            return domainstring+self.author.username+'/document/'+self.filename+'/'
+        else: 
+            return '/'+self.author.username+'/document/'+self.filename+'/'
     
     def get_stripped(self):
         
@@ -1282,13 +1296,15 @@ class UserPage(webapp.RequestHandler):
 class View_Document(webapp.RequestHandler):
     
     def get(self, name, filename, reply_id=None):
+        logging.info('HERE LIES LOGGING INFO')
+        logging.info('name='+name)
+        logging.info('filename='+filename)
         user = get_user()
         document = get_document(name, filename)
         document.set_view()
         commentary = Commentary(name, filename)
 
         context = {
-
             'rating_threshold': 1,
             'commentary': commentary,
             'document': document,

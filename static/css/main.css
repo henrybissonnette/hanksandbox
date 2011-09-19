@@ -12,8 +12,8 @@ div.bodycontent{
 	border-style:solid;
 	border-width:1px;
 	padding:50px;
-	min-width:600px;
-
+	min-width:650px;
+	overflow: auto;
 }
 
 
@@ -53,7 +53,7 @@ a.subtle,a.subtle:hover{
 
 /************** FONTS **********************/
 
-body {
+body{
     font-family: 'palatino linotype' ‘Book Antiqua’, Palatino, serif;
 }
 
@@ -198,7 +198,7 @@ div.bodytabs{
 }
 
 div.tabs{
-	margin-left:120px;
+	margin-left:130px;
 }
 li.tab{	
 
@@ -557,17 +557,17 @@ div.commentary{
 	clear:both;
 }
 
-/***********user page*****************/
+/***********tabular page division*****************/
 
 div.right_half{
-	margin-left:45%;
+	margin-left:55%;
 	border-left:solid;
 	padding-left:10px;
 }
 
 div.left_half{
 	float:left;
-	width:40%;
+	width:50%;
 }
 /***********subscription stream************/
 
@@ -601,28 +601,35 @@ div.stream_item{
 	overflow:hidden;
 	padding:5px;
 	max-height:125px;
+	max-width:600px;
 	margin-bottom:5px;
 	/*border-bottom:dotted;*/
 }
 
+div.stream_item:hover{
+	border-color: #000;
+}
+
 /********************Document Browser (by tag)***************************/
 
+.tag_browser{
 
+}
 
 .tag_button{
 	cursor:pointer;
-	margin:5px;
+	margin:1px;
 	border:solid 1px;
-	padding: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	display:inline-block;
+	font-size:small;
+	font-variant: small-caps;
 }
 
 .tag_button:hover{
-	cursor:pointer;
-	margin:5px;
-	padding: 5px;
 	background:#333;
 	color:#fff;
-	
 }
 
 .path_button{
@@ -636,7 +643,8 @@ div.stream_item{
 }
 
 .child_button{
-	border:solid 3px #333;
+	color: #333;
+	border:solid 2px #333;
 }
 
 .browser_children{
@@ -645,7 +653,7 @@ div.stream_item{
 }
 
 .browser_documents{
-	overflow:scroll;
+	
 }
 
 .browser_path{
@@ -653,5 +661,7 @@ div.stream_item{
 	border-bottom: solid 1px;
 }
 
-
+ul.test{
+	border:solid 1px;
+}
 

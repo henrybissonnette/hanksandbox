@@ -8,10 +8,9 @@
  * One for the tag path, one with further subtag divisions
  * and a third for displaying the actual documents.
  * 
- * ARGUMENT: LOCATION is a string with the id of the
- * page element into which the browser should be dropped.
- * 
- * ARGUMENT: DATA is a JSON object containing:
+ * ARGUMENT: LOCATION - string - id of the
+ * 	page element into which the browser should be dropped.
+ * ARGUMENT: DATA - JSON object containing:
  * 	ELEMENT: focal_tag - string
  *  ELEMENT: path - array of strings
  *  ELEMENT: children - array of strings
@@ -25,13 +24,10 @@
  *   
  *******************************************************/
 
-test_data = {'focal_tag':'Hank','path':['grandparents','parents'],'children':['stevo','bobby','ted nugent','Meta'], 
-'documents':[{'title':'test document 1','author':'hank','description':'to go where no document has gone before','date':'7/16/2011','key':'secret','filename':'first-doc'}]}
-
 function tag_browser(location, data){
 	
 	holder = document.getElementById(location)
-	holder.innerHTML = null
+	holder.innerHTML = ''
 	holder.className = 'document_browser'
 	
 	this.display_init = function(){
@@ -62,12 +58,14 @@ function tag_browser(location, data){
 			var root_tag = new tag_button('root',location,'path')
 			root_tag.display(location+'_path')
 			
-			for (i=0;i<data['path'].length;i++){
+			for (var i=0;i<data['path'].length;i++){
 				var new_tag = new tag_button(data['path'][i],location,'path')
 				new_tag.display(location+'_path')
 				}
+				
 			var bar = document.createTextNode('|')
 			document.getElementById(location+'_path').appendChild(bar)
+			
 			var new_tag = new tag_button(data['focal_tag'],location,'focal')
 			new_tag.display(location+'_path')
 		}
@@ -88,11 +86,11 @@ function tag_browser(location, data){
 		}
 	}
 	
-	this.new = function(){
-		ajaxify(location,"root")
+	this.newInstance = function(){
+		this.ajaxify(location,"root")
 	}
 	
-	ajaxify = function(location,tag){
+	this.ajaxify = function(location,tag){
 		$(document).ready(function(){		
 					$.ajax({
 						type: "POST",
@@ -121,7 +119,8 @@ function tag_browser(location, data){
 
 function tag_button(name,browser_div, type) {
 
-	var resultsContainer = document.createElement('span')
+	var resultsContainer = document.createElement('span'),
+		holder;
 			
 	state = ""
 	this.name = name
@@ -155,7 +154,7 @@ function tag_button(name,browser_div, type) {
 }
 
 /********************************************************
- * streamDoc builds a document display out of a doc
+ * streamDoc builds a summary document display out of a doc
  * data object.
  * ARGUMENT: DOCUMENT
  *  ELEMENT: title - string
@@ -213,20 +212,11 @@ function streamDoc(doc){
  * MAIN 
  *******************************************************/
 	
-function test_init(name,place) {
-	var test_tag = new tag_button(name)
-	test_tag.display(place)
-}
-
-function hello(message) {
-	var container = document.getElementById("test_container");
-	container.innerHTML = message;
-}
 	
 function intermediary() {
 	
-	myBrowser = new tag_browser('tag_browser',test_data)
-	myBrowser.new()
+	myBrowser = new tag_browser('tag_browser')
+	myBrowser.newInstance()
 	
 }
 	

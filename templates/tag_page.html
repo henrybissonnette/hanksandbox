@@ -31,7 +31,7 @@
 		
 			<li>
 			{% for child in maintag.get_children %}
-				<a href="/tag/{{child.title}}/" title='{{child.title}}'>{{child.title}}</a>
+				<a href="/tag/{{child.title}}/" title='{{child.title}}'>{{child.title}}</a><br/>
 			{% endfor %}
 			</li>
 		</ul>
@@ -45,7 +45,9 @@
 
 	{% for doc in maintag.get_documents%}
 	{% if not document.draft %}
-	{% include 'stream_doc.html'%}
+	<div>
+		<a href="{{doc.get_url}}">{{doc.title}}</a>
+	</div>
 	{% endif %}
 	{% endfor %}
 

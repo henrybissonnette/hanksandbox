@@ -86,7 +86,9 @@
 	<h2> {{ page_user.username }}'s Subscription Stream </h2>
 	{% for doc in page_user.fetch_stream %}
 		{% if doc.title %}
-			{% include 'stream_doc.html'%}		
+			{% if not doc.draft or user.username in doc.author.circle %}	
+				{% include 'stream_doc.html'%}
+			{% endif %}		
 		{% else %}
 		
 		<div class="stream_item" id="{{doc.key}}">
@@ -160,6 +162,7 @@
 
 <!--begin user circle menu-->
 {% if user.username == page_user.username %}
+your reputation: {{user.reputation}}
 	<script type="text/javascript">
 		reveal_controller('h2#circle','#circle_div')
 		reveal_controller('h3#mycircle','#mycircle_div')
