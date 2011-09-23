@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}
+Reply to {{above.author.username}} 
+{% endblock %}
+
+{% block content %}
+
+
+
+
+<h1>Reply to {{above.author.username}} </h1>
+
+			<div class="comment_header" id="header_{{key}}">
+				{{above.subject}}
+			</div>		
+			<div class="comment_top">
+			    <small>[<i>{{ above.date.ctime }}</i>]</small>
+				<b>
+					{% if above.author %}
+						<a href="/user/{{ above.author.username }}/" id="{{above.key}}bookmark"><code>{{ above.author.username }}</code></a> 
+					{% else %}
+						<i>anonymous</i>
+					{% endif %}
+				</b>
+				wrote:<br>
+			</div>
+			
+			<div class="comment" id="body_{{key}}">
+				<div id="original{{key}}">
+				{% autoescape off %}
+					{{ above.content }}
+				{% endautoescape %}
+				</div>					
+			</div>
+			<br />
+
+			<form class="{{key}}" action="comment/" method=post>
+				Subject:<input type="text" name="subject" size=80 value="RE: {{above.subject}}" /><br/>
+			    <textarea name=content rows=3 cols=80></textarea>
+			    <input type="hidden" name="key" value="{{key}}" />
+			    <input type="hidden" name="commentAction" value="reply" />
+			    <input type="hidden" name="commentType" value="{{commentType}}" />
+			    {% if document %}
+				    <input type="hidden" name="filename" value="{{document.filename}}" />
+				    <input type="hidden" name="object_user" value="{{document.authorname}}" />
+			    {% endif  %}
+			    
+			   	{% if page_user %}
+			    	<input type="hidden" name="object_user" value="{{page_user.username}}" />
+			    {% endif  %}
+			    <br/><input type=submit value="Reply" />
+			    {% if user %}
+			    <input type=checkbox name="subscribe" value="subscribe" checked>Recieve email notifications if someone replies to this comment.</input>
+			    {% endif %}
+			</form>
+
+{% endblock content %}

@@ -5,16 +5,16 @@
 		Subject:<input type="text" name="subject" size=80 value="RE: {% if document %}{{document.title}}{% else %}{{page_user.username}}{% endif %}" /><br/>
 	    <textarea class="tinymce" name=content rows=5 cols=80></textarea>
 	    
-	    {% if authorname %}
+	    {% if document %}
 		    <input type="hidden" name="filename" value="{{document.filename}}">
-		    <input type="hidden" name="object_user" value="{{authorname}}">
+		    <input type="hidden" name="object_user" value="{{document.authorname}}">
 	    {% endif  %}
 	    
 	   	{% if page_user %}
-	    	<input type="hidden" name="object_user" value="{{page_user}}">
+	    	<input type="hidden" name="object_user" value="{{page_user.username}}">
 	    {% endif  %}
 	    
-	    <input type="hidden" name="comment_type" value="top_level">
+	    <input type="hidden" name="commentAction" value="top_level">
 	    <input type=submit value="Comment">
 	    {% if user %}
 	    <input type=checkbox name="subscribe" value="subscribe" checked>Recieve email notifications if someone replies to this comment.</input>

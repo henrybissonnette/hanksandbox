@@ -169,7 +169,7 @@ def email_comment(comment):
         comment.get_page_object().subtitle
         regarding = comment.get_page_object().title
     except: 
-        regarding = comment.get_page_object().creator.username
+        regarding = comment.get_page_object().username
     
     try:
         authorurlfetch=comment.author.get_url()
@@ -214,7 +214,7 @@ def email_comment_html(comment):
         comment.get_page_object().subtitle
         regarding = comment.get_page_object().title
     except: 
-        regarding = comment.get_page_object().creator.username
+        regarding = comment.get_page_object().username
         
     try:
         authorurlfetch=comment.author.get_url()

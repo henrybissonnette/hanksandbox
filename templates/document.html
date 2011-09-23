@@ -51,8 +51,8 @@
 	
 	<h1 class="document" >{{document.title}}</h1>
 	
-	{% if subtitle %}
-		<h2 class="document">{{subtitle}}</h2>
+	{% if document.subtitle %}
+		<h2 class="document">{{document.subtitle}}</h2>
 	{% endif %}
 	<div id="document">
 	{% autoescape off %}

@@ -174,7 +174,13 @@ class Commentary:
         return return_tree
     
     def delta_builder(self, depth_list):
-        
+        """Delta builder takes a list of depths from prepare_reply_tree
+        and differences them. These differences are then turned into an
+        array of lists including (-1,1). Each top level element in this 
+        array represents a comment. Each -1 represents a decrease in depth
+        each +1 indicates an increase in depth. Empty lists represent no 
+        change in depth. This allows the template system to manage indentation 
+        when building the comment tree in page."""
         delta_return = []
     
         depth_list.insert(0,0)     
@@ -242,6 +248,10 @@ class User(db.Model):
         age = datetime.datetime.now()-self.date
         return age.days
     
+    def get_commentary(self):
+        commentary = Commentary(self.username)
+        return commentary
+    
     def add_favorite(self, document):
         if not document.key in self.favorites:
             self.favorites.append(document.key())
@@ -256,8 +266,11 @@ class User(db.Model):
             favorites.append(Document.get(key))
         return favorites
             
-    def get_url(self):
-        return domainstring+'user/'+self.username+'/'
+    def get_url(self, includeDomain = False):
+        if includeDomain:
+            return domainstring+'user/'+self.username+'/'
+        else:
+            return '/user/'+self.username+'/'
     
     def drafts(self):
         self.works.filter('draft ==', True)
@@ -301,7 +314,10 @@ class User(db.Model):
         if self.get_age() < 100:
             reputation = reputation*math.sqrt(self.get_age())/10
             
-        reputation = (math.sqrt(reputation)/100)*97
+        if reputation < 0:
+            reputation = -(math.sqrt(math.fabs(reputation))/100)*97
+        else:
+            reputation = (math.sqrt(reputation)/100)*97
             
         prolificity = len(myworks)
         if prolificity >= 1:
@@ -340,6 +356,11 @@ class Document(db.Model):
     views = db.IntegerProperty(default=0)
     viewers = db.StringListProperty(default=[])
     type = db.StringListProperty(default=["not_meta"])
+    
+    def get_commentary(self):
+        commentary = Commentary(self.author.username, self.filename)
+        return commentary
+        
     
     def add_tags(self, taglist):
         
@@ -386,13 +407,9 @@ class Document(db.Model):
     def get_stripped(self):
         
         stripped = strip_tags(self.content)
-        #logging.info('stripped 1: '+stripped)
         #for n in range(len(stripped)):
-            #logging.info('n = '+ n)
             #if stripped[n] =='&':
-                #logging.info('found')
                 #stripped = stripped[:n]+stripped[n+5:]
-        #logging.info('stripped 2: '+stripped)
         return stripped
     
     def set_description(self, words):
@@ -461,6 +478,7 @@ class Comment(db.Model):
     manage depth with a property here."""
     author = db.ReferenceProperty(User, collection_name = 'mycomments')
     raters = db.StringListProperty()
+    commentType = db.TextProperty()
     content = db.TextProperty()
     date = db.DateTimeProperty(auto_now_add=True)
     draft = db.BooleanProperty(default=False)
@@ -483,6 +501,11 @@ class Comment(db.Model):
             return self.article
         if self.user_page:
             return self.user_page
+        
+    def get_url(self):
+        object = self.get_page_object()
+        url = object.get_url()
+        return url
         
     def set_rating(self):
         votes = self.ratings
@@ -641,10 +664,12 @@ class CommentBox(webapp.RequestHandler):
 
 class CommentHandler(webapp.RequestHandler):
     def post(self):
-        comment_type = self.request.get('comment_type')
+        commentAction = self.request.get('commentAction')
+        commentType = self.request.get('commentType')
+        logging.info('commentType: ' + commentType)
         new = False
         
-        if comment_type == 'delete':
+        if commentAction == 'delete':
             self_key = self.request.get('key')
             comment = db.get(self_key)
             comment.remove()
@@ -654,7 +679,7 @@ class CommentHandler(webapp.RequestHandler):
             
         else: 
             
-            if comment_type == 'edit':
+            if commentAction == 'edit':
                 self_key = self.request.get('key')
                 comment = db.get(self_key)
             else:
@@ -663,19 +688,19 @@ class CommentHandler(webapp.RequestHandler):
             subject = self.request.get('subject')
             # this if skips the above assignment
             fallback_subject=''
-            if comment_type=='edit':
+            if commentAction=='edit':
                 pass
             else:
                 new = True
                 # replies to other comments get handled by if
-                if comment_type=='reply':
+                if commentAction=='reply':
                     above_key = self.request.get('key')
                     comment.above = db.Key(above_key)
                     fallback_subject = comment.above.subject
                 # else sticks top level comments to an appropriate object
                 else:
                 # comments on a document page
-                    if 'document' in self.request.uri:
+                    if commentType == 'document':
                         filename= self.request.get('filename')
                         name= self.request.get('object_user')
                         article = get_document(name, filename)
@@ -683,7 +708,7 @@ class CommentHandler(webapp.RequestHandler):
                         if not fallback_subject:
                             fallback_subject = article
                  #comments on a user page       
-                    if 'user' in self.request.uri:
+                    if commentType == 'userpage':
                         name = self.request.get('object_user')
                         comment.user_page = get_user(name)
                         if not fallback_subject:
@@ -757,9 +782,12 @@ class CommentHandler(webapp.RequestHandler):
                                 'New reply to %s' % comment.get_page_object().title,
                                 messages.email_comment(comment),
                                 html = messages.email_comment_html(comment)
-                            )
-                        
-            self.redirect('..')
+                            )              
+            if commentType == 'document':
+                self.redirect('/' + article.authorname + '/document/'+  filename + '/')
+            elif commentType == 'userpage':
+                self.redirect('/user/'+ self.request.get('object_user') +'/')
+            
 
 class Create_Document(webapp.RequestHandler):
     #this get should probably be merged with edit
@@ -810,7 +838,6 @@ class Create_Document(webapp.RequestHandler):
         # Handling Tags
         
         tags = self.request.get_all('added_tag')
-        logging.info('tags: '+str(tags))
         document.add_tags(tags)
         
         # End Tags
@@ -838,7 +865,6 @@ class Create_Document(webapp.RequestHandler):
         document.put()
        
         if new and not document.draft:
-            logging.info('if happened')
             for subscriber in user.subscribers_document:
                 sub = get_user(subscriber)
                 mail.send_mail(
@@ -898,7 +924,6 @@ class Home(webapp.RequestHandler):
         main_documents = get_documents(type='not_meta')
         meta_documents = get_documents(type='meta')
         root_tags = Tag.all().filter('parent_tag ==',None).fetch(1000)
-        logging.info('root tags: '+str(root_tags))
         context = {
                    'root_tags': root_tags,
                    'meta_documents': meta_documents,
@@ -934,8 +959,28 @@ class Invite_Handler(webapp.RequestHandler):
             requester.circle.append(user.username)
         user.put()
         requester.put()
-        
-        
+ 
+class PostComment(webapp.RequestHandler):
+    def get(self, object_user,filename):
+        commentType = self.request.get('commentType')
+        user = get_user()      
+        context = {
+                'commentType': commentType,
+                'user':      user,
+                'login':     users.create_login_url(self.request.uri),
+                'logout':    users.create_logout_url(self.request.uri)
+               } 
+        if filename:
+            document = get_document(object_user,filename)
+            context['document']= document
+        else: 
+            page_user = get_user(object_user)
+            context['page_user'] = page_user
+            
+ 
+        tmpl = path.join(path.dirname(__file__), 'templates/postcomment.html')
+        self.response.out.write(template.render(tmpl, context)) 
+            
         
 class Rating(webapp.RequestHandler):
     
@@ -946,6 +991,7 @@ class Rating(webapp.RequestHandler):
         key = self.request.get('key')
         username = self.request.get('username')
         filename = self.request.get('filename')
+        scriptless = self.request.get('scriptless')
         if key:
             object = Comment.get(db.Key(key))
             vote = VoteComment()
@@ -972,7 +1018,10 @@ class Rating(webapp.RequestHandler):
                 object.author.set_reputation()
                 object.author.put()
                 object.put()
-                
+        if scriptless == 'true':
+            self.redirect(object.get_url())
+
+        else:     
             rate_level = object.rating
             context = {
                 'rating':    rate_level,
@@ -983,7 +1032,30 @@ class Rating(webapp.RequestHandler):
             tmpl = path.join(path.dirname(__file__), 'templates/rated.html')
             self.response.out.write(template.render(tmpl, context))  
         
-
+class ReplyBase(webapp.RequestHandler):
+    def post(self):
+        user = get_user()
+        key = self.request.get('key')
+        above = Comment.get(db.Key(key))
+        commentType = self.request.get('commentType')
+        filename = self.request.get('filename')
+        object_user = self.request.get('object_user')
+        context = {
+                   'above': above,
+                   'user': user,
+                   'key':key,
+                   'commentType': commentType,
+                   'login':     users.create_login_url(self.request.uri),
+                   'logout':    users.create_logout_url(self.request.uri)
+                   }
+        if filename:
+            document = get_document(object_user, filename)
+            context['document'] = document
+        else:
+            page_user = get_user(object_user)
+            context['page_user'] = page_user
+        tmpl = path.join(path.dirname(__file__), 'templates/reply-base.html')
+        self.response.out.write(template.render(tmpl, context))
         
 class Register(webapp.RequestHandler):
     
@@ -1130,7 +1202,6 @@ class Tag_Browser(webapp.RequestHandler):
             documents.append(newDoc)
         obj['documents']=documents
         
-        logging.info(str(obj))
         jsonObj = json.dumps(obj)
 
             
@@ -1261,6 +1332,21 @@ class Update_Models(webapp.RequestHandler):
             context = {}
             tmpl = path.join(path.dirname(__file__), 'templates/update_models.html')
             self.response.out.write(template.render(tmpl, context))
+
+class UserBase(webapp.RequestHandler):
+    def get(self,username):
+        user = get_user()
+        creator = get_user(username)
+        context = {
+                'commentary':creator.get_commentary(),
+               'commentType': 'userpage',
+               'page_user': creator,
+               'user': user,
+               'login':     users.create_login_url(self.request.uri),
+               'logout':    users.create_logout_url(self.request.uri)
+               }     
+        tmpl = path.join(path.dirname(__file__), 'templates/user_base.html')
+        self.response.out.write(template.render(tmpl, context))  
             
 class Username_Check(webapp.RequestHandler):
     def post(self):
@@ -1279,12 +1365,10 @@ class UserPage(webapp.RequestHandler):
     def get(self, page_user):
         creator = get_user(page_user)
         user = get_user()
-        essays = creator.works
-        commentary = Commentary(page_user)
         context = {
+                   'commentType': 'userpage',
                    'rating_threshold': 1,
-                   'commentary':commentary,
-                   'essays':    essays,
+                   'commentary':creator.get_commentary(),
                    'page_user': creator,
                    'user':      user,
                    'login':     users.create_login_url(self.request.uri),
@@ -1296,20 +1380,16 @@ class UserPage(webapp.RequestHandler):
 class View_Document(webapp.RequestHandler):
     
     def get(self, name, filename, reply_id=None):
-        logging.info('HERE LIES LOGGING INFO')
-        logging.info('name='+name)
-        logging.info('filename='+filename)
         user = get_user()
         document = get_document(name, filename)
-        document.set_view()
-        commentary = Commentary(name, filename)
+        document.set_view()        
 
         context = {
+            'commentType': 'document',
             'rating_threshold': 1,
-            'commentary': commentary,
+            'commentary': document.get_commentary(),
             'document': document,
             'filename': filename,
-            'subtitle': document.subtitle,
             'name':     name,
             'user':      user,
             'login':     users.create_login_url(self.request.uri),
@@ -1319,6 +1399,9 @@ class View_Document(webapp.RequestHandler):
         self.response.out.write(template.render(tmpl, context))          
 
 application = webapp.WSGIApplication([
+    ('/reply-base/', ReplyBase),
+    ('.*/comment/', CommentHandler),
+    ('/postcomment/(.*)/(.*)/*', PostComment),
     ('/tag_browser/',Tag_Browser),
     ('/tag/(.+)/',Tag_Page),
     ('/favorite/',Favorite),
@@ -1332,8 +1415,8 @@ application = webapp.WSGIApplication([
     ('.*/reply_box/', ReplyBox),
     ('.*/comment_box/', CommentBox),
     ('.*/rate/', Rating),
-    ('.*/comment/', CommentHandler),
     ('/user/(.*)/', UserPage),
+    ('/user_base/(.*)/', UserBase),
     ('/register', Register),
     ('/create', Create_Document),
     (r'/(.*)/document/(.*)/edit/delete/', Delete_Document),

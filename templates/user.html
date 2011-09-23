@@ -21,6 +21,7 @@
 
 {% block main_content %}
 
+<a href="/user_base/{{page_user.username}}/">{{page_user.username}}'s page :: new style</a>
 
 {% comment %}
 ----------------------------------------------------------------------------
@@ -39,7 +40,7 @@
 <a href="/create">Create</a>
 {% endifequal %}
 
-	{% for doc in essays %}
+	{% for doc in page_user.works %}
 	{% if not doc.draft %}
 	{% include 'stream_doc.html'%}
 	{% endif %}
@@ -49,7 +50,7 @@
 {% if user.username in page_user.circle or page_user.username == user.username %}
 <h2> {{ page_user.username }}'s Drafts </h2>	
 
-	{% for doc in essays %}
+	{% for doc in page_user.works %}
 	{% if doc.draft %}
 	{% include 'stream_doc.html'%}
 	{% endif %}
