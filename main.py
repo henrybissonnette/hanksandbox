@@ -11,7 +11,8 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from cgi import escape
 from django.utils.html import strip_tags
 import os, re, logging, sys,datetime,math
-import messages
+import messages, string
+from BeautifulSoup import BeautifulSoup
 from django.utils import simplejson as json
 
 domainstring='http://essayhost.appspot.com/'
@@ -484,6 +485,7 @@ class Comment(db.Model):
     draft = db.BooleanProperty(default=False)
     above = db.SelfReferenceProperty(collection_name='replies')
     article = db.ReferenceProperty(Document,collection_name='comments')
+    object_type = db.StringProperty(default = 'Comment')
     user_page = db.ReferenceProperty(User, collection_name='mypagecomments')
     rating = db.IntegerProperty(default=0)
     stripped_content = db.TextProperty()
@@ -506,12 +508,49 @@ class Comment(db.Model):
         object = self.get_page_object()
         url = object.get_url()
         return url
+    
+    def parse(self):
+        acceptableElements = ['a','blockquote','br','em','i',
+                              'ol','ul','li']
+        acceptableAttributes = ['href']
+        while True:
+            soup = BeautifulSoup(self.content)
+            removed = False        
+            for tag in soup.findAll(True): # find all tags
+                if tag.name not in acceptable_elements:
+                    tag.extract() # remove the bad ones
+                    removed = True
+                else: # it might have bad attributes
+                    # a better way to get all attributes?
+                    for attr in tag._getAttrMap().keys():
+                        if attr not in acceptable_attributes:
+                            del tag[attr]
+    
+            # turn it back to html
+            fragment = unicode(soup)
+    
+            if removed:
+                # we removed tags and tricky can could exploit that!
+                # we need to reparse the html until it stops changing
+                continue # next round
+    
+            self.content = fragment 
+            break       
+       
         
     def set_rating(self):
         votes = self.ratings
-        rating = 0;
+        rating = 40
+        tally = 10
         for vote in votes:
-            rating = rating + vote.value*(1+vote.user.reputation)
+            if vote == -1:
+                tenBase = 0
+            else: 
+                tenBase = 10
+            rating = rating + tenBase*(vote.user.reputation)
+            tally = tally + vote.user.reputation           
+        rating = rating/tally
+        logging.info('rating = '+str(rating))
         self.rating = rating
         self.put()
     
@@ -616,13 +655,76 @@ class Vote(db.Model):
     value = db.IntegerProperty()
     current_rating = db.IntegerProperty()
     
+    
 class VoteDocument(Vote):
     document = db.ReferenceProperty(Document, collection_name='ratings')
     type = db.StringProperty(default = 'document')
     
 class VoteComment(Vote):
     comment = db.ReferenceProperty(Comment, collection_name='ratings')
-    type = db.StringProperty(default = 'comment')        
+    type = db.StringProperty(default = 'comment')     
+    
+
+ 
+####################################################   
+####################################################
+# BEGIN REQUEST HANDLERS                           #
+####################################################
+####################################################
+
+class AJAX(webapp.RequestHandler):
+    def post(self,request):
+        #routes requests for information
+        if request == 'rate':
+            self.rate()
+        if request == 'subscribe-query':
+            self.subscribeQuery()
+        if request == 'delete-comment':
+            self.deleteComment()
+            
+    def deleteComment(self):
+        selfKey = self.request.get('selfKey')
+        comment = db.get(selfKey)
+        comment.remove()
+            
+    def rate(self):
+        user = get_user()
+        rating = self.request.get('rating')
+        key = self.request.get('key')
+
+        object = Comment.get(db.Key(key))
+        vote = VoteComment()
+        vote.comment = object
+
+        if not user.username in object.raters:
+            vote.user = user
+            
+            if not (user.username in object.raters or user == object.author or not user):   
+                if rating == "up":
+                    vote.value = 1
+                else:
+                    vote.value = -1
+                    
+                object.raters.append(user.username)
+                vote.current_rating = object.rating
+                vote.put()
+                object.set_rating()
+                object.author.set_reputation()
+                object.author.put()
+                object.put()
+        self.response.out.write(object.rating)
+    
+    def subscribeQuery(self):
+        user = get_user()
+        selfKey = self.request.get('selfKey')
+        comment = db.get(selfKey)
+        if user.username in comment.subscribers:
+            isSubscribed = 'true'
+        else: 
+            isSubscribed = 'false'
+        logging.info('subscribed? '+isSubscribed)
+        self.response.out.write(isSubscribed)
+        
     
 class Admin(webapp.RequestHandler):
     def get(self):
@@ -660,76 +762,89 @@ class CommentBox(webapp.RequestHandler):
            }  
         tmpl = path.join(path.dirname(__file__), 'templates/comment_request/comment_box.html')
         self.response.out.write(template.render(tmpl, context))        
-        
 
-class CommentHandler(webapp.RequestHandler):
-    def post(self):
-        commentAction = self.request.get('commentAction')
-        commentType = self.request.get('commentType')
-        logging.info('commentType: ' + commentType)
-        new = False
+class CommentPage(webapp.RequestHandler):
+    def showForm(self,messages=None):
+        user = get_user()   
+        aboveKey = self.request.get('aboveKey')
+        selfKey = self.request.get('selfKey')  
+        if aboveKey:
+            above = db.get(aboveKey)
+        if selfKey:
+            selfComment = db.get(selfKey)
+            if selfComment.above:
+                above = selfComment.above
+            elif selfComment.article:
+                above = selfComment.article
+            elif selfComment.user_page:
+                above = selfComment.user_page
+        context = {
+                'messages': messages,
+                'above': above,
+                'user':      user,
+                'login':     users.create_login_url(self.request.uri),
+                'logout':    users.create_logout_url(self.request.uri)
+               }   
+ 
+        try:
+            context['selfComment']=selfComment
+        except:
+            pass     
+ 
+        tmpl = path.join(path.dirname(__file__), 'templates/postcomment.html')
+        self.response.out.write(template.render(tmpl, context)) 
         
-        if commentAction == 'delete':
-            self_key = self.request.get('key')
-            comment = db.get(self_key)
-            comment.remove()
-            context={}
-            tmpl = path.join(path.dirname(__file__), 'templates/empty.html')
-            self.response.out.write(template.render(tmpl, context))
+class CommentHandler(CommentPage):
+       
+    def post(self):
+
+        user = get_user()  
+        aboveKey = self.request.get('aboveKey')
+        selfKey = self.request.get('selfKey')
+        delete = self.request.get('delete')
+        content = self.request.get('content')
+        scriptless = self.request.get('scriptless')
+        subject = self.request.get('subject')
+
+        if aboveKey:
+            above = db.get(aboveKey)
+        if selfKey:
+            selfComment = db.get(selfKey)
             
-        else: 
+        
+        if delete == 'true':
+            self.back(selfComment)
+            selfComment.remove()
+
+            #context={}
+            #tmpl = path.join(path.dirname(__file__), 'templates/empty.html')
+            #self.response.out.write(template.render(tmpl, context))
             
-            if commentAction == 'edit':
-                self_key = self.request.get('key')
-                comment = db.get(self_key)
-            else:
-                comment = Comment()             
-            # subject handles comment topics
-            subject = self.request.get('subject')
-            # this if skips the above assignment
-            fallback_subject=''
-            if commentAction=='edit':
-                pass
-            else:
-                new = True
-                # replies to other comments get handled by if
-                if commentAction=='reply':
-                    above_key = self.request.get('key')
-                    comment.above = db.Key(above_key)
-                    fallback_subject = comment.above.subject
-                # else sticks top level comments to an appropriate object
-                else:
-                # comments on a document page
-                    if commentType == 'document':
+        else:            
+            try:
+                comment = selfComment
+            except:
+                comment = Comment()                           
+                if hasattr(above,'subject'): # replies to other comments get handled by if
+                    comment.above = above              
+                else:         # else sticks top level comments to an appropriate object
+                    if hasattr(above,'authorname'): # comments on a document page
                         filename= self.request.get('filename')
                         name= self.request.get('object_user')
                         article = get_document(name, filename)
-                        comment.article = article
-                        if not fallback_subject:
-                            fallback_subject = article
-                 #comments on a user page       
-                    if commentType == 'userpage':
-                        name = self.request.get('object_user')
-                        comment.user_page = get_user(name)
-                        if not fallback_subject:
-                            fallback_subject = name
-            if subject:
-                comment.subject = subject
-            else:
-                comment.subject = 'RE:'+ fallback_subject
+                        comment.article = article                        
+                    if hasattr(above,'username'): #comments on a user page
+                        comment.user_page = above
               
-            user = get_user()  
-            
             subscribe = self.request.get('subscribe')
-
+            
             if subscribe == 'subscribe':
                 if not user.username in comment.subscribers:
                     comment.subscribers.append(user.username)
             else:
                 if user:
                     if user.username in comment.subscribers:
-                        comment.subscribers.remove(user.username)
-     
+                        comment.subscribers.remove(user.username)    
             
             if user:
                 if user.username:
@@ -738,55 +853,85 @@ class CommentHandler(webapp.RequestHandler):
             else:
                 commenter = 'anonymous'
                 
-            comment.content = self.request.get('content')
+            comment.content = content
+            comment.subject = subject
             comment.get_stripped()
+            if scriptless == 'true':
+                comment.content = comment.stripped_content
             
             try:
                 if comment.get_page_object().draft:
-                    comment.draft=True
+                    comment.draft=True                    
             except: 
                 pass
             
             comment.put()
+            if self.validate(comment,scriptless):
+                self.email(selfKey, user, comment)
+                self.back(comment)
             
-            if new:
-                if user:
-                    for subscriber in comment.author.subscribers_comment:
+    def email(self, selfKey, user, comment):
+            if user:
+                for subscriber in comment.author.subscribers_comment:
+                    sub = get_user(subscriber)
+                    mail.send_mail(
+                        'postmaster@essayhost.appspotmail.com',
+                        sub.google.email(),
+                        'New Comment by %s' % comment.author.username,
+                        messages.email_comment(comment),
+                        html = messages.email_comment_html(comment)
+                        )
+            if comment.above :
+                if comment.above.subscribers:
+                    for subscriber in comment.above.subscribers:
                         sub = get_user(subscriber)
                         mail.send_mail(
                             'postmaster@essayhost.appspotmail.com',
                             sub.google.email(),
-                            'New Comment by %s' % comment.author.username,
+                            'New reply to %s' % comment.above.subject,
                             messages.email_comment(comment),
                             html = messages.email_comment_html(comment)
-                        )
-                if comment.above :
-                    if comment.above.subscribers:
-                        for subscriber in comment.above.subscribers:
-                            sub = get_user(subscriber)
-                            mail.send_mail(
-                                'postmaster@essayhost.appspotmail.com',
-                                sub.google.email(),
-                                'New reply to %s' % comment.above.subject,
-                                messages.email_comment(comment),
-                                html = messages.email_comment_html(comment)
-                            )
-                
-                if is_document(comment.get_page_object()):
-                    if comment.get_page_object().subscribers:
-                        for subscriber in comment.get_page_object().subscribers:
-                            sub = get_user(subscriber)
-                            mail.send_mail(
-                                'postmaster@essayhost.appspotmail.com',
-                                sub.google.email(),
-                                'New reply to %s' % comment.get_page_object().title,
-                                messages.email_comment(comment),
-                                html = messages.email_comment_html(comment)
-                            )              
-            if commentType == 'document':
-                self.redirect('/' + article.authorname + '/document/'+  filename + '/')
-            elif commentType == 'userpage':
-                self.redirect('/user/'+ self.request.get('object_user') +'/')
+                            )               
+            if is_document(comment.get_page_object()):
+                if comment.get_page_object().subscribers:
+                    for subscriber in comment.get_page_object().subscribers:
+                        sub = get_user(subscriber)
+                        mail.send_mail(
+                            'postmaster@essayhost.appspotmail.com',
+                            sub.google.email(),
+                            'New reply to %s' % comment.get_page_object().title,
+                            messages.email_comment(comment),
+                            html = messages.email_comment_html(comment)
+                        )  
+    def back(self, comment):
+        self.redirect(comment.get_page_object().get_url())
+        
+    def validate(self,comment,scriptless):
+        commentCondensed = cleaner(comment.content,string.whitespace)
+        pageObject = comment.get_page_object()
+        messages = []
+        if scriptless:
+            comment.parse()
+        if not commentCondensed:
+            messages.append('A comment must include some content. Please type something.')
+        if not comment.subject:
+            fallback_subject=''
+            if hasattr(pageObject,'subject'):
+                fallback_subject = comment.above.subject
+            if hasattr(pageObject,'username'):
+                fallback_subject = pageObject.username   
+            if hasattr(pageObject,'authorname'):
+                fallback_subject = pageObject.title
+            comment.subject = 'RE:'+ fallback_subject
+            comment.put()
+
+        if messages:
+            self.showForm(messages)
+            return False
+        else:
+            return True
+            
+
             
 
 class Create_Document(webapp.RequestHandler):
@@ -960,26 +1105,10 @@ class Invite_Handler(webapp.RequestHandler):
         user.put()
         requester.put()
  
-class PostComment(webapp.RequestHandler):
-    def get(self, object_user,filename):
-        commentType = self.request.get('commentType')
-        user = get_user()      
-        context = {
-                'commentType': commentType,
-                'user':      user,
-                'login':     users.create_login_url(self.request.uri),
-                'logout':    users.create_logout_url(self.request.uri)
-               } 
-        if filename:
-            document = get_document(object_user,filename)
-            context['document']= document
-        else: 
-            page_user = get_user(object_user)
-            context['page_user'] = page_user
-            
- 
-        tmpl = path.join(path.dirname(__file__), 'templates/postcomment.html')
-        self.response.out.write(template.render(tmpl, context)) 
+class PostComment(CommentPage):
+    def post(self):
+        self.showForm()
+
             
         
 class Rating(webapp.RequestHandler):
@@ -1338,6 +1467,7 @@ class UserBase(webapp.RequestHandler):
         user = get_user()
         creator = get_user(username)
         context = {
+                'pageObject': creator,
                 'commentary':creator.get_commentary(),
                'commentType': 'userpage',
                'page_user': creator,
@@ -1366,6 +1496,7 @@ class UserPage(webapp.RequestHandler):
         creator = get_user(page_user)
         user = get_user()
         context = {
+                   'pageObject': creator,
                    'commentType': 'userpage',
                    'rating_threshold': 1,
                    'commentary':creator.get_commentary(),
@@ -1388,6 +1519,7 @@ class View_Document(webapp.RequestHandler):
             'commentType': 'document',
             'rating_threshold': 1,
             'commentary': document.get_commentary(),
+            'pageObject': document,
             'document': document,
             'filename': filename,
             'name':     name,
@@ -1399,9 +1531,10 @@ class View_Document(webapp.RequestHandler):
         self.response.out.write(template.render(tmpl, context))          
 
 application = webapp.WSGIApplication([
+    ('/ajax/(.*)/',AJAX),
     ('/reply-base/', ReplyBase),
     ('.*/comment/', CommentHandler),
-    ('/postcomment/(.*)/(.*)/*', PostComment),
+    ('/postcomment/', PostComment),
     ('/tag_browser/',Tag_Browser),
     ('/tag/(.+)/',Tag_Page),
     ('/favorite/',Favorite),

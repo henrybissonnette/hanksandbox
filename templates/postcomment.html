@@ -1,40 +1,87 @@
 {% extends "base.html" %}
 
 {% block title %}
-Comment on {% if document %}{{document.title}}{% else %}{{page_user.username}}{% endif %}
-{% endblock %}
+
+	{% if selfComment %}
+	Edit {{selfComment.subject}}
+	{% else %}
+	
+		{% if above.authorname %}
+		Comment on {{above.title}}
+		{% endif %}
+		
+		{% if above.username %}
+		Comment on {{above.username}}'s page
+		{% endif %}
+		
+		{% if above.subject %}
+		Reply to {{above.subject}}
+		{% endif %}
+		
+	{% endif %}
+	
+{% endblock title %}
 
 {% block content %}
 
-
-
-{% if document %}
-<h1>Respond to {{document.title}} by {{document.authorname}}.</h1>
-
-{% else %}
-<h1>Respond to {{page_user.username}}'s User Page.</h1>
-
+	<h1>
+	{% if selfComment %}
+	Edit {{selfComment.subject}}
+	{% else %}
+	
+		{% if above.authorname %}
+		Comment on {{above.title}}
+		{% endif %}
+		
+		{% if above.username %}
+		Comment on {{above.username}}'s page
+		{% endif %}
+		
+		{% if above.subject %}
+		Reply to {{above.subject}}
+		{% endif %}
+		
+	{% endif %}
+	</h1>
+{% if messages %}
+	{% for message in messages%}
+	<div class='warning'>
+		{{message}}
+	</div>
+	{% endfor %}
 {% endif %}
-
-
 <form action="comment/" method=post>
-		Subject:<input type="text" name="subject" size=80 value="RE: {% if document %}{{document.title}}{% else %}{{page_user.username}}{% endif %}" /><br/>
-	    <textarea class="tinymce" name=content rows=5 cols=80></textarea>
+		Subject:
+		<input type="text" name="subject" size=80 
+		value=
+		{% if selfComment %}
+		"{{selfComment.subject}}"
+		{% else %} 
+			{% if above.authorname %}"RE: {{above.title}}"{% endif %}
+			{% if above.username %}"RE: {{above.username}}"{% endif %}
+			{% if above.subject %}"RE: {{above.subject}}"{% endif %}
+		{% endif %} 
+		/>
+		<br/>
+	    <textarea class="tinymce" name="content" rows=5 cols=80>{% if selfComment %}{{selfComment.content}}{% endif %}</textarea>
 	    
-	    {% if document %}
-		    <input type="hidden" name="filename" value="{{document.filename}}" />
-		    <input type="hidden" name="object_user" value="{{document.authorname}}" />
-	    {% endif  %}
-	    
-	   	{% if page_user %}
-	    	<input type="hidden" name="object_user" value="{{page_user.username}}" />
-	    {% endif  %}
-	    <input type="hidden" name="commentType" value="{{commentType}}" />
-	    <input type="hidden" name="commentAction" value="top_level" />
-	    <input type=submit value="Comment" />
-	    {% if user %}
-	    <input type=checkbox name="subscribe" value="subscribe" checked>Recieve email notifications if someone replies to this comment.</input>
-	    {% endif %}
+       <input type="hidden" name="aboveKey" value="{{above.key}}" />
+       <input type="hidden" name="selfKey" value="{{selfComment.key}}" />
+       <input type="hidden" name="scriptless" value="true" />
+       <br />
+	   <input type=submit value={% if selfComment %}"Save"{% else %}"Comment"{% endif %} />
+	   {% if user %}
+	   <input type=checkbox name="subscribe" value="subscribe" 
+	   {% if user.username in selfComment.subscribers or not selfComment %}checked{%endif%}>
+	   Recieve email notifications if someone replies to this comment.
+	   </input>
+	   {% endif %}
+</form>
+
+<form action="comment/" method="post">
+	<input type="hidden" name="delete" value="true" />
+	<input type="hidden" name="selfKey" value="{{selfComment.key}}" />
+	<input type="submit" value="Delete" title="Permanently delete this comment." />
 </form>
 
 {% endblock content %}

@@ -86,7 +86,7 @@ function array_remove(array, element)
 		return array;
 	}
 	
-//clicking on 'controler' reveals 'revealed'. Both should be strings.	
+//clicking on 'controller' reveals 'revealed'. Both should be strings.	
 //initial state is visible if 'hidden' = false
 function reveal_controller(controller, element, hidden)
 	{
@@ -115,7 +115,6 @@ function reveal_controller(controller, element, hidden)
 	
 function tabular(controller, element, groupname ,initial)
 	{
-		
 		$(document).ready(function(){
 			if(initial){
 				$(controller).addClass('selected')
@@ -126,7 +125,7 @@ function tabular(controller, element, groupname ,initial)
 			}
 			$(controller).addClass(groupname+' tab');
 			$(element).addClass(groupname+' tabbed');
-		
+			$('.tab').corner('top')
 			$(controller).click(function(){
 				$('.selected.'+groupname).addClass('unselected');
 				$('.selected.'+groupname).removeClass('selected');
@@ -137,6 +136,111 @@ function tabular(controller, element, groupname ,initial)
 			})
 		})
 	}
+
+	
+function hank(){
+	/***************************************
+	* This creates a comment box. 
+	* ARGUMENT
+	* DATA : OBJECT:
+	* 	subjectValue : string
+	* 	contentValue : string
+	* 	aboveKeyValue : string
+	* 	selfKeyValue : string
+	* 	subscribeChecked : boolean
+	* 	submitValue : string
+	****************************************/
+	this.createCommentBox = function(data,subscribeData){
+
+		//Generate Elements
+		exit = document.createElement('span')
+		Xit = document.createTextNode('x')
+		exit.appendChild(Xit)
+		exit.className='exit'
+		form = document.createElement('form')
+		form.className = 'postcomment'
+		form.setAttribute('action','comment/')
+		form.setAttribute('method','post')
+		subjectText = document.createTextNode('Subject: ')
+		subject = document.createElement('input')
+		subject.type = 'text'
+		subject.size = 80
+		subject.name = 'subject'
+		subject.value = data['subjectValue']
+		content = document.createElement('textarea')
+		content.setAttribute('name','content')
+		content.setAttribute('class','tinymce')
+		content.setAttribute('rows','5')
+		content.setAttribute('cols','67')
+		if(data['contentValue']!= undefined){
+			contentText = document.createTextNode(data['contentValue'])
+			content.appendChild(contentText)
+			}	
+		if(data['aboveKeyValue'] != undefined){
+			aboveKey = document.createElement('input')
+			aboveKey.setAttribute('type','hidden')
+			aboveKey.setAttribute('name','aboveKey')
+			aboveKey.setAttribute('value',data['aboveKeyValue'])
+		}
+
+		
+		if(data['selfKeyValue'] != undefined){
+			selfKey = document.createElement('input')
+			selfKey.setAttribute('name','selfKey')
+			selfKey.setAttribute('type','hidden')
+			selfKey.setAttribute('value',data['selfKeyValue'])
+			deleteButton = document.createElement('input')
+			deleteButton.type = 'button'
+			deleteButton.className = "deleteComment"
+			deleteButton.value = 'Delete'
+		}
+		submit = document.createElement('input')
+		submit.setAttribute('type','submit')
+		submit.setAttribute('value',data['submitValue'])
+		subscribe = document.createElement('input')
+		subscribe.setAttribute('type','checkbox')
+		subscribe.setAttribute('name','subscribe')
+		subscribe.setAttribute('value','subscribe')
+		subscribeMessage = document.createTextNode('Receive email notifications if someone replies to this comment.')
+		subscribe.appendChild(subscribeMessage)		
+		if(data['subscribeChecked']!= undefined){
+			subscribe.checked = data['subscribeChecked']
+		}
+		else{
+			subscribe.checked = true
+		}
+		//Combine Elements
+		form.appendChild(exit)
+		form.appendChild(subjectText)
+		form.appendChild(subject)
+		form.appendChild(document.createElement("br"))
+		form.appendChild(content)
+		form.appendChild(document.createElement("br"))
+		if(data['aboveKeyValue'] != undefined){
+			form.appendChild(aboveKey)
+		}
+		form.appendChild(submit)
+		form.appendChild(subscribe)
+		form.appendChild(subscribeMessage)
+		if(data['selfKeyValue'] != undefined){
+			form.appendChild(selfKey)	
+			form.appendChild(document.createElement("br"))
+			form.appendChild(deleteButton)
+		}
+
+		//Return
+		return form				
+	}
+}
+
+/* ROUNDIFICATION */
+
+$(document).ready(function(){
+	$('div.stream_item').corner()
+	$('div.pagetop').corner('40 px')
+	$('div.bodycontent').corner('40 px')
+})
+
 /////////////////////////////////////////////////////////////////
 /*template should contain a string with unique replacibles
   and a context which is an array of items to be replaced and 
@@ -151,3 +255,39 @@ function template(string, context)
 		} 
 		return string;
 	} 
+	
+addLoadEvent( function(){
+if (document.getElementsByClassName == undefined) {
+	document.getElementsByClassName = function(className)
+	{
+		var hasClassName = new RegExp("(?:^|\\s)" + className + "(?:$|\\s)");
+		var allElements = document.getElementsByTagName("*");
+		var results = [];
+
+		var element;
+		for (var i = 0; (element = allElements[i]) != null; i++) {
+			var elementClass = element.className;
+			if (elementClass && elementClass.indexOf(className) != -1 && hasClassName.test(elementClass))
+				results.push(element);
+		}
+
+		return results;
+	}
+}
+})
+
+addLoadEvent(hank)
+
+function addLoadEvent(func) {
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}

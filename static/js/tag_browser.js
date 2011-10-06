@@ -174,6 +174,7 @@ function streamDoc(doc){
 		container.id = location + '_streamDoc_'+doc['key']
 		container.className = 'browser_streamDoc stream_item clickable'
 		container.onclick = direct
+		$('.stream_item').corner()
 		
 
 		var title = document.createElement('div')
@@ -194,7 +195,7 @@ function streamDoc(doc){
 		container.appendChild(content)
 		holder.appendChild(container)
 		
-				$(document).ready(function(){
+		$(document).ready(function(){
 			$('#{{doc.filename}}').addClass('clickable')
 			$('#{{doc.filename}}').click(function(){
 			window.location.href = "/{{doc.author.username}}/document/{{doc.filename}}/";

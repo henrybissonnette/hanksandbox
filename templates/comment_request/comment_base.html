@@ -3,6 +3,10 @@
 {% block title %}
 {% endblock %}
 
+{% block scripts %}
+<script type="text/javascript" src="/static/js/comment_system.js"></script>
+{% endblock %}
+
 {% block content %}
 {% block main_content %}
 {% endblock main_content %}
@@ -12,25 +16,19 @@
 - This is a scriptless version of the comment browser that follows many content pages.
 - Is intended to be progressively enhanced via scripts.
 {% endcomment %}
-
+<div class="commentary">
 	<h2>Comments</h2>
+	<span class="rate threshold" value=3 title="comments with ratings below your threshold will be minimized"> 
+		Your Rating Threshold is 3 
+	</span>
 	<hr>
 	
-		<form action="/postcomment/{% if page_user%}{{page_user.username}}/{%else%}{{document.authorname}}/{{document.filename}}/{%endif%}">
-		<input type="hidden" name="commentType" value="{{commentType}}" />
+		<form action="/postcomment/" method="post">
+		<input type="hidden" name="aboveKey" value="{{pageObject.key}}" />
 	    <input type="submit" value="Post Comment" />
 		</form>
 
 	{% for comment, key, depth in commentary.comment_data %}
-		<!-- If there is no new indent, the previous comment has no children 
-			and it's outer div must be closed before the next begins -->
-		{% if forloop.counter != 1 %}
-			{% if not depth or depth.0 == -1 %}
-				</div>
-			{% endif %}
-		{% endif %}
-			
-
 
 			<br />
 			<!-- Loop handles comment indentation.  Depth contains lists with +1
@@ -38,109 +36,88 @@
 			{% if depth %}
 				{% for i in depth %}
 					{% if i > 0 %}
-						<div  class="nested">
+						<div id="nested{{key}}" class="nested">
 					{% else %}
-						<!--close nested/outer-->
-						</div></div>
+						<!--close nested-->
+						</div>
 					{% endif %}
 				{% endfor %}
 			{% endif %}
-		<!-- outer div contains comment and its children. used for ajax removal in 
-			event of deletion -->
-		<div id="outer_{{key}}">
 			
-			
-			<div id="maximized_{{key}}">
-				
-				{% if comment.author.username == user.username or not user %}
-					<span class="rate">Rating: {{comment.rating}}</span>
-					{% else %}
-						
-					{% if user.username not in comment.raters %}
-						
-						<form action="/rate/" method="post" class="rate">
-							<input type="hidden" name="key" value="{{key}}" />
-							<input type="hidden" name="rating" value="up" />
-							<input type="hidden" name="scriptless" value="true" />
-							<input type="submit" value="rate up" />
-						</form>
-						<form action="/rate/" method="post" class="rate">
-							<input type="hidden" name="key" value="{{key}}" />
-							<input type="hidden" name="rating" value="down" />
-							<input type="hidden" name="scriptless" value="true" />
-							<input type="submit" value="rate down" />
-						</form>
-						{% else %}
-						<span class="rate">Thanks for rating this comment. Rating: {{comment.rating}}</span>				
-					{% endif %}
-				{% endif %}
-				
-				</br>
-				<div class="comment_header" id="header_{{key}}">
-					{{comment.subject}}
-				</div>		
-				<div class="comment_top">
-
-				    <small>[<i>{{ comment.date.ctime }}</i>]</small>
-					<b>
+			<div class="comment" id="comment{{key}}">
+				<div class="comment_header" id="header{{key}}">
+					<span class="subject">{{comment.subject}}</span>
+					<span class="commentRating" value="{{comment.rating}}">(Rating: {{comment.rating}})</span>
+				</div>	
+				<div class="commentBox" id="commentBox{{key}}">
+					<div class="comment_top">
+					    <small>[<i>{{ comment.date.ctime }}</i>]</small>
+						<b>
 						{% if comment.author %}
 							<a href="/user/{{ comment.author.username }}/" id="{{comment.key}}bookmark"><code>{{ comment.author.username }}</code></a> 
 						{% else %}
 							<i>anonymous</i>
 						{% endif %}
-					</b>
-					wrote:<br>
-				</div>
-				
-				<div class="comment" id="body_{{key}}">
-					<div id="original{{key}}">
-					{% autoescape off %}
-						{{ comment.content }}
-					{% endautoescape %}
-					</div>					
-				</div>
-				
+						</b>
+						wrote:<br>
+		
+						{% if user %}
+							{% if not comment.author.username == user.username%}
+								{% if user.username not in comment.raters %}
+															
+									<form action="/rate/" method="post" class="rate">
+										<input type="hidden" name="key" value="{{key}}" />
+										<input type="hidden" name="rating" value="up" />
+										<input type="hidden" name="scriptless" value="true" />
+										<input  type="submit" value="rate up" />
+									</form>
+									<form action="/rate/" method="post" class="rate">
+										<input type="hidden" name="key" value="{{key}}" />
+										<input type="hidden" name="rating" value="down" />
+										<input type="hidden" name="scriptless" value="true" />
+										<input  type="submit" value="rate down" />
+									</form>
+								{% else %}
+									<span class="rate">Thanks for rating.</span>
+								{% endif %}
+							{% endif %}	
+						{% else %}
+							<span class="rate">Sign in to rate.</span>
+						{% endif %}
+					</div>
+					
+					<div class="commentContent" id="body_{{key}}">{% autoescape off %}{{ comment.content }}{% endautoescape %}</div>
+				</div>	
 				{% if user and user.username == comment.author.username or not comment.author and user.admin %}
-
-					<form action="/edit-base/" method="post">
-						<input type="hidden" name="key" value="{{key}}" />
-						<input type=""
-					</form>
-
-				{% endif %}
-				
-
-				<form action="/reply-base/" method="post">
-					<input type="hidden" name="key" value="{{key}}" />
-					<input type="hidden" name="commentType" value="{{commentType}}" />
-					<input type="submit" value="Reply">
-					{% if document %}
-					    <input type="hidden" name="filename" value="{{document.filename}}" />
-					    <input type="hidden" name="object_user" value="{{document.authorname}}" />
-				    {% endif  %}
-				    
-				   	{% if page_user %}
-				    	<input type="hidden" name="object_user" value="{{page_user.username}}" />
-				    {% endif  %}
+			
+				<form action="/postcomment/" method="post">
+					<input type="hidden" name="selfKey" value="{{key}}" />
+					<input type="hidden" name="scriptless" value="true" />
+					<input type="submit" value="Edit" />
 				</form>
-
+		
+				{% endif %}					
+				<form action="/postcomment/" method="post">
+					<input type="hidden" name="aboveKey" value="{{key}}" />
+					<input type="hidden" name="scriptless" value="true" />
+					<input type="submit" value="Reply" />
+				</form>
 			</div>
+
+
 			
 
 			
 	{% endfor %}
 	
-	<!-- Since outers are closed in next iteration, the final
-		outer is hanging and must be closed.--> 
-	</div>
 		<!--If the end of the comment tree is still indented
 		(i.e. the final comment is some level of reply)
-		this loop closes out the nested/outer divs. -->
+		this loop closes out the nested divs. -->
 	{% for i in commentary.sum_delta %}
 		</div></div>
 	{% endfor %}
 
 </div>
-
+</div>
 {% endblock content %}
 

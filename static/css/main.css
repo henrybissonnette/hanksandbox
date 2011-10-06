@@ -8,7 +8,7 @@ div.bodycontent{
 
     margin-left: 120px;
     margin-right: 100px;
-  	border-color:#995;
+  	border-color:#999;
 	border-style:solid;
 	border-width:1px;
 	padding:50px;
@@ -48,10 +48,39 @@ a.subtle,a.subtle:hover{
 	min-height: 500px;
 }
 
+.hidden{
+	visibility: hidden;
+	display: none;
+}
+
+.revealed{
+	visibility: visible;
+}
+
+.warning{
+	color: red;
+}
+
+.exit{
+	margin-top:-10px;
+	color: #bbb;
+	font-size: 25px;
+	float: right;
+	padding:3px;
+}
+
+.exit:hover{
+	cursor: pointer;
+	color: #555;
+}
+
 /***************many element presentation standards********************/
 /*********************************************************************/
 
 /************** FONTS **********************/
+.exit{
+	font-family:'Arial',Sans-serif;
+}
 
 body{
     font-family: 'palatino linotype' ‘Book Antiqua’, Palatino, serif;
@@ -76,7 +105,8 @@ a.home,a.creator,a.header{
 }
 
 div.comment_top{
-	background: #ddd;
+	background: #eee;
+	color: #222
 }
 
 /* outer spaces (light) */
@@ -84,17 +114,17 @@ body{
 	background: #d1d1d1;	
 }
 
-div.comment {
-	background-color:#eee;
+div.commentContent {
+	background-color:#fff;
 	border-color:
 	color:black;
 }
 
-div.comment_top,div.comment {
+div.comment_top,div.commentContent {
 	border-color: #a00606
 }
 
-div.minimized_comment{
+div.commentHeaderMin{
 	background-color: #a3a3a3;
 	color:#fff;
 
@@ -115,7 +145,7 @@ div.bodycontent,#sidebar,hr.menu,.menu_head,.sidebar_link:hover,a.subtle:hover{
 }
 
 /* dark background, namely, main header */
-div.pagetop,div.comment_header,.unselected,.minimized_comment:hover {
+div.pagetop,div.comment_header,.unselected,.commentHeaderMin:hover,div.commentBox {
 
     color: #fff;
     background: #242e2f;
@@ -134,9 +164,9 @@ div.div_hover{
 	background-color:#ddd;
 }
 
-/***************** SHAPES ************************/
+/***************** SHAPES ***********************
 
-/* rounded box with shadow */
+
 #sidebar,div.bodycontent,div.pagetop{
 	
 -moz-border-radius: 10px;
@@ -145,7 +175,7 @@ box-shadow: -1px 1px 6px #000;
 
 }
 
-/* MEGA SHADOW */
+
 div.pagetop{
 -moz-border-radius: 10px;
 -webkit-border-radius: 10px;
@@ -154,24 +184,23 @@ box-shadow: 0px 4px 50px #000;
 }
 
 
-/* rounded box withOUT shadow */
-div.minimized_comment,div.stream_item{
+
+div.stream_item{
 	
 -moz-border-radius: 10px;
 -webkit-border-radius: 10px;
 
 }
 
-/* rounded box withOUT shadow: less bubbly */
-div.minimized_comment,div.stream_item{
+div.commentHeaderMin,.commentHeaderMax,div.stream_item,.commentBox{
 	
 -moz-border-radius: 5px;
 -webkit-border-radius: 5px;
 
 }
 
-/* rounded box top */
-div.comment_header,.tab,.inner_tabs{
+
+.tab,.inner_tabs{
 	
 -moz-border-radius-topleft: 10px;
 -webkit-border-top-left-radius: 10px;
@@ -180,7 +209,7 @@ div.comment_header,.tab,.inner_tabs{
 -webkit-border-top-right-radius: 10px;
 }
 
-/* rounded box bottom */
+
 div.comment{
 	
 -moz-border-radius-bottomleft: 10px;
@@ -189,7 +218,7 @@ div.comment{
 -moz-border-radius-bottomright: 10px;
 -webkit-border-bottom-right-radius: 10px;
 }
-
+*/
 /*******************TABS************************/
 
 div.bodytabs{
@@ -409,13 +438,14 @@ div#document{
 /****************Rating*************************/
 
 .rate {
-	margin-right:3px;
+	margin-right:5px;
 	float: right;
+	margin-top:-20px;
 }
 
 a.rate_up{
 	display: block;
-	height: 20px;
+	/*height: 20px;*/
 	width: 40px;
 	background-color:transparent;
 	background-image: url('/static/images/rate_up_off.jpg');
@@ -427,7 +457,7 @@ a.rate_up:hover{
 
 a.rate_down{
 	display: block;
-	height: 20px;
+	/*height: 20px;*/
 	width: 40px;
 	background-color:transparent;
 	background-image: url('/static/images/rate_down_off.jpg');
@@ -502,6 +532,7 @@ a.reply:hover,a.reply:active
 div.nested{
 
 	margin-right:20px;
+	margin-bottom:1px;
 	position:relative;
 	left:20px;
 	border-left-style:dotted;
@@ -514,25 +545,32 @@ div.nested{
 }
 
 div.comment_header{
-	cursor:pointer;
+
 	padding: 2px;
 	padding-left:5px;
-	margin-top: 2px;
-	margin-bottom: -8px;
+	margin-top:2px;
+	margin-bottom: -5px;
+}
+
+div.commentHeaderMax{
+
+}
+
+div.commentHeaderMin{
+	overflow:hidden;
 }
 
 div.comment_top{
-	margin-top:10px;
-	border-right:solid 1px;
-	border-left:solid 1px;
+	height:25px;
+	margin-top:0px;
+	border-bottom: dotted 1px;
 }
 
-div.minimized_comment{
-	padding-left:5px;
-	margin-top:15px;
-	cursor:pointer;
-	height:20px;
-	overflow:hidden;
+div.commentBox{
+
+	margin-top: 5px;
+	padding:4px;
+	padding-top:1px;
 }
 
 div.top_comment{
@@ -542,19 +580,25 @@ div.top_comment{
 	border-left-style:solid;
 }
 
-div.comment {
+div.commentContent {
+	color:black;
 	padding-top:10px;
 	padding-bottom:10px;
 	padding-right:10px;
 	padding-left:10px;
-	border-left:solid 1px;
-	border-right:solid 1px;
-	border-bottom:solid 1px;
 }
 
 
 div.commentary{
 	clear:both;
+}
+
+.postcomment{
+	margin-top: 3px;
+	border:solid 2px #aaa;
+	max-width: 600px;
+	padding:5px;
+	padding-left: 20px;
 }
 
 /***********tabular page division*****************/
