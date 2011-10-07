@@ -33,6 +33,10 @@ body {
 /**************WIDELY USED***********************/
 /************************************************/
 
+.highlight{
+	background-color: #ff0;
+}
+
 a.subtle,a.subtle:hover{
 	text-decoration: none;
 }
@@ -87,7 +91,7 @@ body{
 }
 
 /* Elements that Represent Passages of Text are Seriffed*/
-div.comment,div#document,h1.document,h2.document,.stream_title,.stream_subtitle, .stream_description{
+div.comment .content,div#document,h1.document,h2.document,.stream_title,.stream_subtitle, .stream_description{
 	color:#000;
 	font-family: "Times New Roman",Times,serif;
 }
@@ -104,7 +108,7 @@ a.home,a.creator,a.header{
 	color:#eee;
 }
 
-div.comment_top{
+div.comment .top{
 	background: #eee;
 	color: #222
 }
@@ -114,13 +118,13 @@ body{
 	background: #d1d1d1;	
 }
 
-div.commentContent {
+div.comment .content {
 	background-color:#fff;
 	border-color:
 	color:black;
 }
 
-div.comment_top,div.commentContent {
+div.comment .top,div.comment .content {
 	border-color: #a00606
 }
 
@@ -145,7 +149,7 @@ div.bodycontent,#sidebar,hr.menu,.menu_head,.sidebar_link:hover,a.subtle:hover{
 }
 
 /* dark background, namely, main header */
-div.pagetop,div.comment_header,.unselected,.commentHeaderMin:hover,div.commentBox {
+div.pagetop,.comment .header,.unselected,.commentHeaderMin:hover,div.commentBox {
 
     color: #fff;
     background: #242e2f;
@@ -544,10 +548,14 @@ div.nested{
 	padding-bottom:10px;
 }
 
-div.comment_header{
+.comment{
+	margin-top: 15px;
+	
+}
 
-	padding: 2px;
-	padding-left:5px;
+div.comment .header{
+	font-weight:bold;
+	padding-left:10px;
 	margin-top:2px;
 	margin-bottom: -5px;
 }
@@ -560,7 +568,11 @@ div.commentHeaderMin{
 	overflow:hidden;
 }
 
-div.comment_top{
+div.commentHeaderMin:hover{
+	
+}
+
+div.comment .top{
 	height:25px;
 	margin-top:0px;
 	border-bottom: dotted 1px;
@@ -580,7 +592,7 @@ div.top_comment{
 	border-left-style:solid;
 }
 
-div.commentContent {
+div.comment .content {
 	color:black;
 	padding-top:10px;
 	padding-bottom:10px;

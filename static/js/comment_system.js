@@ -9,13 +9,13 @@
 $(document).ready(function(){  
 	
 $('.commentBox').corner('bottom');
-$('.comment_header').css('cursor','pointer').corner('top');
-$('.commentContent').corner("round bottom 8px").parent().corner("round bottom 10px")
+$('.comment .header').css('cursor','pointer').corner('top');
+$('.comment .content').corner("round bottom 8px").parent().corner("round bottom 10px")
 	
-$(".comment_header").toggleClass("commentHeaderMax");
-$(".comment_header").click(function () { 
+$(".comment .header").toggleClass("commentHeaderMax");
+$(".comment .header").click(function () { 
 	if($(this).hasClass("commentHeaderMax")){
-			comment = $(this).next().children('.commentContent')
+			comment = $(this).next().children('.comment .content')
 			$(this).append('<span class="stub">:     '+comment.text()+'</span>');
 			$(this).siblings('form, button').hide(function(x){$(x).corner();}(this));
 			$(this).next().slideUp('fast'); 			
@@ -36,12 +36,13 @@ $(".comment_header").click(function () {
 
 
 $(document).ready(function(){
+
 	$('form[action="/postcomment/"]').submit(function(event){
 		event.preventDefault()
 		var commentData = {}
 		var subscribeCheck
 		if ($('input[type="submit"]', this).val()=="Reply"){
-			commentData['subjectValue']='Re: '+ $(this).siblings('.comment_header').children('.subject').text()
+			commentData['subjectValue']='Re: '+ $(this).siblings('.header').children('.subject').text()
 			commentData['aboveKeyValue']=$('input[name="aboveKey"]', this).val()
 			commentData['submitValue']='Reply'	
 		}
@@ -51,9 +52,9 @@ $(document).ready(function(){
 			commentData['submitValue']='Post Comment'	
 		}
 		if ($('input[type="submit"]', this).val()=="Edit"){
-			commentData['subjectValue']=$(this).siblings('.comment_header').children('.subject').text()
+			commentData['subjectValue']=$(this).siblings('.header').children('.subject').text()
 			commentData['selfKeyValue']=$('input[name="selfKey"]', this).val()
-			commentData['contentValue']=$(this).siblings('.commentBox').children('.commentContent').text()
+			commentData['contentValue']=$(this).siblings('.commentBox').children('.comment .content').text()
 			commentData['submitValue']='Save'				
 			commentData['subscribeChecked']=subscribeCheck
 
@@ -94,15 +95,19 @@ $(document).ready(function(){
 			//DELETION
 			$('input[value="Delete"]').click(function(){
 				selfKey = $(this).siblings('input[name="selfKey"]').val()
-				$.ajax({
-					type: "POST",
-					url: "/ajax/delete-comment/",
-					data: "selfKey=" + selfKey,
-					success: function(){
-						$('#nested'+selfKey).remove()
-						$('#comment'+selfKey).remove()
-					}
-				})	
+				if(confirm('This comment will be permanently deleted.')){
+					$.ajax({
+						type: "POST",
+						url: "/ajax/delete-comment/",
+						data: "selfKey=" + selfKey,
+						success: function(){
+							if ($('#comment'+selfKey).next().hasClass('nested')){
+								$('#comment'+selfKey).next().remove()
+							}
+							$('#comment'+selfKey).remove()
+						}
+					})						
+				}
 			})
 		}		
 	})
@@ -122,8 +127,8 @@ $(document).ready(function(){
 			url: "/ajax/rate/",
 			data: 'key='+key+'&rating='+rating,
 			success: function(currentRating){
-				$('#commentBox'+key+' form[action="/rate/"]').replaceWith('<span class="rate">Thanks for rating this comment.</span>')
-				$('#header'+key+' .commentRating').html('(Rating: '+currentRating+')')
+				$('#comment'+key+' .commentBox form[action="/rate/"]').replaceWith('<span class="rate">Thanks for rating this comment.</span>')
+				$('#comment'+key+' .header .commentRating').html('(Rating: '+currentRating+')')
 				}
 		})
 	})
@@ -135,7 +140,7 @@ $(document).ready(function(){
 	var threshold = $('.threshold').attr('value')
 	$('.comment').each(function(){
 				if ($('.commentRating',this).attr('value') < threshold){
-					$('.comment_header',this).trigger('click')
+					$('.header',this).trigger('click')
 				}		
 			})
 })

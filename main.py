@@ -565,6 +565,13 @@ class Comment(db.Model):
             child.remove()
             
         self.delete()
+        
+    def subscribe(self, user):
+        if not user.username in self.subscribers:
+            self.subscribers.append(user.username)
+    def unsubscribe(self,user):
+        if user.username in self.subscribers:
+            self.subscribers.remove(user.username) 
 
 class Mypage(db.Model):
     creator = db.ReferenceProperty(User)
@@ -648,6 +655,7 @@ class Tag(db.Model):
         for child in children:
             child.exterminate()
         self.delete()
+        
         
 class Vote(db.Model):
     user = db.ReferenceProperty(User, collection_name='ratings')
@@ -742,26 +750,6 @@ class Admin(webapp.RequestHandler):
                    }     
         tmpl = path.join(path.dirname(__file__), 'templates/admin.html')
         self.response.out.write(template.render(tmpl, context))   
-    
-
-class CommentBox(webapp.RequestHandler):
-    
-    def post(self):
-        user = get_user()
-        filename = self.request.get('filename')
-        authorname = self.request.get('authorname')
-        page_user = self.request.get('page_user')
-        document = get_document(authorname,filename)
-        context = {
-            'page_user':    page_user,
-            'authorname':    authorname,
-            'document':    document,
-            'user':      user,
-            'login':     users.create_login_url(self.request.uri),
-            'logout':    users.create_logout_url(self.request.uri)
-           }  
-        tmpl = path.join(path.dirname(__file__), 'templates/comment_request/comment_box.html')
-        self.response.out.write(template.render(tmpl, context))        
 
 class CommentPage(webapp.RequestHandler):
     def showForm(self,messages=None):
@@ -838,13 +826,11 @@ class CommentHandler(CommentPage):
               
             subscribe = self.request.get('subscribe')
             
-            if subscribe == 'subscribe':
-                if not user.username in comment.subscribers:
-                    comment.subscribers.append(user.username)
-            else:
-                if user:
-                    if user.username in comment.subscribers:
-                        comment.subscribers.remove(user.username)    
+            if user:
+                if subscribe == 'subscribe':
+                    comment.subscribe(user)
+                else:
+                    comment.unsubscribe(user)
             
             if user:
                 if user.username:
@@ -1216,27 +1202,6 @@ class Register(webapp.RequestHandler):
         user.put()
         self.redirect('/home')
         
-class ReplyBox(webapp.RequestHandler):
-    
-    def post(self):
-        # request = edit tells us that its an edit
-        request = self.request.get('request')
-        user = get_user()
-        key = self.request.get('key')
-        above = db.get(key)
-        context = {
-            'above':  above,
-            'key':    key,
-            'user':      user,
-            'login':     users.create_login_url(self.request.uri),
-            'logout':    users.create_logout_url(self.request.uri)
-           }  
-        if request == 'edit':
-            edit = db.get(key)
-            context['edit']=edit
-        tmpl = path.join(path.dirname(__file__), 'templates/comment_request/reply_box.html')
-        self.response.out.write(template.render(tmpl, context)) 
-        
 class Subscription_Handler(webapp.RequestHandler):
              
     def post(self):
@@ -1545,8 +1510,6 @@ application = webapp.WSGIApplication([
     ('/update_models/(.*)./', Update_Models),                                      
     ('.*/tag_(.*)/', TagManager),
     ('/admin/', Admin),
-    ('.*/reply_box/', ReplyBox),
-    ('.*/comment_box/', CommentBox),
     ('.*/rate/', Rating),
     ('/user/(.*)/', UserPage),
     ('/user_base/(.*)/', UserBase),

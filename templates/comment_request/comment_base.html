@@ -13,8 +13,9 @@
 
 {% comment %}
 ----------------------------------------------------------------------------
-- This is a scriptless version of the comment browser that follows many content pages.
-- Is intended to be progressively enhanced via scripts.
+	This is a scriptless version of the comment browser that follows many 
+	content pages. Is intended to be progressively enhanced via scripts.
+----------------------------------------------------------------------------
 {% endcomment %}
 <div class="commentary">
 	<h2>Comments</h2>
@@ -29,30 +30,33 @@
 		</form>
 
 	{% for comment, key, depth in commentary.comment_data %}
-
-			<br />
-			<!-- Loop handles comment indentation.  Depth contains lists with +1
-				elements for opening nested divs and -1 elements for closing them-->
+	
+	{% comment %}
+	--------------------------------------------------------------------------
+		This loop handles comment indentation.  Depth contains lists with 
+		+1 elements for opening nested divs and -1 elements for closing them.
+	--------------------------------------------------------------------------
+	{% endcomment %}
+	
 			{% if depth %}
 				{% for i in depth %}
 					{% if i > 0 %}
-						<div id="nested{{key}}" class="nested">
+						<div class="nested">
 					{% else %}
-						<!--close nested-->
 						</div>
 					{% endif %}
 				{% endfor %}
 			{% endif %}
 			
 			<div class="comment" id="comment{{key}}">
-				<div class="comment_header" id="header{{key}}">
+				<div class="header">
 					<span class="subject">{{comment.subject}}</span>
 					<span class="commentRating" value="{{comment.rating}}">(Rating: {{comment.rating}})</span>
 				</div>	
-				<div class="commentBox" id="commentBox{{key}}">
-					<div class="comment_top">
+				<div class="commentBox" >
+					<div class="top">
 					    <small>[<i>{{ comment.date.ctime }}</i>]</small>
-						<b>
+						</b>
 						{% if comment.author %}
 							<a href="/user/{{ comment.author.username }}/" id="{{comment.key}}bookmark"><code>{{ comment.author.username }}</code></a> 
 						{% else %}
@@ -86,9 +90,9 @@
 						{% endif %}
 					</div>
 					
-					<div class="commentContent" id="body_{{key}}">{% autoescape off %}{{ comment.content }}{% endautoescape %}</div>
+					<div class="content">{% autoescape off %}{{ comment.content }}{% endautoescape %}</div>
 				</div>	
-				{% if user and user.username == comment.author.username or not comment.author and user.admin %}
+				{% if user and user.username == comment.author.username or user.admin %}
 			
 				<form action="/postcomment/" method="post">
 					<input type="hidden" name="selfKey" value="{{key}}" />
@@ -110,9 +114,14 @@
 			
 	{% endfor %}
 	
-		<!--If the end of the comment tree is still indented
+	{% comment %}
+	-----------------------------------------------------------
+		If the end of the comment tree is still indented
 		(i.e. the final comment is some level of reply)
-		this loop closes out the nested divs. -->
+		this loop closes out the nested divs.
+	-----------------------------------------------------------
+	{% endcomment %}
+	
 	{% for i in commentary.sum_delta %}
 		</div></div>
 	{% endfor %}
