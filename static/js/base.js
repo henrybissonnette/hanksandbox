@@ -231,14 +231,121 @@ function hank(){
 		//Return
 		return form				
 	}
+	
+		
+	this.tabular = function(controller, element, groupname ,initial){
+			$('div.tabs').each(function(){
+				var newList = document.createElement('ul')
+				mainFlag = $(this).metadata().main
+				newList.className='tabs'
+				//construct list as skeleton for tabs
+				if(mainFlag == 'true'){
+				/*The key differences between main tabs and body tabs are that 
+				 *the main tab div is separated from the divs it controls by the
+				 *body content div, so selector chains tend to need an extra 
+				 * 'children()' to get to their target, and the two need to be 
+				 * wrapped in different div classes for styling.
+				 * */
+					$(this).children().children('div.tab').each(function(){
+						var data = $(this).metadata()
+						var newLi = document.createElement('li')
+						if(data.initial=='true'){
+							$(newLi).addClass('selected tab')
+						}
+						else{
+							$(newLi).addClass('unselected tab')
+							//hide unselected tabs
+							$(this).hide()
+						}
+						newLi.appendChild(document.createTextNode(data.name))
+						newList.appendChild(newLi)
+					})
+					//insert tab structure
+					var result = $('<div class="maintabs"></div>').append(newList)
+					$(this).prepend(result)
+					//set click action
+					$(this).children('.maintabs').children('ul.tabs').children('li.tab').each(function(index){
+						$(this).click(function(){
+							if(!$(this).hasClass('selected')){
+								$(this).toggleClass('selected unselected').siblings('li.tab.selected').toggleClass('selected unselected')
+								$(this).closest('div.tabs').children().children('div.tab:eq('+index+'),div.tab:visible').toggle()
+							}
+						})
+					})					
+				}
+				else{
+					$(this).children('div.tab').each(function(){
+						var data = $(this).metadata()
+						var newLi = document.createElement('li')
+						if(data.initial=='true'){
+							$(newLi).addClass('selected tab')
+						}
+						else{
+							$(newLi).addClass('unselected tab')
+							//hide unselected tabs
+							$(this).hide()
+						}
+						newLi.appendChild(document.createTextNode(data.name))
+						newList.appendChild(newLi)
+					})
+					//insert tab structure
+					var result = $('<div class="bodytabs"></div>').append(newList)
+					$(this).prepend(result)	
+					//set click action
+					$(this).children('div.bodytabs').children('ul.tabs').children('li.tab').each(function(index){
+						$(this).click(function(){
+							if(!$(this).hasClass('selected')){
+								$(this).toggleClass('selected unselected').siblings('li.tab.selected').toggleClass('selected unselected')
+								$(this).closest('div.tabs').children('div.tab:eq('+index+'),div.tab:visible').toggle()
+							}
+						})
+					})						
+				}
+				
+						
+			})
+			var isIE = navigator.appName === 'Microsoft Internet Explorer';
+			if(!isIE){
+				$('.tab').corner('top')
+			}
+			
+			//$('.bodytabs').corner('top')
+
+			/*if(initial){
+				$(controller).addClass('selected')
+			}
+			else{
+				$(controller).addClass('unselected')
+				$(element).hide();
+			}
+			$(controller).addClass(groupname+' tab');
+			$(element).addClass(groupname+' tabbed');
+			$('.tab').corner('top')
+			$(controller).click(function(){
+				$('.selected.'+groupname).addClass('unselected');
+				$('.selected.'+groupname).removeClass('selected');
+				$(controller).addClass('selected');
+				$(controller).removeClass('unselected');
+				$('.tabbed.'+groupname).hide();
+				$(element).show();
+			})*/
+		}
 }
+
+$(document).ready(function(){
+	myHank = new hank
+	myHank.tabular()
+})
 
 /* ROUNDIFICATION */
 
 $(document).ready(function(){
-	$('div.stream_item').corner()
-	$('div.pagetop').corner('40 px')
-	$('div.bodycontent').corner('40 px')
+	var isIE = navigator.appName === 'Microsoft Internet Explorer';
+	if(!isIE){
+		$('div.stream_item').corner()
+		$('div.pagetop').corner('40 px')
+		$('div.bodycontent').corner('40 px')
+	}
 })
 
 /////////////////////////////////////////////////////////////////
@@ -270,13 +377,12 @@ if (document.getElementsByClassName == undefined) {
 			if (elementClass && elementClass.indexOf(className) != -1 && hasClassName.test(elementClass))
 				results.push(element);
 		}
-
 		return results;
 	}
 }
 })
 
-addLoadEvent(hank)
+addLoadEvent(function(){var myHank = new hank})
 
 function addLoadEvent(func) {
   var oldonload = window.onload;

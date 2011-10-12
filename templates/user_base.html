@@ -4,15 +4,45 @@
 {{ page_user.username }}'s Page
 {% endblock title%}
 
-{% block main_content %}
+{% block tabs %}
+<div class="tabs {main:'true'}">
 
+{% endblock tabs %}
+	
+{% block main_content %}
+	<div class="tab {name:'frontpage',initial:'true'}">	
+		<h1> Welcome to {{ page_user.username }}'s Page </h1>
+		
+		<div class="tabs">
+			(tabs div)
+			<div class="tab {name:'tabA',initial:'true'}"> (tab A) </div>
+			<div class="tab tabs {name:'tabB'}"> (tab B)
+				(tabs div)
+				<div class="tab {name:'tab a',initial:'true'}"> (tab a) </div>
+				<div class="tab {name:'tab b'}"> (tab b) </div>
+				<div class="tab {name:'tab c'}"> (tab c) </div>
+				<div class="tab {name:'tab d'}"> (tab d) </div>
+				<div class="tab {name:'tab e'}"> 
+					Given a jQuery object that represents a set of DOM elements, the .closest() method 
+					searches through these elements and their ancestors in the DOM tree and constructs 
+					a new jQuery object from the matching elements. The .parents() and .closest() methods 
+					are similar in that they both traverse up the DOM tree. The differences between the 
+					two, though subtle, are significant: 
+				</div>
+			</div>
+		</div>
+		
+		{% comment %}
+		----------------------------------------------------------------------------
+		-----------------------------Documents-------------------------------------
+		----------------------------------------------------------------------------
+		{% endcomment %}
+	</div>
+	<div class="tab {name:'back page'}">
+		(back page)
+	</div>
 {% endblock main_content %}
 
-<h1> Welcome to {{ page_user.username }}'s Page </h1>
+{% block postBody %}
 
-{% comment %}
-----------------------------------------------------------------------------
------------------------------Documents-------------------------------------
-----------------------------------------------------------------------------
-{% endcomment %}
-
+{% endblock %}

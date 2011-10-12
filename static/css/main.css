@@ -8,9 +8,7 @@ div.bodycontent{
 
     margin-left: 120px;
     margin-right: 100px;
-  	border-color:#999;
-	border-style:solid;
-	border-width:1px;
+	border:solid 2px #333;
 	padding:50px;
 	min-width:650px;
 	overflow: auto;
@@ -226,40 +224,46 @@ div.comment{
 /*******************TABS************************/
 
 div.bodytabs{
-	border-bottom:solid 1px #999;
+
+	border-bottom:solid 2px #343e3f;
 	padding-left:20px;
+	padding-top:10px;
+	padding-bottom:-5px;
 }
 
 div.tabs{
-	margin-left:130px;
+	margin-left:1px;
 }
 li.tab{	
-
+	margin-right:1px;
 	padding:5px;
 	padding-bottom:1px;
 	display:inline;
-	padding-top:10px;
+	margin-top:10px;
 	width:100px;
 	text-align:center;	
 	font-size:20px;
+	font-weight:bold;
 	height:35px;
 	cursor:pointer;
 }
 
 .selected{
-	border-top:solid 1px #aaa;
+	/*border-top:solid 1px #aaa;
 	border-left:solid 3px #aaa;
 	border-right:solid 1px #aaa;
-	border-bottom:solid 1px #fff;
+	border-bottom:solid 1px #fff;*/
+	border:solid 2px #343e3f;
+	border-bottom:solid 2px #fff;;
 	color#000;
 	background:#fff;	
 }
 
 .unselected{
-	border-color:#fff;
+	/*border-color:#fff;
 	border:solid 1px;
 	border-bottom:none;
-	border-left:solid 3px;
+	border-left:solid 3px;*/
 }
 .unselected:hover{
 	background:#555;
@@ -269,6 +273,10 @@ ul.tabs{
 	list-style-type:none;
 	margin:0;
 	padding:0;
+}
+
+.maintabs{
+	margin-left:150px;
 }
 /*
 .inner_tabs{

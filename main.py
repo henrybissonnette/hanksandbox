@@ -124,7 +124,7 @@ def remove_duplicates(seq, idfun=None):
 
 class CommentaryObj:
     """
-    Intended to replace the awkward code of the commentary object. Should 
+    Intended to replace the awkward code of the commentary object. Should be
     an object that is perfectly JSON compatible and gives all the info necessary
     to perform arbitrarily complex comment filtering. 
     STRUCTURE:
@@ -362,7 +362,6 @@ class Document(db.Model):
         commentary = Commentary(self.author.username, self.filename)
         return commentary
         
-    
     def add_tags(self, taglist):
         
         self.leaftags = []
@@ -396,7 +395,6 @@ class Document(db.Model):
                             except:
                                 pass
                             self.type.append('meta')                    
-
         self.put()
     
     def get_url(self,includeDomain=False):
@@ -1093,9 +1091,7 @@ class Invite_Handler(webapp.RequestHandler):
  
 class PostComment(CommentPage):
     def post(self):
-        self.showForm()
-
-            
+        self.showForm()        
         
 class Rating(webapp.RequestHandler):
     
