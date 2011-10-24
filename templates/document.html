@@ -20,18 +20,7 @@
 
 {% block tabs %}
 	{% if user.username == document.author.username %}
-	<script type="text/javascript">
-		tabular('#tab_edit','#edit_tab','maintabs')
-		tabular('#tab_view','#document_tab','maintabs',true)
-	</script>
-	<div class="tabs">
- 		<ul class="tabs">
-			<li id="tab_view">View</li>
-			<li id="tab_edit">Edit</li>
-		</ul>
-
- 
-	</div>
+	<div class="tabs {main:'true'}">
 	{% endif %}
 {% endblock %}
 
@@ -43,7 +32,7 @@
 	------------------------------------DOCUMENT-------------------------------------
 	---------------------------------------------------------------------------------
 	{% endcomment %}
-<div id="document_tab">
+<div class="tab {name:'Document',initial:'true'}">
 	<h1 class="creator"><a title="Visit {{document.author.username}}'s  Page" class="creator" href="/user/{{document.author.username}}/">
 		{{document.author.username}}{% if document.draft %} : draft{% endif %}
 		</a></h1>
@@ -183,17 +172,8 @@
 	
 	{% if user.username == document.author.username %}
 	
-<div id="edit_tab">
-	<script type="text/javascript">
-		tabular('#tab_write','#write','edittabs',true)
-		tabular('#tab_tag','#tag','edittabs')
-	</script>
-	<div class="bodytabs">
- 		<ul class="tabs">
-			<li id="tab_write">Write</li>
-			<li id="tab_tag">Tag</li>
-		</ul>
-	</div>
+<div class="tabs tab {name:'Edit'}">
+
 	
 		<script type="text/javascript">
 			basic_MCE()
@@ -255,7 +235,7 @@
 	----------------------------------------------------------------------------
 	--------------------------------WRITE---------------------------------------
 	{% endcomment %}
-		<div class="fullpage" id="write">
+		<div class="tab fullpage {name:'Write',initial:'true'}">
 		<h1 class="embed">Edit</h1>
 		<form action="/create"  method=post>
 			<table>
@@ -317,7 +297,7 @@
 	--------------------------------TAG-----------------------------------------
 	{% endcomment %}
 
-		<div class="fullpage" id="tag">
+		<div class="tab fullpage {name:'Tab'}">
 			<h2>Current Tags</h2>
 			<div id="added_tags">{% include 'tag_request/addto.html' %}</div>
 			<div id="tags">
@@ -335,3 +315,7 @@
 
 	{% endif %}
 {% endblock main_content %}
+
+{% block postBody %}
+</div>
+{% endblock %}

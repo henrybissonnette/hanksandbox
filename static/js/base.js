@@ -233,7 +233,7 @@ function hank(){
 	}
 	
 		
-	this.tabular = function(controller, element, groupname ,initial){
+	this.tabular = function(){
 			$('div.tabs').each(function(){
 				var newList = document.createElement('ul')
 				mainFlag = $(this).metadata().main
@@ -247,6 +247,10 @@ function hank(){
 				 * wrapped in different div classes for styling.
 				 * */
 					$(this).children().children('div.tab').each(function(){
+						// .notab allows for titles and other elements that serve when tabs
+						// can't be generated.
+						$(".notab",this).hide()
+						
 						var data = $(this).metadata()
 						var newLi = document.createElement('li')
 						if(data.initial=='true'){
@@ -308,33 +312,25 @@ function hank(){
 			if(!isIE){
 				$('.tab').corner('top')
 			}
-			
-			//$('.bodytabs').corner('top')
-
-			/*if(initial){
-				$(controller).addClass('selected')
-			}
-			else{
-				$(controller).addClass('unselected')
-				$(element).hide();
-			}
-			$(controller).addClass(groupname+' tab');
-			$(element).addClass(groupname+' tabbed');
-			$('.tab').corner('top')
-			$(controller).click(function(){
-				$('.selected.'+groupname).addClass('unselected');
-				$('.selected.'+groupname).removeClass('selected');
-				$(controller).addClass('selected');
-				$(controller).removeClass('unselected');
-				$('.tabbed.'+groupname).hide();
-				$(element).show();
-			})*/
 		}
+	this.streamDoc = function(){
+		$('.streamDocument').each(function(){
+			$(this).addClass('clickable')
+			$('.title a',this).hide()
+			title = $('.title a',this).html()
+			url = $('.title a',this).attr('href')
+			$('.title',this).append(title)
+			$(this).click(function(){
+				window.location = url
+			})
+		})
+	}
 }
 
 $(document).ready(function(){
 	myHank = new hank
 	myHank.tabular()
+	myHank.streamDoc()
 })
 
 /* ROUNDIFICATION */
@@ -345,6 +341,7 @@ $(document).ready(function(){
 		$('div.stream_item').corner()
 		$('div.pagetop').corner('40 px')
 		$('div.bodycontent').corner('40 px')
+		$('.aButton').corner('40 px')
 	}
 })
 

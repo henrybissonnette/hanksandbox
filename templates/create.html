@@ -1,4 +1,4 @@
-{% extends "comment_request/commentary.html" %}
+{% extends "comment_request/comment_base.html" %}
 {% block title %}
 	{% if document %}
 		Edit {{document.title}}
@@ -8,18 +8,7 @@
 {% endblock %}
 
 {% block tabs %}
-	<script type="text/javascript">
-		tabular('#tab_write','#write','maintabs',true)
-		tabular('#tab_tag','#tag','maintabs')
-	</script>
-	<div class="tabs">
- 		<ul class="tabs">
-			<li id="tab_write">Write</li>
-			<li id="tab_tag">Tag</li>
-		</ul>
-
- 
-	</div>
+	<div class="tabs {main:'true'}">
 {% endblock %}
 
 {% block main_content %}
@@ -71,7 +60,7 @@
 --------------------------------WRITE---------------------------------------
 ----------------------------------------------------------------------------
 {% endcomment %}
-	<div id="write">
+	<div class="tab {name:'write',initial:'true'}">
 	<h1 class="embed">{% if document %}Edit{% else %}Create{% endif %}</h1>
 	<form action="/create"  method=post>
 		<table>
@@ -133,7 +122,7 @@
 --------------------------------TAG-----------------------------------------
 ----------------------------------------------------------------------------
 {% endcomment %}
-	<div id="tag">
+	<div class="tab {name:'Tag'}">
 		<div id="added_tags">{% include 'tag_request/addto.html' %}</div>
 		<div id="tags">
 			
