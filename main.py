@@ -253,6 +253,20 @@ class User(db.Model):
         commentary = Commentary(self.username)
         return commentary
     
+    def acceptInvitation(self, username):
+        self.circlepermissions.append(username)
+        self.invitations.remove(username)
+        inviter = get_user(username)
+        inviter.invitees.remove(self.username)
+        inviter.circle.append(self.username)
+        self.put()
+        inviter.put()
+        # stream message
+        message = StreamMessage()
+        message.recipient = inviter
+        message.content = self.get_url(html=True)+' has accepted your circle invitation.'
+        message.put()
+    
     def add_favorite(self, document):
         if not document.key in self.favorites:
             self.favorites.append(document.key())
@@ -261,25 +275,64 @@ class User(db.Model):
         document.put()
         self.put()
         
+    def declineInvitation(self, username):
+        self.invitations.remove(username)
+        inviter = get_user(username)
+        inviter.invitees.remove(self.username)
+        self.put()
+        inviter.put()
+        # steam message
+        message = StreamMessage()
+        message.recipient = inviter
+        message.content = self.get_url(html=True)+' has declined your circle invitation.'
+        message.put()
+        
     def fetch_favorites(self):
         favorites = []
         for key in self.favorites:
             favorites.append(Document.get(key))
         return favorites
             
-    def get_url(self, includeDomain = False):
+    def get_url(self, includeDomain = False, html = False):
         if includeDomain:
             return domainstring+'user/'+self.username+'/'
+        elif html:
+            return '<a href="/user/'+self.username+'/" class="username">'+self.username+'</a>'
         else:
             return '/user/'+self.username+'/'
     
     def drafts(self):
         self.works.filter('draft ==', True)
         
+    def invite(self, username):
+        if not username in self.invitees:
+            self.invitees.append(username)
+            invited = get_user(username)
+            invited.invitations.append(self.username)
+            self.put()
+            invited.put()     
+            # stream message
+            message = StreamMessage()
+            message.recipient = invited
+            message.content = 'You\'ve been invited to join '+self.get_url(html=True)+'\'s Writer\'s Circle'
+            message.put()
+            
+    def leaveCircle(self, username):
+        self.circlepermissions.remove(username)
+        other = get_user(username)
+        other.circle.remove(self.username)
+        self.put()
+        other.put()
+        # stream message
+        message = StreamMessage()
+        message.recipient = other
+        message.content = self.get_url(html=True)+' has left your Writer\'s Circle'
+        message.put()
+        
     def publications(self):
         self.works.filter('draft ==', False)
         
-    def fetch_stream(self,number=10):
+    def fetch_stream(self,number=100):
 
         documents=[]
         horizon = datetime.datetime.now()-datetime.timedelta(weeks=1)
@@ -295,8 +348,22 @@ class User(db.Model):
         for tag in self.subscriptions_tag:
             documents.extend(get_documents([tag],number=number))
             
+        documents.extend(self.streamMessages)
+            
         ordered = sorted(documents, key=lambda document: document.date, reverse=True)
         return ordered[:number]
+    
+    def removeCircle(self, username):
+        self.circle.remove(username)
+        other = get_user(username)
+        other.circlepermissions.remove(self.username)
+        self.put()
+        other.put()
+        # stream message
+        message = StreamMessage()
+        message.recipient = other
+        message.content = 'You have been removed from '+self.get_url(html=True)+'\'s Writer\'s Circle'
+        message.put()
     
     def set_reputation(self):
         
@@ -335,6 +402,17 @@ class User(db.Model):
         self.reputation = int(reputation)    
         self.put()
         
+    def withdrawCircle(self, username):
+        self.invitees.remove(username)
+        other = get_user(username)
+        other.invitations.remove(self.username)
+        self.put()
+        other.put()
+        # stream message
+        message = StreamMessage()
+        message.recipient = other
+        message.content = self.get_url(html=True)+'\'s Writer\'s Circle invitation has been withdrawn.'
+        message.put()        
 
 class Document(db.Model):
     
@@ -570,6 +648,16 @@ class Comment(db.Model):
     def unsubscribe(self,user):
         if user.username in self.subscribers:
             self.subscribers.remove(user.username) 
+            
+class StreamMessage(db.Model):
+    date = db.DateTimeProperty(auto_now_add=True)
+    object_type = db.StringProperty(default='StreamMessage')
+    content = db.StringProperty()
+    private = db.BooleanProperty(default=True)
+    recipient = db.ReferenceProperty(User, collection_name='streamMessages')
+    
+    def remove(self):
+        self.delete()
 
 class Mypage(db.Model):
     creator = db.ReferenceProperty(User)
@@ -748,6 +836,55 @@ class Admin(webapp.RequestHandler):
                    }     
         tmpl = path.join(path.dirname(__file__), 'templates/admin.html')
         self.response.out.write(template.render(tmpl, context))   
+        
+class Circle(webapp.RequestHandler):
+    
+    def get(self,request,data):
+        user = get_user()
+        
+        if request == 'accept':
+            user.acceptInvitation(data)
+            self.redirect('../../../')
+            
+        if request == 'clear':
+            user.invitations = []
+            user.circle = []
+            user.circlepermissions = []
+            user.invitees = []
+            for message in user.streamMessages:
+                message.delete()
+            user.put()
+            self.redirect('../../../')
+            
+        if request == 'decline':
+            user.declineInvitation(data)
+            self.redirect('../../../')
+        
+        if request == 'invite':
+            user.invite(data) 
+            self.redirect('../../../')
+            
+        if request == 'leave':
+            user.leaveCircle(data)
+            self.redirect('../../../')
+            
+        if request == 'manage':
+            context = {
+                   'user':      user,
+                   'login':     users.create_login_url(self.request.uri),
+                   'logout':    users.create_logout_url(self.request.uri)                       
+                   }     
+            tmpl = path.join(path.dirname(__file__), 'templates/circle.html')
+            self.response.out.write(template.render(tmpl, context)) 
+            
+        if request == 'remove':
+            user.removeCircle(data)
+            self.redirect('../../../')
+            
+            
+        if request == 'withdraw':
+            user.withdrawCircle(data)
+            self.redirect('../../../')
 
 class CommentPage(webapp.RequestHandler):
     def showForm(self,messages=None):
@@ -811,16 +948,12 @@ class CommentHandler(CommentPage):
                 comment = selfComment
             except:
                 comment = Comment()                           
-                if hasattr(above,'subject'): # replies to other comments get handled by if
+                if above.object_type == 'Comment': 
                     comment.above = above              
-                else:         # else sticks top level comments to an appropriate object
-                    if hasattr(above,'authorname'): # comments on a document page
-                        filename= self.request.get('filename')
-                        name= self.request.get('object_user')
-                        article = get_document(name, filename)
-                        comment.article = article                        
-                    if hasattr(above,'username'): #comments on a user page
-                        comment.user_page = above
+                if above.object_type == 'Document':
+                    comment.article = above                       
+                if above.object_type == 'User': 
+                    comment.user_page = above
               
             subscribe = self.request.get('subscribe')
             
@@ -1088,6 +1221,15 @@ class Invite_Handler(webapp.RequestHandler):
             requester.circle.append(user.username)
         user.put()
         requester.put()
+        
+class Message(webapp.RequestHandler):
+    def get(self,request,key):
+        user = get_user()
+        message = db.get(key)
+        if request == 'remove':
+            if message.recipient.username == user.username:               
+                message.remove() 
+        self.redirect('../../../')
  
 class PostComment(CommentPage):
     def post(self):
@@ -1495,6 +1637,7 @@ application = webapp.WSGIApplication([
     ('/ajax/(.*)/',AJAX),
     ('/reply-base/', ReplyBase),
     ('.*/comment/', CommentHandler),
+    ('.*/circle/(.*)/(.*)/', Circle),
     ('/postcomment/', PostComment),
     ('/tag_browser/',Tag_Browser),
     ('/tag/(.+)/',Tag_Page),
@@ -1507,6 +1650,7 @@ application = webapp.WSGIApplication([
     ('.*/tag_(.*)/', TagManager),
     ('/admin/', Admin),
     ('.*/rate/', Rating),
+    ('.*/message/(.*)/(.*)/',Message),
     ('/user/(.*)/', UserPage),
     ('/user_base/(.*)/', UserBase),
     ('/register', Register),

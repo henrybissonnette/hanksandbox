@@ -48,7 +48,7 @@
 				{% endfor %}
 			{% endif %}
 			
-			<div class="comment" id="comment{{key}}">
+			<div class="comment" >
 				<div class="header">
 					<span class="subject">{{comment.subject}}</span>
 					<span class="commentRating" value="{{comment.rating}}">(Rating: {{comment.rating}})</span>
@@ -58,7 +58,7 @@
 					    <small>[<i>{{ comment.date.ctime }}</i>]</small>
 						</b>
 						{% if comment.author %}
-							<a href="/user/{{ comment.author.username }}/" id="{{comment.key}}bookmark"><code>{{ comment.author.username }}</code></a> 
+							<a href="/user/{{ comment.author.username }}/" id="{{comment.key}}"><code>{{ comment.author.username }}</code></a> 
 						{% else %}
 							<i>anonymous</i>
 						{% endif %}

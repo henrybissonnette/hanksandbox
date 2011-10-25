@@ -325,12 +325,22 @@ function hank(){
 			})
 		})
 	}
+	
+	this.streamComment = function(){
+		$('.stream_item .comment').each(function(){
+			$(this).addClass('clickable').click(function(){
+				url = $('.header a',this).attr('href')
+				window.location = url
+			})
+		})
+	}
 }
 
 $(document).ready(function(){
 	myHank = new hank
 	myHank.tabular()
 	myHank.streamDoc()
+	myHank.streamComment()
 })
 
 /* ROUNDIFICATION */
