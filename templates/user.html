@@ -270,8 +270,15 @@
 			{% endcomment %}
 			</div>
 			
+			{% comment %}
+			---------------------------------------------------------
+			(((		SUBSCRIPTIONS
+			---------------------------------------------------------
+			{% endcomment %}	
+					
 			<div class="tab {name:'Subscriptions'}">
 				<h2 class="notab">Subscriptions</h2>
+				
 				<form action="subscribe/{{page_user.username}}/" method="post">
 				<table>
 					<tr>
@@ -300,7 +307,14 @@
 					</tr>
 				</table>				
 				</form>
+				
 			</div>
+			{% comment %}
+			---------------------------------------------------------
+					SUBSCRIPTIONS							      )))
+			---------------------------------------------------------
+			{% endcomment %}
+			
 		</div>
 	</div>
 	{% endif %}

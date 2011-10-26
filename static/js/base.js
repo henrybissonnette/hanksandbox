@@ -318,9 +318,9 @@ function hank(){
 			$(this).addClass('clickable')
 			$('.title a',this).hide()
 			title = $('.title a',this).html()
-			url = $('.title a',this).attr('href')
 			$('.title',this).append(title)
 			$(this).click(function(){
+				url = $('.title a',this).attr('href')
 				window.location = url
 			})
 		})
