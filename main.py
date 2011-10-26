@@ -402,6 +402,66 @@ class User(db.Model):
         self.reputation = int(reputation)    
         self.put()
         
+    def set_subscription(self, subscriptions, subscribee):
+        """ SUBSCRIPTIONS is a list of values one each for email and stream 
+        subscription on either comments or documents. Subscribee should be a 
+        username string. """
+        flag = None
+        subscribee = get_user(subscribee)
+        if not subscriptions:
+            if self.username in subscribee.subscribers:
+                    subscribee.subscribers.remove(self.username)
+
+            if subscribee.username in self.subscriptions_user:
+                    self.subscriptions_user.remove(subscribee.username)
+
+            message = 'This user has been removed from your subscriptions.'    
+        else:
+            if self.username not in subscribee.subscribers:
+                    subscribee.subscribers.append(self.username)
+                    flag = 1
+
+            if subscribee.username not in self.subscriptions_user:
+                    self.subscriptions_user.append(subscribee.username)
+                    flag = 1
+               
+        if flag:
+            message = 'This user has been added to your subscriptions.' 
+        else:
+            message = 'Your settings have been saved.'
+        
+        if 'subscribe_publish' in subscriptions:
+            if not subscribee.username in self.subscriptions_document:
+                self.subscriptions_document.append(subscribee.username)
+        else:
+            if subscribee.username in self.subscriptions_document:
+                self.subscriptions_document.remove(subscribee.username)
+                
+        if 'email_publish' in subscriptions:
+            if not self.username in subscribee.subscribers_document:
+                subscribee.subscribers_document.append(self.username)
+        else:
+            if self.username in subscribee.subscribers_document:
+                subscribee.subscribers_document.remove(self.username)
+                
+        if 'subscribe_comment' in subscriptions:
+            if not subscribee.username in self.subscriptions_comment:
+                self.subscriptions_comment.append(subscribee.username)
+        else:
+            if subscribee.username in self.subscriptions_comment:
+                self.subscriptions_comment.remove(subscribee.username)
+        
+        if 'email_comment' in subscriptions:
+            if not self.username in subscribee.subscribers_comment:
+                subscribee.subscribers_comment.append(self.username)
+        else:
+            if self.username in subscribee.subscribers_comment:
+                subscribee.subscribers_comment.remove(self.username)
+        
+        subscribee.put()
+        self.put()
+        return message
+        
     def withdrawCircle(self, username):
         self.invitees.remove(username)
         other = get_user(username)
@@ -1342,67 +1402,12 @@ class Register(webapp.RequestHandler):
         
 class Subscription_Handler(webapp.RequestHandler):
              
-    def post(self):
-        flag=None
+    def post(self, username):
         user = get_user()
-        subscriptions = self.request.get_all('subscriptions[]')
-        page_user = self.request.get('page_user')
-        subscribee = get_user(page_user)
-        
-        if not subscriptions:
-            if user.username in subscribee.subscribers:
-                    subscribee.subscribers.remove(user.username)
-
-            if subscribee.username in user.subscriptions_user:
-                    user.subscriptions_user.remove(subscribee.username)
-
-            message = 'This user has been removed from your subscriptions.'    
-        else:
-            if user.username not in subscribee.subscribers:
-                    subscribee.subscribers.append(user.username)
-                    flag = 1
-
-            if subscribee.username not in user.subscriptions_user:
-                    user.subscriptions_user.append(subscribee.username)
-                    flag = 1
-               
-        if flag:
-            message = 'This user has been added to your subscriptions.' 
-        else:
-            message = 'Your settings have been saved.'
-        
-        if 'subscribe_publish' in subscriptions:
-            if not page_user in user.subscriptions_document:
-                user.subscriptions_document.append(page_user)
-        else:
-            if page_user in user.subscriptions_document:
-                user.subscriptions_document.remove(page_user)
-                
-        if 'email_publish' in subscriptions:
-            if not user.username in subscribee.subscribers_document:
-                subscribee.subscribers_document.append(user.username)
-        else:
-            if user.username in subscribee.subscribers_document:
-                subscribee.subscribers_document.remove(user.username)
-                
-        if 'subscribe_comment' in subscriptions:
-            if not page_user in user.subscriptions_comment:
-                user.subscriptions_comment.append(page_user)
-        else:
-            if page_user in user.subscriptions_comment:
-                user.subscriptions_comment.remove(page_user)
-        
-        if 'email_comment' in subscriptions:
-            if not user.username in subscribee.subscribers_comment:
-                subscribee.subscribers_comment.append(user.username)
-        else:
-            if user.username in subscribee.subscribers_comment:
-                subscribee.subscribers_comment.remove(user.username)
-        
-        subscribee.put()
-        user.put()
-        
-        self.response.out.write(message)
+        subscriptions = self.request.get_all('subscriptions')
+        user.set_subscription(subscriptions,username)
+        self.redirect('../../')
+        #self.response.out.write(message)
         
 class Tag_Browser(webapp.RequestHandler):
     def post(self):        
@@ -1642,7 +1647,7 @@ application = webapp.WSGIApplication([
     ('/tag_browser/',Tag_Browser),
     ('/tag/(.+)/',Tag_Page),
     ('/favorite/',Favorite),
-    ('/subscription_handler/', Subscription_Handler),
+    ('.*/subscribe/(.*)/', Subscription_Handler),
     ('/invite_handler/', Invite_Handler),
     ('/invite/', Invite),
     ('/availability/', Username_Check),
