@@ -7,7 +7,6 @@
 /*MINIMIZE/MAXIMIZE*/
 
 $(document).ready(function(){  
-	
 $('.commentBox').corner('bottom');
 $('.comment .header').css('cursor','pointer').corner('top');
 $('.comment .content').corner("round bottom 8px").parent().corner("round bottom 10px")
@@ -36,7 +35,7 @@ $(".comment .header").click(function () {
 
 
 $(document).ready(function(){
-
+	
 	$('form[action="/postcomment/"]').submit(function(event){
 		event.preventDefault()
 		var commentData = {}
@@ -59,7 +58,6 @@ $(document).ready(function(){
 			commentData['subscribeChecked']=subscribeCheck
 
 		}
-		
 		var myHank = new hank
 		var commentForm = myHank.createCommentBox(commentData)
 

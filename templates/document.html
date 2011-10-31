@@ -6,14 +6,17 @@
 {{document.title}}
 {% endblock title%}
 
+
 {% block leftside %}
 	<div class="l_outer">
 		<ul>						
-			<li>
+			
 			{% for tag in document.get_leaftags %}
+			<li>
 			<a href="/tag/{{tag.title}}/" title='{{tag.title}}'>{{tag.title}}</a>
-			{% endfor %}
 			</li>
+			{% endfor %}
+			
 		</ul>
 	</div>
 {% endblock %}
@@ -297,7 +300,7 @@
 	--------------------------------TAG-----------------------------------------
 	{% endcomment %}
 
-		<div class="tab fullpage {name:'Tab'}">
+		<div class="tab fullpage {name:'Tag'}">
 			<h2>Current Tags</h2>
 			<div id="added_tags">{% include 'tag_request/addto.html' %}</div>
 			<div id="tags">

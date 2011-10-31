@@ -242,6 +242,7 @@ class User(db.Model):
     subscriptions_document = db.StringListProperty(default=[])
     # tags I subscribe to
     subscriptions_tag = db.StringListProperty(default=[])
+    minimizeThreshold = db.IntegerProperty(default=3)
     object_type = db.StringProperty(default = 'User')
     username = db.StringProperty()
     
@@ -499,7 +500,16 @@ class Document(db.Model):
     def get_commentary(self):
         commentary = Commentary(self.author.username, self.filename)
         return commentary
-        
+
+    def add_tag(self, tag):
+        if len(self.tags) < 3:
+            tags = self.tags
+            tags.append(tag)
+            self.add_tags(tags)
+            return 'Tag added successfully.'
+        else: 
+            return 'A document may only have three leaf tags.'
+
     def add_tags(self, taglist):
         
         self.leaftags = []
@@ -597,6 +607,13 @@ class Document(db.Model):
             
         self.delete()
         
+    def remove_tag(self,tagName):
+        current = self.leaftags
+        if tagName in current:
+            current.remove(tagName)
+        self.add_tags(current)
+        return tagName+' was removed from tags.'
+        
     def set_view(self):
         if not self.draft:
             self.views += 1
@@ -608,6 +625,8 @@ class Document(db.Model):
             except:
                 pass
             self.put()
+    def get_tag_number(self):
+        return len(self.tags)
             
 
 class Comment(db.Model):
@@ -878,6 +897,44 @@ class AJAX(webapp.RequestHandler):
             isSubscribed = 'false'
         logging.info('subscribed? '+isSubscribed)
         self.response.out.write(isSubscribed)
+      
+class AddTag(webapp.RequestHandler):
+      
+    def get(self, tag, docName):
+        user = get_user() 
+        document = get_document(user.username,docName)
+        tagObj = Tag.all().filter('title ==',tag)[0]
+        self.render(tagObj,document)
+        
+    def post(self, tag, docName):
+        user = get_user() 
+        added = self.request.get('added')
+        request = self.request.get('request')
+        tagObj = Tag.all().filter('title ==',tag)[0]
+        if Tag.all().filter('title ==',added)[0]: 
+            document = get_document(user.username,docName)
+            if request == 'add':
+                message = document.add_tag(added)
+            if request == 'remove':
+                message = document.remove_tag(added)
+                
+            self.render(tagObj,document,message)
+        else:
+            self.render(tagObj,document,'Tag does not exist.')
+        
+    def render(self, tag, document,message=None):    
+        user = get_user()           
+        context = {
+                   'baseTag':   tag,
+                   'message':   message,
+                   'document':  document,
+                   'user':      user,
+                   'login':     users.create_login_url(self.request.uri),
+                   'logout':    users.create_logout_url(self.request.uri)
+                   }  
+        tmpl = path.join(path.dirname(__file__), 'templates/addTags.html')
+        self.response.out.write(template.render(tmpl, context))  
+
         
     
 class Admin(webapp.RequestHandler):
@@ -1128,7 +1185,6 @@ class Create_Document(webapp.RequestHandler):
         self.response.out.write(template.render(tmpl, context))   
         
     def post(self):
-        
         user = get_user()
         new = False
         existing_filename = self.request.get('existing_filename')
@@ -1139,6 +1195,7 @@ class Create_Document(webapp.RequestHandler):
         description = cleaner(description,deletechars = '`~@#^*{[}]|/><)')
         username = self.request.get('username')
         draft = self.request.get('draft')
+        scriptless = self.request.get('scriptless')
         
         # username only gets passed on an edit
         if username:
@@ -1184,7 +1241,7 @@ class Create_Document(webapp.RequestHandler):
             if document.draft == True:
                 new = True
             document.draft = False
-        document.put()
+        document.put()         
        
         if new and not document.draft:
             for subscriber in user.subscribers_document:
@@ -1196,9 +1253,14 @@ class Create_Document(webapp.RequestHandler):
                     messages.email_document(document),
                     html = messages.email_document_html(document)
                 )
+        if new and scriptless == 'true':
+            self.redirect('/addtag/Root/'+document.filename+'/')
+        else:
+            self.redirect('/' + document.authorname + '/document/'+  filename + '/')
 
-        self.redirect('/' + document.authorname + '/document/'+  filename + '/')
 
+        
+        
 class Delete_Document(webapp.RequestHandler):
     def get(self,name,filename):
         document = get_document(name,filename)
@@ -1457,6 +1519,21 @@ class TagManager(webapp.RequestHandler):
             tag.title = create_title
             if parent_title:
                 tag.parent_tag = Tag.get_by_key_name(parent_title)
+            else:
+                logging.info('there is NOT a parent title')
+                if Tag.get_by_key_name('Root'):
+                    tag.parent_tag = Tag.get_by_key_name('Root')
+                else:
+                    root = Tag(key_name='Root')
+                    root.title = 'Root'
+                    for item in Tag.all().filter('parent_tag ==',None).fetch(1000):
+                        item.parent_tag = root
+                        item.put()
+                    root.set_ancestors()
+                    root.set_descendants()
+                    root.put()
+                    tag.parent_tag = root
+                    
             tag.set_ancestors()
             tag.set_descendants()
             tag.put() 
@@ -1485,7 +1562,6 @@ class TagManager(webapp.RequestHandler):
                            }
                 tmpl = path.join(path.dirname(__file__), 'templates/tag_request/base.html')
                 self.response.out.write(template.render(tmpl, context))
-
             
         if request == 'newform':
             new_title = self.request.get('title')
@@ -1529,7 +1605,8 @@ class TagManager(webapp.RequestHandler):
             
         if request == 'base':
             user_type = self.request.get('user_type')
-            root_tags = Tag.all().filter('parent_tag ==', None).fetch(100)
+            root = Tag.all().filter('title ==', 'Root').fetch(1)[0]
+            root_tags = root.get_children()
             context = {
                        'user':     user,
                        'user_type':user_type,
@@ -1636,15 +1713,134 @@ class View_Document(webapp.RequestHandler):
             'logout':    users.create_logout_url(self.request.uri)
         }
         tmpl = path.join(path.dirname(__file__), 'templates/document.html')
-        self.response.out.write(template.render(tmpl, context))          
+        self.response.out.write(template.render(tmpl, context))  
+        
+class CreateBase(webapp.RequestHandler): 
+    def get(self):
+        
+        user = get_user()
+        userdocuments = user.works
+        tags = self.request.get_all('tag')
+        context = {
+                   'tags':      tags,
+                   'userdocuments': userdocuments,
+                   'user':      user,
+                   'login':     users.create_login_url(self.request.uri),
+                   'logout':    users.create_logout_url(self.request.uri)
+                   }     
+        tmpl = path.join(path.dirname(__file__), 'templates/create_base.html')
+        self.response.out.write(template.render(tmpl, context)) 
+          
+    def post(self, request):
+        
+        if request == 'save':
+            self.save()
+            
+        if request == 'tag':
+            user = get_user()
+            filename = self.request.get('filename')
+            document = get_document(user.username,filename)
+            self.addTags(document)
+        
+    def save(self):
+        
+        user = get_user()
+        new = False
+        existing_filename = self.request.get('existing_filename')
+        filename = self.request.get('filename')
+        filename = cleaner(filename)
+        subscribe = self.request.get('subscribe')
+        description = self.request.get('description')
+        description = cleaner(description,deletechars = '`~@#^*{[}]|/><)')
+        username = self.request.get('username')
+        draft = self.request.get('draft')
+        
+        # username only gets passed on an edit
+        if username:
+            document = get_document(username,existing_filename)
+        else:
+            new = True
+            # if new document uses existing filename this will happen
+            if get_document(user.username,filename):
+                document = get_document(user.username,filename)
+            else:
+                document = Document()
+        
+        if subscribe == 'subscribe':
+            document.set_subscriber(user.username)
+        else:
+            document.set_subscriber(user.username,False)
+        
+        #################################################
+        # Handling Tags
+        
+        tags = self.request.get_all('added_tag')
+        document.add_tags(tags)
+        
+        # End Tags
+        ######################################################
+        
+        if user:
+            if user.username:
+                document.author = user
+                document.authorname = user.username 
+            else:
+                error = 'Must Be Logged In to Create Documents'
+            
+        document.content = self.request.get('document_content')
+        title = escape(self.request.get('title'))
+        document.title = title
+        document.subtitle = escape(self.request.get('subtitle'))
+        document.filename = filename
+        document.set_description(description)
+        if draft == 'True':
+            document.draft = True
+        else:
+            if document.draft == True:
+                new = True
+            document.draft = False
+        document.put()
+                
+        if scriptless == 'true':
+            self.addTags(document)
+       
+        if new and not document.draft:
+            for subscriber in user.subscribers_document:
+                sub = get_user(subscriber)
+                mail.send_mail(
+                    'postmaster@essayhost.appspotmail.com',
+                    sub.google.email(),
+                    'New document by %s' % document.authorname,
+                    messages.email_document(document),
+                    html = messages.email_document_html(document)
+                )
+
+        self.redirect('/' + document.authorname + '/document/'+  filename + '/')   
+        
+    def addTags(self, document):
+        newTag = self.request.get('tag')
+        if newTag:
+            message = document.add_tag(newTag)
+        user = get_user()
+        context = {
+                   'message':   message,
+                   'document':  document,
+                   'user':      user,
+                   'login':     users.create_login_url(self.request.uri),
+                   'logout':    users.create_logout_url(self.request.uri)
+                   }  
+        tmpl = path.join(path.dirname(__file__), 'templates/addTags.html')
+        self.response.out.write(template.render(tmpl, context))     
 
 application = webapp.WSGIApplication([
     ('/ajax/(.*)/',AJAX),
     ('/reply-base/', ReplyBase),
-    ('.*/comment/', CommentHandler),
+    ('/create_base/', CreateBase),
+    ('.*/comment/(.*)/', CommentHandler),
     ('.*/circle/(.*)/(.*)/', Circle),
     ('/postcomment/', PostComment),
     ('/tag_browser/',Tag_Browser),
+    ('/addtag/(.*)/(.*)/', AddTag),
     ('/tag/(.+)/',Tag_Page),
     ('/favorite/',Favorite),
     ('.*/subscribe/(.*)/', Subscription_Handler),
@@ -1657,7 +1853,6 @@ application = webapp.WSGIApplication([
     ('.*/rate/', Rating),
     ('.*/message/(.*)/(.*)/',Message),
     ('/user/(.*)/', UserPage),
-    ('/user_base/(.*)/', UserBase),
     ('/register', Register),
     ('/create', Create_Document),
     (r'/(.*)/document/(.*)/edit/delete/', Delete_Document),

@@ -13,11 +13,13 @@ function basic_MCE()
 			    plugins: "lists,tinyautosave",
 			    content_css : "static/css/custom_content.css",
 
-			    theme_advanced_buttons1 : "tinyautosave,|,bold,italic,underline,strikethrough,|,link,unlink,|,bullist, numlist,|,blockquote,undo", 
+			    theme_advanced_buttons1 : "tinyautosave,|,bold,italic,underline,strikethrough,|,link,unlink,|,bullist, numlist,|,blockquote,undo,|,formatselect,charmap", 
 			    theme_advanced_buttons2 : "", 
 			    theme_advanced_buttons3 : "" ,
 			    theme_advanced_statusbar_location : "bottom",
 			    theme_advanced_resizing : true,
+			    theme_advanced_blockformats : "h3",
+
 			    
 			    gecko_spellcheck : true,
 
@@ -334,6 +336,10 @@ function hank(){
 			})
 		})
 	}
+	
+	this.clearScriptless = function(){
+		$('.scriptless').remove()
+	}
 }
 
 $(document).ready(function(){
@@ -341,6 +347,7 @@ $(document).ready(function(){
 	myHank.tabular()
 	myHank.streamDoc()
 	myHank.streamComment()
+	myHank.clearScriptless()
 })
 
 /* ROUNDIFICATION */

@@ -41,7 +41,7 @@
 				{
 					if (x.indexOf(forbidden.charAt(i)) != -1)
 					{
-						alert("Filenames may only contain A-z, 1-9, _ , and -.");
+						alert("Filenames may only contain a-z, A-Z, 1-9, _ , and -.");
 						return false;
 					}
 				}
@@ -60,7 +60,9 @@
 --------------------------------WRITE---------------------------------------
 ----------------------------------------------------------------------------
 {% endcomment %}
-	<div class="tab {name:'write',initial:'true'}">
+	New Create Page : <a href="/create_base/">New Create</a>
+
+	<div class="tab {name:'Write',initial:'true'}">
 	<h1 class="embed">{% if document %}Edit{% else %}Create{% endif %}</h1>
 	<form action="/create"  method=post>
 		<table>

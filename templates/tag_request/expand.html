@@ -5,7 +5,7 @@
 	--- and all subexpansions.
 	{% endcomment %}
 	
-	{% if parent_title %}
+	{% if parent_title != 'Root' %}
 		<script type="text/javascript">
 			//sets up the close div button
 			divtrigger("a#contract{{parent_title}}","div#expand_{{parent_title}}",'tag_contract/',{})
