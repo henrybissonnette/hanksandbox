@@ -1,4 +1,5 @@
-{% extends "comment_request/comment_base.html" %}
+{% extends "base.html" %}
+
 {% block title %}
 	{% if document %}
 		Edit {{document.title}}
@@ -7,62 +8,26 @@
 	{% endif %}
 {% endblock %}
 
+{% block scripts %}
+<script type="text/javascript" src="/static/js/create.js"></script>
+{% endblock %}
+
 {% block tabs %}
 	<div class="tabs {main:'true'}">
 {% endblock %}
 
-{% block main_content %}
 
-	<script type="text/javascript">
-		basic_MCE()
-		var forbidden = "`~!@#$%^&*()+={}[]\\|:;\"\'<>,. ";
-	
-		var works = new Array();
-		{% for document in userdocuments %}
-		works.push("{{document.filename}}");
-		{% endfor %}
-	
-		var added_tags = new Array();
-		{% if document %}
-			{% for tag in document.tags %}
-				added_tags.push("'{{tag}}'")			 
-			{% endfor %}
-		{% endif %}		
-		
-		function validate_filename()
-		{
-			var x=document.getElementById("filename").value;
-			if (x==null || x=="")
-			  {
-				  alert("Filename is required.");
-				  return false;
-			  }
-			for(i=0;i < forbidden.length;i++)
-				{
-					if (x.indexOf(forbidden.charAt(i)) != -1)
-					{
-						alert("Filenames may only contain a-z, A-Z, 1-9, _ , and -.");
-						return false;
-					}
-				}
-			{% if not document %}
-			if (array_member(works,x))
-				{
-					var confirmation = confirm("You have already created a document with this file name. Do you want to replace it?");
-					return confirmation;
-				}
-			{% endif %}
-		}
-	</script>
+
+{% block content %}
 
 {% comment %}
 ----------------------------------------------------------------------------
 --------------------------------WRITE---------------------------------------
 ----------------------------------------------------------------------------
 {% endcomment %}
-	New Create Page : <a href="/create_base/">New Create</a>
 
 	<div class="tab {name:'Write',initial:'true'}">
+		
 	<h1 class="embed">{% if document %}Edit{% else %}Create{% endif %}</h1>
 	<form action="/create"  method=post>
 		<table>
@@ -87,6 +52,7 @@
 		{% endfor%}
 		<input type="hidden" name="username" value="{{document.author.username}}"/>
 		<input type="hidden" name="existing_filename" value="{{document.filename}}"/>
+		<input type="hidden" class="scriptless" name="scriptless" value="true"/>
 	    <textarea name=document_content rows=20 cols=75>{{document.content}}</textarea>
 	    <br>
 	    <input type="checkbox" name="draft" value="True" {% if document.draft or not document %}checked{% endif %} /> Mark as Draft | 
@@ -94,28 +60,16 @@
 	    	<span>Recieve email notifications if someone replies to this Document.</span>
 	    </input>
 	    <br/>
-	    <input type=submit 
-	    value={% if document %}"Save"{% else %}"Create"{% endif %}
-	    onClick="return validate_filename()"
-	    />
+	    <input type=submit value={% if document %}"Save"{% else %}"Next Step: Add Tags >>"{% endif %}/>
 
 
 	</form>
 	
-	<script type="text/javascript">
-	$(document).ready(function(){
-		$('#cancel_button').click(function(){
-				var agree=confirm('You are about to close this document without saving. Continue?');
-				if (agree)
-					window.history.back();
-			})
-		})	
-	</script>
-	<button id="cancel_button" >Cancel</button>
+	<a href="/user/{{user.username}}/" title="Go back to my homepage.">Cancel</a>
 	
 	{% if document %}
 	<form action="delete/" method="get">
-		<input type="submit" value="Delete" title="Permanently delete this document." onClick="return confirmSubmit('Do you want to permanently delete this document?')"/>
+		<input type="submit" value="Delete" title="Permanently delete this document."/>
 	</form>
 	{% endif %}
 	</div>
@@ -125,18 +79,11 @@
 ----------------------------------------------------------------------------
 {% endcomment %}
 	<div class="tab {name:'Tag'}">
-		<div id="added_tags">{% include 'tag_request/addto.html' %}</div>
-		<div id="tags">
-			
-				
-			<script type="text/javascript">
-				divtrigger("button#browse_tags","div#tags",'tag_base/',{"user_type":"user"})
-			</script> 	
-			<button  title="Use tags to identify your topic" id="browse_tags" class="subtlebutton">Add Tags</button>
-		</div>
-		
-
+	<div id="added_tags">{% include 'tag_request/addto.html' %}</div>
+	<div id="tags">
+	<button  title="Use tags to identify your topic" id="browse_tags" class="subtlebutton">Add Tags</button>
 	</div>
 
+</div>
 	
 {% endblock %}

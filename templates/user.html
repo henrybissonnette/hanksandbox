@@ -310,13 +310,13 @@
 				</form>
 				{% endif %}
 				{% if user.username != page_user.username %} 
-				<h3>{{page_user.username}}'s Subscriptions<h3/>
+				<h3>{{page_user.username}}'s Subscriptions</h3>
 				{% else %}
-				<h3>Your Subscriptions<h3/>
+				<h3>Your Subscriptions</h3>
 				{% endif %}
 				{% if page_user.subscriptions_user %}
 					{% for subscription in page_user.subscriptions_user %}
-						<a href="/user/{{subscription}}/" class="username">{{subscription}}<a/>
+						<a href="/user/{{subscription}}/" class="username">{{subscription}}</a>
 					{% endfor %}					
 				{% else %}
 				None
@@ -329,7 +329,7 @@
 				{% endif %}
 				{% if page_user.subscribers %}
 					{% for subscriber in page_user.subscribers %}
-						<a href="/user/{{subscriber}}/" class="username">{{subscriber}}<a/>
+						<a href="/user/{{subscriber}}/" class="username">{{subscriber}}</a>
 					{% endfor %}
 				{% else %}
 				None

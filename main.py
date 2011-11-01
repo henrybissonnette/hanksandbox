@@ -846,6 +846,11 @@ class VoteComment(Vote):
 ####################################################
 
 class AJAX(webapp.RequestHandler):
+    
+    def get(self,request):
+        if request == 'getWorks':
+            self.getWorks()
+    
     def post(self,request):
         #routes requests for information
         if request == 'rate':
@@ -854,12 +859,23 @@ class AJAX(webapp.RequestHandler):
             self.subscribeQuery()
         if request == 'delete-comment':
             self.deleteComment()
+        
             
     def deleteComment(self):
         selfKey = self.request.get('selfKey')
         comment = db.get(selfKey)
         comment.remove()
-            
+        
+    def getWorks(self):
+        user = get_user()
+        obj = {}
+        works = []
+        for document in user.works:
+            works.append(document.filename)
+        obj['works']=works
+        jsonObj = json.dumps(obj)
+        self.response.out.write(jsonObj)
+                  
     def rate(self):
         user = get_user()
         rating = self.request.get('rating')
@@ -953,6 +969,19 @@ class Admin(webapp.RequestHandler):
                    }     
         tmpl = path.join(path.dirname(__file__), 'templates/admin.html')
         self.response.out.write(template.render(tmpl, context))   
+        
+class baseHandler(webapp.RequestHandler):
+    
+    def boot(self):
+        self.redirect('/')
+    
+    def nonUserBoot(self):
+        user = get_user()
+        if not user:
+            self.redirect('/')
+        
+    def nonAdminBoot(self):
+        user = get_user()
         
 class Circle(webapp.RequestHandler):
     
@@ -1168,10 +1197,17 @@ class CommentHandler(CommentPage):
 
             
 
-class Create_Document(webapp.RequestHandler):
+class Create_Document(baseHandler):
     #this get should probably be merged with edit
     def get(self):
-        
+        user = get_user()
+        if user:
+            self.getMain(user)
+        else:
+            self.boot()
+            
+    def getMain(self,user):
+        self.nonUserBoot()
         user = get_user()
         userdocuments = user.works
         
@@ -1186,6 +1222,12 @@ class Create_Document(webapp.RequestHandler):
         
     def post(self):
         user = get_user()
+        if user:
+            self.postMain(user)
+        else:
+            self.boot()
+    
+    def postMain(self, user):
         new = False
         existing_filename = self.request.get('existing_filename')
         filename = self.request.get('filename')
@@ -1476,19 +1518,19 @@ class Tag_Browser(webapp.RequestHandler):
         
         focal = self.request.get('tag')
         obj = {}
-        if focal != 'root':
-            focalTag = Tag.get_by_key_name(focal)
-            obj['focal_tag']=focalTag.title
-            obj['path']=focalTag.ancestors
-            obj['children']=focalTag.get_childNames()
+        #if focal != 'root':
+        focalTag = Tag.get_by_key_name(focal)
+        obj['focal_tag']=focalTag.title
+        obj['path']=focalTag.ancestors
+        obj['children']=focalTag.get_childNames()
                        
-            docs=focalTag.get_documents()
-        else:
-            obj['children']=[child.title for child in Tag.all().filter('parent_tag ==',None).fetch(1000)]
-            obj['focal_tag']=None
-            obj['path']=None
+        docs=focalTag.get_documents()
+       # else:
+            #obj['children']=[child.title for child in Tag.all().filter('parent_tag ==',None).fetch(1000)]
+            #obj['focal_tag']=None
+            #obj['path']=None
             
-            docs = get_documents()
+            #docs = get_documents()
         documents = []
         for doc in docs:
             newDoc = {}
@@ -1715,127 +1757,10 @@ class View_Document(webapp.RequestHandler):
         tmpl = path.join(path.dirname(__file__), 'templates/document.html')
         self.response.out.write(template.render(tmpl, context))  
         
-class CreateBase(webapp.RequestHandler): 
-    def get(self):
-        
-        user = get_user()
-        userdocuments = user.works
-        tags = self.request.get_all('tag')
-        context = {
-                   'tags':      tags,
-                   'userdocuments': userdocuments,
-                   'user':      user,
-                   'login':     users.create_login_url(self.request.uri),
-                   'logout':    users.create_logout_url(self.request.uri)
-                   }     
-        tmpl = path.join(path.dirname(__file__), 'templates/create_base.html')
-        self.response.out.write(template.render(tmpl, context)) 
-          
-    def post(self, request):
-        
-        if request == 'save':
-            self.save()
-            
-        if request == 'tag':
-            user = get_user()
-            filename = self.request.get('filename')
-            document = get_document(user.username,filename)
-            self.addTags(document)
-        
-    def save(self):
-        
-        user = get_user()
-        new = False
-        existing_filename = self.request.get('existing_filename')
-        filename = self.request.get('filename')
-        filename = cleaner(filename)
-        subscribe = self.request.get('subscribe')
-        description = self.request.get('description')
-        description = cleaner(description,deletechars = '`~@#^*{[}]|/><)')
-        username = self.request.get('username')
-        draft = self.request.get('draft')
-        
-        # username only gets passed on an edit
-        if username:
-            document = get_document(username,existing_filename)
-        else:
-            new = True
-            # if new document uses existing filename this will happen
-            if get_document(user.username,filename):
-                document = get_document(user.username,filename)
-            else:
-                document = Document()
-        
-        if subscribe == 'subscribe':
-            document.set_subscriber(user.username)
-        else:
-            document.set_subscriber(user.username,False)
-        
-        #################################################
-        # Handling Tags
-        
-        tags = self.request.get_all('added_tag')
-        document.add_tags(tags)
-        
-        # End Tags
-        ######################################################
-        
-        if user:
-            if user.username:
-                document.author = user
-                document.authorname = user.username 
-            else:
-                error = 'Must Be Logged In to Create Documents'
-            
-        document.content = self.request.get('document_content')
-        title = escape(self.request.get('title'))
-        document.title = title
-        document.subtitle = escape(self.request.get('subtitle'))
-        document.filename = filename
-        document.set_description(description)
-        if draft == 'True':
-            document.draft = True
-        else:
-            if document.draft == True:
-                new = True
-            document.draft = False
-        document.put()
-                
-        if scriptless == 'true':
-            self.addTags(document)
-       
-        if new and not document.draft:
-            for subscriber in user.subscribers_document:
-                sub = get_user(subscriber)
-                mail.send_mail(
-                    'postmaster@essayhost.appspotmail.com',
-                    sub.google.email(),
-                    'New document by %s' % document.authorname,
-                    messages.email_document(document),
-                    html = messages.email_document_html(document)
-                )
-
-        self.redirect('/' + document.authorname + '/document/'+  filename + '/')   
-        
-    def addTags(self, document):
-        newTag = self.request.get('tag')
-        if newTag:
-            message = document.add_tag(newTag)
-        user = get_user()
-        context = {
-                   'message':   message,
-                   'document':  document,
-                   'user':      user,
-                   'login':     users.create_login_url(self.request.uri),
-                   'logout':    users.create_logout_url(self.request.uri)
-                   }  
-        tmpl = path.join(path.dirname(__file__), 'templates/addTags.html')
-        self.response.out.write(template.render(tmpl, context))     
 
 application = webapp.WSGIApplication([
     ('/ajax/(.*)/',AJAX),
     ('/reply-base/', ReplyBase),
-    ('/create_base/', CreateBase),
     ('.*/comment/(.*)/', CommentHandler),
     ('.*/circle/(.*)/(.*)/', Circle),
     ('/postcomment/', PostComment),

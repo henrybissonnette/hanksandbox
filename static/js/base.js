@@ -155,31 +155,31 @@ function hank(){
 	this.createCommentBox = function(data,subscribeData){
 
 		//Generate Elements
-		exit = document.createElement('span')
-		Xit = document.createTextNode('x')
+		var exit = document.createElement('span')
+		var Xit = document.createTextNode('x')
 		exit.appendChild(Xit)
 		exit.className='exit'
-		form = document.createElement('form')
+		var form = document.createElement('form')
 		form.className = 'postcomment'
 		form.setAttribute('action','comment/')
 		form.setAttribute('method','post')
-		subjectText = document.createTextNode('Subject: ')
-		subject = document.createElement('input')
+		var subjectText = document.createTextNode('Subject: ')
+		var subject = document.createElement('input')
 		subject.type = 'text'
 		subject.size = 80
 		subject.name = 'subject'
 		subject.value = data['subjectValue']
-		content = document.createElement('textarea')
+		var content = document.createElement('textarea')
 		content.setAttribute('name','content')
 		content.setAttribute('class','tinymce')
 		content.setAttribute('rows','5')
 		content.setAttribute('cols','67')
 		if(data['contentValue']!= undefined){
-			contentText = document.createTextNode(data['contentValue'])
+			var contentText = document.createTextNode(data['contentValue'])
 			content.appendChild(contentText)
 			}	
 		if(data['aboveKeyValue'] != undefined){
-			aboveKey = document.createElement('input')
+			var aboveKey = document.createElement('input')
 			aboveKey.setAttribute('type','hidden')
 			aboveKey.setAttribute('name','aboveKey')
 			aboveKey.setAttribute('value',data['aboveKeyValue'])
@@ -187,23 +187,23 @@ function hank(){
 
 		
 		if(data['selfKeyValue'] != undefined){
-			selfKey = document.createElement('input')
+			var selfKey = document.createElement('input')
 			selfKey.setAttribute('name','selfKey')
 			selfKey.setAttribute('type','hidden')
 			selfKey.setAttribute('value',data['selfKeyValue'])
-			deleteButton = document.createElement('input')
+			var deleteButton = document.createElement('input')
 			deleteButton.type = 'button'
 			deleteButton.className = "deleteComment"
 			deleteButton.value = 'Delete'
 		}
-		submit = document.createElement('input')
+		var submit = document.createElement('input')
 		submit.setAttribute('type','submit')
 		submit.setAttribute('value',data['submitValue'])
-		subscribe = document.createElement('input')
+		var subscribe = document.createElement('input')
 		subscribe.setAttribute('type','checkbox')
 		subscribe.setAttribute('name','subscribe')
 		subscribe.setAttribute('value','subscribe')
-		subscribeMessage = document.createTextNode('Receive email notifications if someone replies to this comment.')
+		var subscribeMessage = document.createTextNode('Receive email notifications if someone replies to this comment.')
 		subscribe.appendChild(subscribeMessage)		
 		if(data['subscribeChecked']!= undefined){
 			subscribe.checked = data['subscribeChecked']
@@ -238,7 +238,7 @@ function hank(){
 	this.tabular = function(){
 			$('div.tabs').each(function(){
 				var newList = document.createElement('ul')
-				mainFlag = $(this).metadata().main
+				var mainFlag = $(this).metadata().main
 				newList.className='tabs'
 				//construct list as skeleton for tabs
 				if(mainFlag == 'true'){
