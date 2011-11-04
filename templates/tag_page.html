@@ -46,7 +46,8 @@
 	{% for doc in maintag.get_documents%}
 	{% if not document.draft %}
 	<div>
-		<a href="{{doc.get_url}}">{{doc.title}}</a>
+		<a href="{{doc.get_url}}">{{doc.title}}</a> by 
+		<a class="username" href="{{doc.author.get_url}}">{{doc.author.username}}</a>
 	</div>
 	{% endif %}
 	{% endfor %}

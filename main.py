@@ -755,7 +755,7 @@ class Tag(db.Model):
     descendants = db.StringListProperty()
     
     def set_descendants(self,passive=False):
-        descendants = []
+        descendants = []            
         for child in self.children:
             family = child.set_descendants(True)
             descendants.extend(family)
@@ -805,8 +805,23 @@ class Tag(db.Model):
                 return descendants
         self.put()
             
-    def get_documents(self):
-        return get_documents([self.title])
+    def get_documents(self, own = False):
+        
+        if self.title == 'Root':
+            return Document.all().filter("draft ==",False).order('-date').fetch(1000)
+        else:
+            if own:
+                return get_documents([self.title])
+            
+            else: 
+                docs = []
+                for descendant in self.descendants:
+                     tag = Tag.get_by_key_name(descendant)
+                     docs.extend(tag.get_documents(True))
+                docs.extend(self.get_documents(True))
+                unique = list(set(docs))
+                ordered = sorted(unique, key=lambda document: document.date, reverse=True)
+                return ordered
             
     def exterminate(self):
         references = Document.all().filter('tags =', self.title).fetch(1000)
@@ -1341,6 +1356,7 @@ class Favorite(webapp.RequestHandler):
 class Home(webapp.RequestHandler):
     
     def get(self):
+        
         if self.request.path != '/home':
             self.redirect('/home')
         user = get_user()
@@ -1349,7 +1365,8 @@ class Home(webapp.RequestHandler):
                 self.redirect('/register')
         main_documents = get_documents(type='not_meta')
         meta_documents = get_documents(type='meta')
-        root_tags = Tag.all().filter('parent_tag ==',None).fetch(1000)
+        root = Tag.get_by_key_name('Root')
+        root_tags = Tag.all().filter('parent_tag ==',root).fetch(1000)
         context = {
                    'root_tags': root_tags,
                    'meta_documents': meta_documents,
@@ -1559,10 +1576,10 @@ class TagManager(webapp.RequestHandler):
             parent_title = self.request.get('parent_title')
             tag = Tag(key_name=create_title)
             tag.title = create_title
+            logging.info('in create tag = '+tag.title)
             if parent_title:
                 tag.parent_tag = Tag.get_by_key_name(parent_title)
             else:
-                logging.info('there is NOT a parent title')
                 if Tag.get_by_key_name('Root'):
                     tag.parent_tag = Tag.get_by_key_name('Root')
                 else:
@@ -1570,6 +1587,7 @@ class TagManager(webapp.RequestHandler):
                     root.title = 'Root'
                     for item in Tag.all().filter('parent_tag ==',None).fetch(1000):
                         item.parent_tag = root
+                        item.set_ancestors()
                         item.put()
                     root.set_ancestors()
                     root.set_descendants()
