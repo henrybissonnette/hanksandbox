@@ -495,6 +495,7 @@ class Document(db.Model):
     title = db.StringProperty()
     views = db.IntegerProperty(default=0)
     viewers = db.StringListProperty(default=[])
+    special = db.BooleanProperty(default=False)
     type = db.StringListProperty(default=["not_meta"])
     
     def get_commentary(self):
@@ -570,6 +571,36 @@ class Document(db.Model):
     def get_leaftags(self):
         return [Tag.get_by_key_name(title) for title in self.leaftags]
     
+    def parse(self):
+        acceptableElements = ['a','blockquote','br','em','i',
+                              'ol','ul','li','p','b']
+        acceptableAttributes = ['href']
+        counter = 0
+        contentTemp = self.content  
+        while True:
+            counter += 1
+            soup = BeautifulSoup(contentTemp)
+            removed = False        
+            for tag in soup.findAll(True): # find all tags
+                if tag.name not in acceptableElements:
+                    tag.extract() # remove the bad ones
+                    removed = True
+                else: # it might have bad attributes               
+                    for attr in tag._getAttrMap().keys():
+                        if attr not in acceptableAttributes:
+                            del tag[attr]
+    
+            # turn it back to html
+            fragment = unicode(soup)
+            if removed:
+                # tricks can exploit a single pass
+                # we need to reparse the html until it stops changing
+                contentTemp = fragment
+                continue # next round           
+            break   
+        self.content = contentTemp
+        self.put()
+        
     def set_rating(self):
         votes = self.ratings 
         rating = 0;
@@ -666,7 +697,7 @@ class Comment(db.Model):
     
     def parse(self):
         acceptableElements = ['a','blockquote','br','em','i',
-                              'ol','ul','li']
+                              'ol','ul','li','p','b']
         acceptableAttributes = ['href']
         while True:
             soup = BeautifulSoup(self.content)
@@ -687,10 +718,10 @@ class Comment(db.Model):
             if removed:
                 # we removed tags and tricky can could exploit that!
                 # we need to reparse the html until it stops changing
-                continue # next round
-    
-            self.content = fragment 
-            break       
+                self.content = fragment 
+                continue # next round            
+            break    
+        self.put()   
        
         
     def set_rating(self):
@@ -836,6 +867,8 @@ class Tag(db.Model):
             child.exterminate()
         self.delete()
         
+    def get_url(self):
+        return '/tag/'+self.title+'/'
         
 class Vote(db.Model):
     user = db.ReferenceProperty(User, collection_name='ratings')
@@ -1298,6 +1331,8 @@ class Create_Document(baseHandler):
             if document.draft == True:
                 new = True
             document.draft = False
+        if scriptless:
+            self.validate(document)
         document.put()         
        
         if new and not document.draft:
@@ -1310,10 +1345,13 @@ class Create_Document(baseHandler):
                     messages.email_document(document),
                     html = messages.email_document_html(document)
                 )
-        if new and scriptless == 'true':
+        if scriptless == 'true':
             self.redirect('/addtag/Root/'+document.filename+'/')
         else:
             self.redirect('/' + document.authorname + '/document/'+  filename + '/')
+            
+    def validate(self, document):
+        document.parse()
 
 
         
@@ -1347,9 +1385,8 @@ class Edit_Document(webapp.RequestHandler):
         self.response.out.write(template.render(tmpl, context))
         
 class Favorite(webapp.RequestHandler):
-    def post(self):
-        key = self.request.get('document')
-        document = Document.get(key)
+    def post(self,user,filename):
+        document = get_document(user,filename)
         user = get_user()
         user.add_favorite(document)
       
@@ -1778,14 +1815,15 @@ class View_Document(webapp.RequestHandler):
 
 application = webapp.WSGIApplication([
     ('/ajax/(.*)/',AJAX),
+    ('.*/rate/', Rating),
     ('/reply-base/', ReplyBase),
-    ('.*/comment/(.*)/', CommentHandler),
+    ('.*/comment/', CommentHandler),
     ('.*/circle/(.*)/(.*)/', Circle),
     ('/postcomment/', PostComment),
     ('/tag_browser/',Tag_Browser),
     ('/addtag/(.*)/(.*)/', AddTag),
     ('/tag/(.+)/',Tag_Page),
-    ('/favorite/',Favorite),
+    ('/(.*)/document/(.*)/favorite/',Favorite),
     ('.*/subscribe/(.*)/', Subscription_Handler),
     ('/invite_handler/', Invite_Handler),
     ('/invite/', Invite),
@@ -1793,7 +1831,6 @@ application = webapp.WSGIApplication([
     ('/update_models/(.*)./', Update_Models),                                      
     ('.*/tag_(.*)/', TagManager),
     ('/admin/', Admin),
-    ('.*/rate/', Rating),
     ('.*/message/(.*)/(.*)/',Message),
     ('/user/(.*)/', UserPage),
     ('/register', Register),

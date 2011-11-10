@@ -337,9 +337,11 @@ function hank(){
 		})
 	}
 	
-	this.clearScriptless = function(){
+	this.prepareScriptVersion = function(){
 		$('.scriptless').remove()
+		$('.scriptOnly').show()
 	}
+	
 }
 
 $(document).ready(function(){
@@ -347,7 +349,7 @@ $(document).ready(function(){
 	myHank.tabular()
 	myHank.streamDoc()
 	myHank.streamComment()
-	myHank.clearScriptless()
+	myHank.prepareScriptVersion()
 })
 
 /* ROUNDIFICATION */
@@ -358,6 +360,7 @@ $(document).ready(function(){
 		$('div.stream_item').corner()
 		$('div.pagetop').corner('40 px')
 		$('div.bodycontent').corner('40 px')
+		$('.round').corner('40 px')
 		$('.aButton').corner('40 px')
 	}
 })

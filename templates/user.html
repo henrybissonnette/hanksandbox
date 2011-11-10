@@ -107,6 +107,11 @@
 	{% if user %}
 	<div class="tab {% if user.username == page_user.username %}{name:'Your Information'}{% else %}{name:'Connect with {{page_user.username}}'}{% endif %}">
 		<div class="left_half">
+		{% comment %}
+		---------------------------------------------------------
+		(((		PERSONAL INFO
+		---------------------------------------------------------
+		{% endcomment %}
 			{% if user.username == page_user.username %}
 			<div class="tabs">
 				<div class="tab {name:'Personal Info',initial:'true'}">
@@ -119,7 +124,11 @@
 			{% else %}
 			<h2><span class="username">{{page_user.username}}'s Information</span></h2>
 			{% endif %}
-			
+		{% comment %}
+		---------------------------------------------------------
+				PERSONAL INFO							      )))
+		---------------------------------------------------------
+		{% endcomment %}			
 		</div>								
 		<div class="tabs right_half">
 			

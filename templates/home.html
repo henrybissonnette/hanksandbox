@@ -30,13 +30,13 @@
 	----------------------------------------------------------------------------------
 	-----------------------------Left Column Tabs-------------------------------------
 	{% endcomment %}	
-	<div class="tabs">
+	<div class="tabs left_half">
 		<div class="tab {name:'Recent Documents',initial:'true'}">
 			<h1>Recent Documents</h1>
 		
 			{% for doc in main_documents %}
 			{% if not doc.draft %}
-			{% include 'stream_doc.html'%}
+			{% include 'streamDocument.html'%}
 			{% endif %}
 			{% endfor %}
 		</div>
@@ -48,7 +48,7 @@
 			</div>				
 		</div>
 	</div>
-
+	
 
 
 
