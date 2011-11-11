@@ -1529,34 +1529,69 @@ class ReplyBase(webapp.RequestHandler):
         self.response.out.write(template.render(tmpl, context))
         
 class Register(webapp.RequestHandler):
-    
-    def get(self):
-        user = get_user()
+     
+    def get(self):   
+        user = get_user()   
         if user:
             if user.username:
                 self.redirect('/home')
         else:
             if not users.get_current_user():
                 self.redirect(users.create_login_url(self.request.uri))
+            else:
+                self.registerPage()
 
-        context = {
-                    'user':      user,
-                    'login':     users.create_login_url(self.request.uri),
-                    'logout':    users.create_logout_url(self.request.uri)                       
-                    }     
-        tmpl = path.join(path.dirname(__file__), 'templates/register.html')
-        self.response.out.write(template.render(tmpl, context))
+
             
     def post(self):
         user = get_user()
+        scriptless = self.request.get('scriptless')
+        hold = False
         user = User()
-        user.google = users.get_current_user()
+        user.google = users.get_current_user() 
+        messages = []
+        changed = None
+        taken = None
+        
+        #remove unacceptable characters
         name = self.request.get('username')
-        name = cleaner(name)
-        if not get_user(name.lower()):
-            user.username = name.lower()
-        user.put()
-        self.redirect('/home')
+        cleanedName = cleaner(name)
+        
+        if cleanedName != name:
+            messages = ['Some unacceptable characters were removed from your username.'] 
+            changed = cleanedName
+            if scriptless == 'true':
+                hold = True
+                
+        if not cleanedName:
+            messages.append('A username must contain some characters.')
+            hold = True
+            
+        if not get_user(cleanedName.lower()):
+            user.username = cleanedName.lower()
+        else: 
+            messages.append('This username is already in use.')
+            taken = True
+            hold = True
+            
+        if hold:
+            self.registerPage(messages, changed, taken)
+        else:
+            user.put()
+            self.redirect('/home')
+        
+    def registerPage(self,messages=None, changed=False, taken = False):
+        user = get_user()
+        context = {
+                'taken':     taken,
+                'messages':  messages,
+                'changed':   changed,
+                'user':      user,
+                'login':     users.create_login_url(self.request.uri),
+                'logout':    users.create_logout_url(self.request.uri)                       
+                }     
+        tmpl = path.join(path.dirname(__file__), 'templates/register.html')
+        self.response.out.write(template.render(tmpl, context))
         
 class Subscription_Handler(webapp.RequestHandler):
              

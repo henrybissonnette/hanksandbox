@@ -805,7 +805,11 @@ ul.test{
 /********************One Off: should probably be done in some more general way ***************************/
 
 
-
+.note{
+	border:solid;
+	max-width:200px;
+	background-color: #eee;
+}
 
 div.marginalNote{
 	margin-top: 100px;

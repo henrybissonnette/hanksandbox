@@ -1,89 +1,50 @@
 {% extends "base.html" %}
+
+{% block scripts %}
+<script type="text/javascript" src="/static/js/register.js"></script>
+{% endblock %}
+
 {% block content %}
-
-	<script type="text/javascript" >
-	loader = new Image(10, 10); 
-	loader.src = '/static/images/loader.gif';
+	<span class="warning">
+	{% if changed %}
+		Some unacceptable characters have been removed from your username. </br>
+		username after removal: {{changed}}</br>
+		</br>
+		{% if not taken %}
+		You can continue with this username or submit a different one.
+		<form action="/register" method="post">
+			<input type="hidden" name="username" value="{{changed}}"/>
+			<input type="hidden" name="scriptless" value="true"/>
+			<input type="submit" value="Continue with {{changed}}"/>
+		</form>
+		{% else %}
+		This username is already in use. Choose something different.
+		{% endif %}	
+	{% else %}
+		{% if taken %}
+			That username is not available. Choose something different.
+		{% endif %}	
+	{% endif %}
+	<br/><br/>
+	Errors: <br/>
+	{% for message in messages %}
+		{{message}}</br>
+	{% endfor %}
+	</span>
 	
-	var is_in_use = false
-	var forbidden = "`~!@#$%^&*()+={}[]\\|:;\"\'<>,. ";
-		
-	function validate_username()
-		{
-			var x=document.getElementById("username").value;
-			if (x==null || x=="")
-			  {
-				  alert("Username is required.");
-				  return false;
-			  }
-			for(i=0;i < forbidden.length;i++)
-				{
-					if (x.indexOf(forbidden.charAt(i)) != -1)
-					{
-						alert("Usernames may only contain A-z, 1-9, _ , and -.");
-						return false;
-					}
-				}
-
-			if (is_in_use)
-				{
-					alert("This username already exists, you must choose a unique username.");
-					return false;
-				}
-		}
-
-	$(document).ready(function(){
-	
-		$('#username').bind('keyup change paste cut',function(){	
-			
-			var user = $('#username').val();
-			
-			if(user.length >= 1)
-			{
-				$('#status').html('<img class="loader_img" src="/static/images/loader.gif"/> Checking availability...');
-				
-				$.ajax({
-					type: "POST",
-					url: "availability/",
-					data: "username=" + user,
-					success: function(message){
-						$('#status').ajaxComplete(function(event,request,settings){
-							if(message == "1")
-							{
-								$(this).html('username available');	
-							}
-							else if(message =="00")
-							{
-								is_in_use = true
-								$(this).html('username already in use');	
-							}
-							else if(message =="01")
-							{
-								$(this).html('username may only contain A-z, 1-9, _ , and -');	
-							}
-							else
-							{
-								$(this).html('error unknown');	
-							}
-									
-						})
-					}
-	
-				})
-			}
-				
-		})
-		
-		
-	})
-	</script>
-
 	<h1 class="embed">Register</h1>
-	<form action="/register" method=post>
-		Username: <input title="usernames are not case sensitive and may only contain A-z, 1-9, _ , and -" type="text" id="username" name="username"/><br/>
-		<input type=submit onClick="return validate_username()" value="Submit">
+	<form id="entry" action="/register" method=post>
+		Username: 
+		<input title="usernames are not case sensitive and may only contain A-z, 1-9, _ , and -" 
+			type="text" id="username" name="username" {%if changed%}value="{{changed}}"{%endif%}/>
+		<span class="status" id="status"></span>
+		<br/>
+		<input class="scriptless" type="hidden" name="scriptless" value="true" />
+		<input type=submit value="Submit">
 	</form>
-	<div id="status"></div>
-	
+	</br>
+	<div class="note round">
+		Usernames are not case sensitive and may only contain the characters 'A-Z', 'a-z', '1-9', '_', and '-'. 
+	</div>
 
 {% endblock %}
