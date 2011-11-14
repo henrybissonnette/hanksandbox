@@ -25,11 +25,13 @@
 			That username is not available. Choose something different.
 		{% endif %}	
 	{% endif %}
-	<br/><br/>
-	Errors: <br/>
-	{% for message in messages %}
-		{{message}}</br>
-	{% endfor %}
+	{% if messages %}
+		<br/><br/>
+		Errors: <br/>
+		{% for message in messages %}
+			{{message}}</br>
+		{% endfor %}
+	{% endif %}
 	</span>
 	
 	<h1 class="embed">Register</h1>

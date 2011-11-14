@@ -961,16 +961,46 @@ class AJAX(webapp.RequestHandler):
             isSubscribed = 'false'
         logging.info('subscribed? '+isSubscribed)
         self.response.out.write(isSubscribed)
+        
+class baseHandler(webapp.RequestHandler):
+    
+    def get(self,*args):
+        if self.usernameCheck():
+            self.myGet(*args)
+    
+    def post(self):
+        if self.usernameCheck():
+            self.myPost(*args)
+    
+    def boot(self):
+        self.redirect('/')
+    
+    def nonUserBoot(self):
+        user = get_user()
+        if not user:
+            self.boot()
+        
+    def nonAdminBoot(self):
+        user = get_user()
+        
+    def usernameCheck(self):
+        googleUser = users.get_current_user()
+        user = get_user()
+        if user and not user.username or googleUser and not user:
+            self.redirect('/register')
+            return False
+
+        return True
       
-class AddTag(webapp.RequestHandler):
+class AddTag(baseHandler):
       
-    def get(self, tag, docName):
+    def myGet(self, tag, docName):
         user = get_user() 
         document = get_document(user.username,docName)
         tagObj = Tag.all().filter('title ==',tag)[0]
         self.render(tagObj,document)
         
-    def post(self, tag, docName):
+    def myPost(self, tag, docName):
         user = get_user() 
         added = self.request.get('added')
         request = self.request.get('request')
@@ -1001,8 +1031,8 @@ class AddTag(webapp.RequestHandler):
 
         
     
-class Admin(webapp.RequestHandler):
-    def get(self):
+class Admin(baseHandler):
+    def myGet(self):
         user = get_user()
         if user:
             if not user.admin:
@@ -1018,22 +1048,12 @@ class Admin(webapp.RequestHandler):
         tmpl = path.join(path.dirname(__file__), 'templates/admin.html')
         self.response.out.write(template.render(tmpl, context))   
         
-class baseHandler(webapp.RequestHandler):
-    
-    def boot(self):
-        self.redirect('/')
-    
-    def nonUserBoot(self):
-        user = get_user()
-        if not user:
-            self.redirect('/')
+
         
-    def nonAdminBoot(self):
-        user = get_user()
         
-class Circle(webapp.RequestHandler):
+class Circle(baseHandler):
     
-    def get(self,request,data):
+    def myGet(self,request,data):
         user = get_user()
         
         if request == 'accept':
@@ -1080,7 +1100,7 @@ class Circle(webapp.RequestHandler):
             user.withdrawCircle(data)
             self.redirect('../../../')
 
-class CommentPage(webapp.RequestHandler):
+class CommentPage(baseHandler):
     def showForm(self,messages=None):
         user = get_user()   
         aboveKey = self.request.get('aboveKey')
@@ -1113,7 +1133,7 @@ class CommentPage(webapp.RequestHandler):
         
 class CommentHandler(CommentPage):
        
-    def post(self):
+    def myPost(self):
 
         user = get_user()  
         aboveKey = self.request.get('aboveKey')
@@ -1247,7 +1267,7 @@ class CommentHandler(CommentPage):
 
 class Create_Document(baseHandler):
     #this get should probably be merged with edit
-    def get(self):
+    def myGet(self):
         user = get_user()
         if user:
             self.getMain(user)
@@ -1268,7 +1288,7 @@ class Create_Document(baseHandler):
         tmpl = path.join(path.dirname(__file__), 'templates/create.html')
         self.response.out.write(template.render(tmpl, context))   
         
-    def post(self):
+    def myPost(self):
         user = get_user()
         if user:
             self.postMain(user)
@@ -1356,14 +1376,14 @@ class Create_Document(baseHandler):
 
         
         
-class Delete_Document(webapp.RequestHandler):
-    def get(self,name,filename):
+class Delete_Document(baseHandler):
+    def myGet(self,name,filename):
         document = get_document(name,filename)
         document.remove()
         self.redirect('/user/' + name + '/')
               
-class Edit_Document(webapp.RequestHandler):
-    def get(self,name,filename):
+class Edit_Document(baseHandler):
+    def myGet(self,name,filename):
         user = get_user()
         userdocuments = user.works
         document = get_document(name, filename)
@@ -1384,22 +1404,22 @@ class Edit_Document(webapp.RequestHandler):
         tmpl = path.join(path.dirname(__file__), 'templates/create.html')
         self.response.out.write(template.render(tmpl, context))
         
-class Favorite(webapp.RequestHandler):
-    def post(self,user,filename):
+class Favorite(baseHandler):
+    def myPost(self,user,filename):
         document = get_document(user,filename)
         user = get_user()
         user.add_favorite(document)
       
-class Home(webapp.RequestHandler):
+class Home(baseHandler):
     
-    def get(self):
+    def myGet(self):
         
         if self.request.path != '/home':
             self.redirect('/home')
         user = get_user()
-        if users.get_current_user():
-            if not user or not user.username:
-                self.redirect('/register')
+        #if users.get_current_user():
+        #    if not user or not user.username:
+        #        self.redirect('/register')
         main_documents = get_documents(type='not_meta')
         meta_documents = get_documents(type='meta')
         root = Tag.get_by_key_name('Root')
@@ -1415,8 +1435,8 @@ class Home(webapp.RequestHandler):
         tmpl = path.join(path.dirname(__file__), 'templates/home.html')
         self.response.out.write(template.render(tmpl, context))   
         
-class Invite(webapp.RequestHandler):
-    def post(self):
+class Invite(baseHandler):
+    def myPost(self):
         
         user = get_user()
         invitee = self.request.get('invitee')
@@ -1426,8 +1446,8 @@ class Invite(webapp.RequestHandler):
         user.put()
         invited.put()
         
-class Invite_Handler(webapp.RequestHandler):
-    def post(self):
+class Invite_Handler(baseHandler):
+    def myPost(self):
         user = get_user()
         accept = self.request.get('accept')
         inviter = self.request.get('inviter')
@@ -1440,8 +1460,8 @@ class Invite_Handler(webapp.RequestHandler):
         user.put()
         requester.put()
         
-class Message(webapp.RequestHandler):
-    def get(self,request,key):
+class Message(baseHandler):
+    def myGet(self,request,key):
         user = get_user()
         message = db.get(key)
         if request == 'remove':
@@ -1453,9 +1473,9 @@ class PostComment(CommentPage):
     def post(self):
         self.showForm()        
         
-class Rating(webapp.RequestHandler):
+class Rating(baseHandler):
     
-    def post(self):
+    def myPost(self):
         
         user = get_user()
         rating = self.request.get('rating')
@@ -1503,8 +1523,8 @@ class Rating(webapp.RequestHandler):
             tmpl = path.join(path.dirname(__file__), 'templates/rated.html')
             self.response.out.write(template.render(tmpl, context))  
         
-class ReplyBase(webapp.RequestHandler):
-    def post(self):
+class ReplyBase(baseHandler):
+    def myPost(self):
         user = get_user()
         key = self.request.get('key')
         above = Comment.get(db.Key(key))
@@ -1530,7 +1550,8 @@ class ReplyBase(webapp.RequestHandler):
         
 class Register(webapp.RequestHandler):
      
-    def get(self):   
+    def get(self):  
+         
         user = get_user()   
         if user:
             if user.username:
@@ -1540,10 +1561,19 @@ class Register(webapp.RequestHandler):
                 self.redirect(users.create_login_url(self.request.uri))
             else:
                 self.registerPage()
-
-
             
     def post(self):
+        user = get_user()   
+        if user:
+            if user.username:
+                self.redirect('/home')
+        else:
+            if not users.get_current_user():
+                self.redirect(users.create_login_url(self.request.uri))
+            else:
+                self.recieveData()
+                
+    def recieveData(self):
         user = get_user()
         scriptless = self.request.get('scriptless')
         hold = False
@@ -1579,7 +1609,7 @@ class Register(webapp.RequestHandler):
         else:
             user.put()
             self.redirect('/home')
-        
+                    
     def registerPage(self,messages=None, changed=False, taken = False):
         user = get_user()
         context = {
@@ -1593,9 +1623,9 @@ class Register(webapp.RequestHandler):
         tmpl = path.join(path.dirname(__file__), 'templates/register.html')
         self.response.out.write(template.render(tmpl, context))
         
-class Subscription_Handler(webapp.RequestHandler):
+class Subscription_Handler(baseHandler):
              
-    def post(self, username):
+    def myPost(self, username):
         user = get_user()
         subscriptions = self.request.get_all('subscriptions')
         user.set_subscription(subscriptions,username)
@@ -1637,8 +1667,8 @@ class Tag_Browser(webapp.RequestHandler):
             
         self.response.out.write(jsonObj)
         
-class TagManager(webapp.RequestHandler):
-    def post(self, request):
+class TagManager(baseHandler):
+    def myPost(self, request):
         user = get_user()
         #if not user.admin:
             #self.redirect('/home')
@@ -1755,8 +1785,8 @@ class TagManager(webapp.RequestHandler):
             tmpl = path.join(path.dirname(__file__), 'templates/tag_request/empty.html')
             self.response.out.write(template.render(tmpl, context))
             
-class Tag_Page(webapp.RequestHandler):
-    def get(self, maintag):
+class Tag_Page(baseHandler):
+    def myGet(self, maintag):
         user = get_user()
         tagobj = Tag.get_by_key_name(maintag)
         tagobj.set_ancestors()
@@ -1771,16 +1801,16 @@ class Tag_Page(webapp.RequestHandler):
         
         
             
-class Update_Models(webapp.RequestHandler):
-    def post(self, request):
+class Update_Models(baseHandler):
+    def myPost(self, request):
         adminboot()
         if request == 'start':
             context = {}
             tmpl = path.join(path.dirname(__file__), 'templates/update_models.html')
             self.response.out.write(template.render(tmpl, context))
 
-class UserBase(webapp.RequestHandler):
-    def get(self,username):
+class UserBase(baseHandler):
+    def myGet(self,username):
         user = get_user()
         creator = get_user(username)
         context = {
@@ -1808,8 +1838,8 @@ class Username_Check(webapp.RequestHandler):
         else:
                 self.response.out.write('02')
                 
-class UserPage(webapp.RequestHandler):
-    def get(self, page_user):
+class UserPage(baseHandler):
+    def myGet(self, page_user):
         creator = get_user(page_user)
         user = get_user()
         context = {
@@ -1825,9 +1855,9 @@ class UserPage(webapp.RequestHandler):
         tmpl = path.join(path.dirname(__file__), 'templates/user.html')
         self.response.out.write(template.render(tmpl, context))   
   
-class View_Document(webapp.RequestHandler):
+class View_Document(baseHandler):
     
-    def get(self, name, filename, reply_id=None):
+    def myGet(self, name, filename, reply_id=None):
         user = get_user()
         document = get_document(name, filename)
         document.set_view()        
