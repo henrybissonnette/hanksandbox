@@ -866,13 +866,15 @@ class Tag(db.Model):
                 return self.set_ancestors(ancestry)
             else:
                 self.ancestors = []
+                self.put()
         else:
             if Tag.get_by_key_name(ancestry[-1]).parent_tag:
                 ancestry.append(Tag.get_by_key_name(ancestry[-1]).parent_tag.title)
                 return self.set_ancestors(ancestry)
             else:
                 self.ancestors = ancestry
-        self.put()
+                self.put()
+        
         
     def get_children(self):
         children = Tag.all().filter('parent_tag ==',self).fetch(1000)

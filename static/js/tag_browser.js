@@ -58,7 +58,7 @@ function tag_browser(location, data){
 			/*var root_tag = new tag_button('Root',location,'path')
 			root_tag.display(location+'_path')*/
 			
-			for (var i=0;i<data['path'].length;i++){
+			for (var i=data['path'].length-1;i>=0;i--){
 				var new_tag = new tag_button(data['path'][i],location,'path')
 				new_tag.display(location+'_path')
 				}
