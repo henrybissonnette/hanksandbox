@@ -4,14 +4,17 @@
 /***********EVERY PAGE****************/
 
 
+div.bodywrap{
+    margin-left: 120px;	
+    margin-right: 100px;
+}
+
 div.bodycontent{
 
-    margin-left: 120px;
-    margin-right: 100px;
 	border:solid 2px #333;
 	padding:50px;
 	min-width:650px;
-	overflow: auto;
+	overflow: auto;  
 }
 
 
@@ -313,7 +316,7 @@ ul.tabs{
 }
 
 .maintabs{
-	margin-left:150px;
+	margin-left:30px;
 }
 /*
 .inner_tabs{

@@ -228,6 +228,7 @@ class User(db.Model):
     invitations = db.StringListProperty(default=[])
     invitees = db.StringListProperty(default=[])
     reputation = db.IntegerProperty(default=1)
+    
     # people who subscribe to me in some way
     subscribers = db.StringListProperty(default=[])
     # people who subscribe to my documents by email
@@ -242,6 +243,7 @@ class User(db.Model):
     subscriptions_document = db.StringListProperty(default=[])
     # tags I subscribe to
     subscriptions_tag = db.StringListProperty(default=[])
+    
     minimizeThreshold = db.IntegerProperty(default=3)
     object_type = db.StringProperty(default = 'User')
     username = db.StringProperty()
@@ -354,7 +356,63 @@ class User(db.Model):
         ordered = sorted(documents, key=lambda document: document.date, reverse=True)
         return ordered[:number]
     
+    def remove(self):
+        affected = []
+        
+        for username in self.circle:
+            other = get_user(username)
+            other.circlepermissions.remove(self.username)
+            other.put()     
+            affected.append(other)       
+            
+        for username in self.circlepermissions:
+            other = get_user(username)
+            other.circle.remove(self.username)
+            other.put()
+            affected.append(other)  
+            
+        for username in self.invitations:
+            other = get_user(username)
+            other.invitees.remove(self.username)
+            other.put()     
+            affected.append(other) 
+            
+        for username in self.invitees:
+            other = get_user(username)
+            other.invitations.remove(self.username)
+            other.put()     
+            affected.append(other)   
+            
+        for username in self.subscribers:
+            other = get_user(username)
+            other.set_subscription([],self.username) 
+            affected.append(other)        
+            
+        for username in self.subscriptions_user:
+            self.set_subscription([],username) 
+            affected.append(other)      
+            
+        for comment in self.mycomments:
+            #potential ERROR if some comments are descendants of others
+            comment.remove()
+            
+        for document in self.works:
+            document.remove()
+            
+        for message in self.streamMessages:
+            message.remove()
+            
+        for rating in self.ratings:
+            rating.delete()
+            
+        self.delete()
+            
+        
+            
+    
+    
     def removeCircle(self, username):
+        """Ejects username from this user's circle"""
         self.circle.remove(username)
         other = get_user(username)
         other.circlepermissions.remove(self.username)
@@ -473,8 +531,8 @@ class User(db.Model):
         message = StreamMessage()
         message.recipient = other
         message.content = self.get_url(html=True)+'\'s Writer\'s Circle invitation has been withdrawn.'
-        message.put()        
-
+        message.put()       
+        
 class Document(db.Model):
     
     author = db.ReferenceProperty(User, collection_name = 'works')
@@ -968,7 +1026,7 @@ class baseHandler(webapp.RequestHandler):
         if self.usernameCheck():
             self.myGet(*args)
     
-    def post(self):
+    def post(self,*args):
         if self.usernameCheck():
             self.myPost(*args)
     
@@ -1373,8 +1431,24 @@ class Create_Document(baseHandler):
     def validate(self, document):
         document.parse()
 
-
+class DeleteAccount(baseHandler):
+    def myGet(self):
+        user = get_user()
         
+        context = {
+                   'user':      user,
+                   'login':     users.create_login_url(self.request.uri),
+                   'logout':    users.create_logout_url(self.request.uri)
+                   }     
+        tmpl = path.join(path.dirname(__file__), 'templates/delete-account.html')
+        self.response.out.write(template.render(tmpl, context))       
+        
+    def myPost(self):
+        verify = self.request.get('delete')
+        if verify == 'true':
+            user = get_user()
+            user.remove()
+            self.redirect(users.create_logout_url('/home')) 
         
 class Delete_Document(baseHandler):
     def myGet(self,name,filename):
@@ -1884,6 +1958,7 @@ application = webapp.WSGIApplication([
     ('/reply-base/', ReplyBase),
     ('.*/comment/', CommentHandler),
     ('.*/circle/(.*)/(.*)/', Circle),
+    ('/delete-account/', DeleteAccount),
     ('/postcomment/', PostComment),
     ('/tag_browser/',Tag_Browser),
     ('/addtag/(.*)/(.*)/', AddTag),

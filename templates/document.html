@@ -7,8 +7,10 @@
 {% endblock title%}
 
 {% block scripts %}
-<script type="text/javascript" src="/static/js/edit.js"></script>
-<script type="text/javascript" src="/static/js/comment_system.js"></script>
+	{% if user.username == document.author.username %}
+	<script type="text/javascript" src="/static/js/edit.js"></script>
+	{% endif %}
+	<script type="text/javascript" src="/static/js/comment_system.js"></script>
 {% endblock %}
 
 {% block leftside %}
