@@ -10,12 +10,16 @@ from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
 from cgi import escape
 from django.utils.html import strip_tags
-import os, re, logging, sys,datetime,math
+import os, re, logging, sys,datetime,math,urllib
 import messages, string
 from BeautifulSoup import BeautifulSoup
 from django.utils import simplejson as json
 
-domainstring='http://essayhost.appspot.com/'
+hank = {
+        'domainstring':'http://essayhost.appspot.com/',
+        'adminlist':['henrydbissonnette@gmail.com',],
+        'updatingModel':None,
+        }
 
 def get_document(name, filename, title=None):
 
@@ -47,23 +51,6 @@ def get_documents(tag_list=[], tag_not_list=[], number=1000, type=None):
     documents = document_query.order('-date').fetch(number)
     return documents
 
-def admincheck():
-    
-    adminlist = ['henrydbissonnette@gmail.com',]
-    user = users.get_current_user()
-    try:
-        if user.email() in adminlist:
-            return True
-        else:
-            return False
-    except:
-        return False
-    
-def adminboot():
-        admincheck()
-        if not user.admin:
-            self.redirect('/home/')
-
 
 def get_user(name=None):
     """If a name is supplied get user returns the user with that username otherwise
@@ -85,12 +72,6 @@ def get_user(name=None):
     #this is one time use for correcting prelowercase usernames
     if user.username:
         user.username = user.username.lower()
-    if admincheck():
-        user.admin = True 
-        user.put()
-    else:
-        user.admin = False 
-        user.put()
     
     return user
 
@@ -217,7 +198,6 @@ class Commentary:
 
 class User(db.Model):
     
-    admin = db.BooleanProperty(default=False)
     circle = db.StringListProperty(default=[])
     circlepermissions = db.StringListProperty(default=[])
     date = db.DateTimeProperty(auto_now_add=True)
@@ -248,6 +228,12 @@ class User(db.Model):
     object_type = db.StringProperty(default = 'User')
     username = db.StringProperty()
     
+    def is_admin(self):
+        if self.google.email() in hank['adminlist']:
+            return True
+        else:
+            return False
+
     def get_age(self):
         age = datetime.datetime.now()-self.date
         return age.days
@@ -298,7 +284,7 @@ class User(db.Model):
             
     def get_url(self, includeDomain = False, html = False):
         if includeDomain:
-            return domainstring+'user/'+self.username+'/'
+            return hank['domainstring']+'user/'+self.username+'/'
         elif html:
             return '<a href="/user/'+self.username+'/" class="username">'+self.username+'</a>'
         else:
@@ -406,10 +392,7 @@ class User(db.Model):
             rating.delete()
             
         self.delete()
-            
-        
-            
-    
+             
     
     def removeCircle(self, username):
         """Ejects username from this user's circle"""
@@ -606,7 +589,7 @@ class Document(db.Model):
     
     def get_url(self,includeDomain=False):
         if includeDomain:
-            return domainstring+self.author.username+'/document/'+self.filename+'/'
+            return hank['domainstring']+self.author.username+'/document/'+self.filename+'/'
         else: 
             return '/'+self.author.username+'/document/'+self.filename+'/'
     
@@ -834,7 +817,7 @@ class Mypage(db.Model):
     subtitle = db.StringProperty()
     blurb = db.TextProperty()
     def get_url(self):
-        return domainstring+'user/'+self.username+'/'
+        return hank['domainstring']+'user/'+self.username+'/'
     
 class Tag(db.Model):
     """ Tags should be instantiated with their title as a key_name """
@@ -1040,9 +1023,6 @@ class baseHandler(webapp.RequestHandler):
         if not user:
             self.boot()
         
-    def nonAdminBoot(self):
-        user = get_user()
-        
     def usernameCheck(self):
         googleUser = users.get_current_user()
         user = get_user()
@@ -1051,6 +1031,18 @@ class baseHandler(webapp.RequestHandler):
             return False
 
         return True
+      
+    def admincheck(self): 
+        user = get_user()
+        try:
+            if user.is_admin():
+                return True
+            else:
+                return False
+                self.boot()
+        except:
+            return False
+            self.boot()
       
 class AddTag(baseHandler):
       
@@ -1094,19 +1086,15 @@ class AddTag(baseHandler):
 class Admin(baseHandler):
     def myGet(self):
         user = get_user()
-        if user:
-            if not user.admin:
-                    self.redirect('/home')
-        else:
-            self.redirect('/home')
-        
-        context = {
-                   'user':      user,
-                   'login':     users.create_login_url(self.request.uri),
-                   'logout':    users.create_logout_url(self.request.uri)                       
-                   }     
-        tmpl = path.join(path.dirname(__file__), 'templates/admin.html')
-        self.response.out.write(template.render(tmpl, context))   
+        if self.admincheck():
+
+            context = {
+                       'user':      user,
+                       'login':     users.create_login_url(self.request.uri),
+                       'logout':    users.create_logout_url(self.request.uri)                       
+                       }     
+            tmpl = path.join(path.dirname(__file__), 'templates/admin.html')
+            self.response.out.write(template.render(tmpl, context))   
         
 
         
@@ -1394,6 +1382,7 @@ class Create_Document(baseHandler):
         
         if user:
             if user.username:
+                logging.info(str(user))
                 document.author = user
                 document.authorname = user.username 
             else:
@@ -1653,7 +1642,7 @@ class Register(webapp.RequestHandler):
         user = get_user()
         scriptless = self.request.get('scriptless')
         hold = False
-        user = User()
+        user =User()
         user.google = users.get_current_user() 
         messages = []
         changed = None
@@ -1746,53 +1735,104 @@ class Tag_Browser(webapp.RequestHandler):
 class TagManager(baseHandler):
     def myPost(self, request):
         user = get_user()
-        #if not user.admin:
-            #self.redirect('/home')
-         
-        if request == 'create':
-            create_title = cleaner(self.request.get('new_title').replace(' ','_'))
-            parent_title = self.request.get('parent_title')
-            tag = Tag(key_name=create_title)
-            tag.title = create_title
-            logging.info('in create tag = '+tag.title)
-            if parent_title:
-                tag.parent_tag = Tag.get_by_key_name(parent_title)
-            else:
-                if Tag.get_by_key_name('Root'):
-                    tag.parent_tag = Tag.get_by_key_name('Root')
+        if self.admincheck():
+             
+            if request == 'create':
+                create_title = cleaner(self.request.get('new_title').replace(' ','_'))
+                parent_title = self.request.get('parent_title')
+                tag = Tag(key_name=create_title)
+                tag.title = create_title
+                logging.info('in create tag = '+tag.title)
+                if parent_title:
+                    tag.parent_tag = Tag.get_by_key_name(parent_title)
                 else:
-                    root = Tag(key_name='Root')
-                    root.title = 'Root'
-                    for item in Tag.all().filter('parent_tag ==',None).fetch(1000):
-                        item.parent_tag = root
-                        item.set_ancestors()
-                        item.put()
-                    root.set_ancestors()
-                    root.set_descendants()
-                    root.put()
-                    tag.parent_tag = root
-                    
-            tag.set_ancestors()
-            tag.set_descendants()
-            tag.put() 
-            
-            if user.admin:
-                user_type='admin' 
-            if parent_title:              
-                parent = tag.parent_tag
-                tags = parent.children.order('title')
+                    if Tag.get_by_key_name('Root'):
+                        tag.parent_tag = Tag.get_by_key_name('Root')
+                    else:
+                        root = Tag(key_name='Root')
+                        root.title = 'Root'
+                        for item in Tag.all().filter('parent_tag ==',None).fetch(1000):
+                            item.parent_tag = root
+                            item.set_ancestors()
+                            item.put()
+                        root.set_ancestors()
+                        root.set_descendants()
+                        root.put()
+                        tag.parent_tag = root
+                        
+                tag.set_ancestors()
+                tag.set_descendants()
+                tag.put() 
                 
+                if user.is_admin():
+                    user_type='admin' 
+                if parent_title:              
+                    parent = tag.parent_tag
+                    tags = parent.children.order('title')
+                    
+                    context = {
+                        'user':     user,
+                        'parent':   parent,
+                        'user_type':user_type,
+                        'tags':     tags,
+                        'parent_title':    parent.title,
+                       }  
+                    tmpl = path.join(path.dirname(__file__), 'templates/tag_request/expand.html')
+                    self.response.out.write(template.render(tmpl, context))  
+                else:
+                    root_tags = Tag.all().filter('parent_tag ==', None).fetch(100)
+                    context = {
+                               'user':     user,
+                               'user_type':user_type,
+                               'tags': root_tags,
+                               }
+                    tmpl = path.join(path.dirname(__file__), 'templates/tag_request/base.html')
+                    self.response.out.write(template.render(tmpl, context))
+                
+            if request == 'newform':
+                new_title = self.request.get('title')
+                context = {
+                    'parent_title':      new_title,
+                   }  
+                tmpl = path.join(path.dirname(__file__), 'templates/tag_request/newform.html')
+                self.response.out.write(template.render(tmpl, context))
+                
+            if request == 'expand':
+    
+                user_type = self.request.get('user_type')
+                expand_title = self.request.get('title')
+                parent = Tag.get_by_key_name(expand_title)
+                tags = parent.children.order('title')
                 context = {
                     'user':     user,
                     'parent':   parent,
                     'user_type':user_type,
                     'tags':     tags,
-                    'parent_title':    parent.title,
+                    'parent_title':    expand_title,
                    }  
                 tmpl = path.join(path.dirname(__file__), 'templates/tag_request/expand.html')
+                self.response.out.write(template.render(tmpl, context))    
+                
+            if request == 'contract':
+                if self.request.get('destination'):
+                    destination = self.request.get('destination')
+                else:
+                    destination = 'empty.html'
+                context = {}
+                tmpl = path.join(path.dirname(__file__), 'templates/tag_request/' + destination)
                 self.response.out.write(template.render(tmpl, context))  
-            else:
-                root_tags = Tag.all().filter('parent_tag ==', None).fetch(100)
+                
+            if request == 'addto':
+                added_tags_pre = self.request.get('added_tags')
+                added_tags = [Tag.get_by_key_name(title) for title in  eval(added_tags_pre)]
+                context = {'added_tags':added_tags}
+                tmpl = path.join(path.dirname(__file__), 'templates/tag_request/addto.html')
+                self.response.out.write(template.render(tmpl, context))  
+                
+            if request == 'base':
+                user_type = self.request.get('user_type')
+                root = Tag.all().filter('title ==', 'Root').fetch(1)[0]
+                root_tags = root.get_children()
                 context = {
                            'user':     user,
                            'user_type':user_type,
@@ -1800,66 +1840,14 @@ class TagManager(baseHandler):
                            }
                 tmpl = path.join(path.dirname(__file__), 'templates/tag_request/base.html')
                 self.response.out.write(template.render(tmpl, context))
-            
-        if request == 'newform':
-            new_title = self.request.get('title')
-            context = {
-                'parent_title':      new_title,
-               }  
-            tmpl = path.join(path.dirname(__file__), 'templates/tag_request/newform.html')
-            self.response.out.write(template.render(tmpl, context))
-            
-        if request == 'expand':
-
-            user_type = self.request.get('user_type')
-            expand_title = self.request.get('title')
-            parent = Tag.get_by_key_name(expand_title)
-            tags = parent.children.order('title')
-            context = {
-                'user':     user,
-                'parent':   parent,
-                'user_type':user_type,
-                'tags':     tags,
-                'parent_title':    expand_title,
-               }  
-            tmpl = path.join(path.dirname(__file__), 'templates/tag_request/expand.html')
-            self.response.out.write(template.render(tmpl, context))    
-            
-        if request == 'contract':
-            if self.request.get('destination'):
-                destination = self.request.get('destination')
-            else:
-                destination = 'empty.html'
-            context = {}
-            tmpl = path.join(path.dirname(__file__), 'templates/tag_request/' + destination)
-            self.response.out.write(template.render(tmpl, context))  
-            
-        if request == 'addto':
-            added_tags_pre = self.request.get('added_tags')
-            added_tags = [Tag.get_by_key_name(title) for title in  eval(added_tags_pre)]
-            context = {'added_tags':added_tags}
-            tmpl = path.join(path.dirname(__file__), 'templates/tag_request/addto.html')
-            self.response.out.write(template.render(tmpl, context))  
-            
-        if request == 'base':
-            user_type = self.request.get('user_type')
-            root = Tag.all().filter('title ==', 'Root').fetch(1)[0]
-            root_tags = root.get_children()
-            context = {
-                       'user':     user,
-                       'user_type':user_type,
-                       'tags': root_tags,
-                       }
-            tmpl = path.join(path.dirname(__file__), 'templates/tag_request/base.html')
-            self.response.out.write(template.render(tmpl, context))
-                  
-        if request == 'remove':
-            removed = self.request.get('title')
-            Tag.get_by_key_name(removed).exterminate()
-            
-            context = {}
-            tmpl = path.join(path.dirname(__file__), 'templates/tag_request/empty.html')
-            self.response.out.write(template.render(tmpl, context))
+                      
+            if request == 'remove':
+                removed = self.request.get('title')
+                Tag.get_by_key_name(removed).exterminate()
+                
+                context = {}
+                tmpl = path.join(path.dirname(__file__), 'templates/tag_request/empty.html')
+                self.response.out.write(template.render(tmpl, context))
             
 class Tag_Page(baseHandler):
     def myGet(self, maintag):
@@ -1877,13 +1865,60 @@ class Tag_Page(baseHandler):
         
         
             
-class Update_Models(baseHandler):
-    def myPost(self, request):
-        adminboot()
-        if request == 'start':
-            context = {}
-            tmpl = path.join(path.dirname(__file__), 'templates/update_models.html')
-            self.response.out.write(template.render(tmpl, context))
+class Update_Model(baseHandler):
+    
+    def myPost(self):
+        logging.info('in update models')
+        modelClass = self.request.get('modelClass')
+        
+        if not modelClass:
+            modelClass = hank['updatingModel']
+            self.update(modelClass)
+        else:
+            logging.info('a model has been sent')
+            
+            test = eval(modelClass+'()')
+            hank['updatingModel'] = modelClass
+            if self.admincheck():
+                self.update(modelClass)
+            #except:
+             #   logging.info(modelClass+' does not appear to be a real class')
+              #  #should return 'no such class' message here
+               # self.boot()
+                
+    def update(self, modelClass):
+        attrValue = self.request.get('attrValue', None)
+        attr = self.request.get('attr', None)
+        
+        if attrValue is None:
+            # First request, just get the first name out of the datastore.
+            obj = eval(modelClass+".gql('ORDER BY "+attr+" DESC').get()")
+            logging.info('obj = '+str(obj))
+            attrValue = eval("obj."+attr)
+        
+        q = eval(modelClass+".gql('WHERE "+attr+" <= :1 ORDER BY "+attr+" DESC', '"+attrValue+"')") 
+        
+        objs = q.fetch(limit=2)
+        current_obj = objs[0]
+        if len(objs) == 2:
+            next_attrValue = eval("objs[1]."+attr)
+            next_url = '/update-model?attrValue=%s' % urllib.quote(next_attrValue)
+        else:
+            hank['updatingModel'] = None
+            next_attrValue = 'FINISHED'
+            next_url = '/'  # Finished processing, go back to main page.
+        
+        #if additional processing were necessary it would go here
+        current_obj.put()
+        
+        context = {
+            'current_obj': obj,
+            'next_obj': next_attrValue,
+            'next_url': next_url,
+        }
+        tmpl = path.join(path.dirname(__file__), 'templates/update-model.html')
+        self.response.out.write(template.render(tmpl, context))
+
 
 class UserBase(baseHandler):
     def myGet(self,username):
@@ -1970,7 +2005,7 @@ application = webapp.WSGIApplication([
     ('/invite_handler/', Invite_Handler),
     ('/invite/', Invite),
     ('/availability/', Username_Check),
-    ('/update_models/(.*)./', Update_Models),                                      
+    ('/update-model/', Update_Model),                                      
     ('.*/tag_(.*)/', TagManager),
     ('/admin/', Admin),
     ('.*/message/(.*)/(.*)/',Message),

@@ -20,15 +20,13 @@
 <h1>Model Updater</h1>
 <hr/>
 
-	<div id="models">
-		<div id="added_tags"></div>	
-		<button  
-		title="Restricted administrative function that updates models in the datastore when there has been a schema change. 
-Must be real admin to use (could easily wipe an entire class of objects from the datastore). " 
-		id="update_models" class="subtlebutton">
-		Update Models
-		</button>
-	</div>
+<form action="/update-model/" method="post">
+	Model Class: <input type="text" name="modelClass"/>
+	<br/>
+	Unique Attribute: <input type="text" name="attr"/>
+	<br/>
+	<input type="submit" value="Update" />
+</form>
 	
 	<script type="text/javascript">
 	/*		$(document).ready(function(){
