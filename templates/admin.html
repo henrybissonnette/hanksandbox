@@ -28,6 +28,11 @@
 	<input type="submit" value="Update" />
 </form>
 	
+<h1>Users</h1>
+<hr/>
+{% for account in accounts %}
+<a href="{{account.get_url}}" class="username">{{account.username}}</a>
+{% endfor %}
 	<script type="text/javascript">
 	/*		$(document).ready(function(){
 				$(trigger).click(function(){

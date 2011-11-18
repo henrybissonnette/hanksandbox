@@ -198,6 +198,7 @@ class Commentary:
 
 class User(db.Model):
     
+    age = db.IntegerProperty()
     circle = db.StringListProperty(default=[])
     circlepermissions = db.StringListProperty(default=[])
     date = db.DateTimeProperty(auto_now_add=True)
@@ -375,6 +376,7 @@ class User(db.Model):
             affected.append(other)        
             
         for username in self.subscriptions_user:
+            other = get_user(username)
             self.set_subscription([],username) 
             affected.append(other)      
             
@@ -1079,25 +1081,21 @@ class AddTag(baseHandler):
                    'logout':    users.create_logout_url(self.request.uri)
                    }  
         tmpl = path.join(path.dirname(__file__), 'templates/addTags.html')
-        self.response.out.write(template.render(tmpl, context))  
-
-        
+        self.response.out.write(template.render(tmpl, context))      
     
 class Admin(baseHandler):
     def myGet(self):
         user = get_user()
         if self.admincheck():
-
+            accounts = User.all().fetch(1000)
             context = {
+                       'accounts':     accounts,
                        'user':      user,
                        'login':     users.create_login_url(self.request.uri),
                        'logout':    users.create_logout_url(self.request.uri)                       
                        }     
             tmpl = path.join(path.dirname(__file__), 'templates/admin.html')
-            self.response.out.write(template.render(tmpl, context))   
-        
-
-        
+            self.response.out.write(template.render(tmpl, context))         
         
 class Circle(baseHandler):
     
@@ -1423,10 +1421,25 @@ class Create_Document(baseHandler):
         document.parse()
 
 class DeleteAccount(baseHandler):
-    def myGet(self):
+    
+    def myPost(self):
         user = get_user()
+        username = self.request.get('username')
+        verify = self.request.get('delete')
         
+        if not (user.username == username or user.is_admin):
+            self.boot()
+        else:
+            if verify == 'true':
+                self.deleteAccount(verify)
+            else:
+                self.verify()
+                
+    def verify(self):
+        user = get_user()
+        username = self.request.get('username')        
         context = {
+                   'username':  username,
                    'user':      user,
                    'login':     users.create_login_url(self.request.uri),
                    'logout':    users.create_logout_url(self.request.uri)
@@ -1434,10 +1447,10 @@ class DeleteAccount(baseHandler):
         tmpl = path.join(path.dirname(__file__), 'templates/delete-account.html')
         self.response.out.write(template.render(tmpl, context))       
         
-    def myPost(self):
-        verify = self.request.get('delete')
+    def deleteAccount(self,verify):
+        username = self.request.get('username')
         if verify == 'true':
-            user = get_user()
+            user = get_user(username)
             user.remove()
             self.redirect(users.create_logout_url('/home')) 
         

@@ -16,7 +16,6 @@
 	{% endif %}
 	
 	<h1> Welcome to <span class="username">{{ page_user.username }}</span>'s Page </h1>
-
 	{% comment %}
 	---------------------------------------------------------
 	(((		Documents
@@ -114,9 +113,9 @@
 		(((		PERSONAL INFO
 		---------------------------------------------------------
 		{% endcomment %}
-			{% if user.username == page_user.username %}
+			{% if user.username == page_user.username or user.is_admin%}
 			<div class="tabs">
-				
+			{% endif %}
 			{% comment %}
 			---------------------------------------------------------
 			(((		DISPLAY
@@ -138,6 +137,7 @@
 			(((		EDIT
 			---------------------------------------------------------
 			{% endcomment %}
+			{% if user.username == page_user.username or user.is_admin%}
 				<div class="tab {name:'Edit'}">
 					<h2 class="notab">Edit</h2>
 					Comments with Ratings lower than your rating threshold will display minimized.
@@ -148,8 +148,9 @@
 					</form>
 					
 					</br>
-					<form action="/delete-account/" method="get">
+					<form action="/delete-account/" method="post">
 						<input type="submit" value="Delete" title="Delete my Account" />
+						<input type="hidden" name="username" value="{{page_user.username}}" />
 					</form>
 				</div>
 			{% comment %}
