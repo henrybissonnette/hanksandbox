@@ -1641,15 +1641,19 @@ class Register(webapp.RequestHandler):
                 self.registerPage()
             
     def post(self):
-        user = get_user()   
-        if user:
-            if user.username:
-                self.redirect('/home')
+        cancel = self.request.get('cancel')
+        if cancel:
+            self.redirect(users.create_logout_url('/home')) 
         else:
-            if not users.get_current_user():
-                self.redirect(users.create_login_url(self.request.uri))
+            user = get_user()   
+            if user:
+                if user.username:
+                    self.redirect('/home')
             else:
-                self.recieveData()
+                if not users.get_current_user():
+                    self.redirect(users.create_login_url(self.request.uri))
+                else:
+                    self.recieveData()
                 
     def recieveData(self):
         user = get_user()
