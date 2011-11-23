@@ -48,5 +48,10 @@
 	<div class="note round">
 		Usernames are not case sensitive and may only contain the characters 'A-Z', 'a-z', '1-9', '_', and '-'. 
 	</div>
+	
+	<form action="/register" method="post" >
+		<input type="hidden" name="cancel" value="true" />
+		<input type="submit" value="Cancel" />		
+	</form>
 
 {% endblock %}
