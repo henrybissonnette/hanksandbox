@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}
+Delete {{ username }}
+{% endblock title%}
+
+{% block content %}
+
+<h1>Delete Account</h1>
+{% if user.username == username %}
+<h3>You have asked to delete your account. Are you sure?</h3>
+{% else %}
+<h3>You have asked to delete {{username}}'s account. Are you sure?</h3>
+{% endif %}
+<form action="/delete-account/" method="post">
+	<input type="hidden" name="delete" value="true" />
+	<input type="hidden" name="username" value="{{username}}" />
+	<input type="submit" value="Yes, delete {% if user.username == username %}my {%endif%}account." />
+</form>
+<br/>
+<form action="{{user.get_url}}" method="get">
+	<input type="submit" value="No! I take it back." />
+</form>
+
+
+{% endblock %}

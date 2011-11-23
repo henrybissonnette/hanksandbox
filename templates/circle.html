@@ -1,0 +1,103 @@
+{% extends "comment_request/comment_base.html" %}
+
+{% block title %}
+{{ user.username }}'s Circle
+{% endblock title%}
+
+{% block content %}
+
+<a href="circle/clear/data/">clear all</a>
+
+<h1>Manage Your Circle Permissions</h1>
+
+				{% comment %}
+				---------------------------------------------------------
+				(((		CIRCLE MEMBERS
+				---------------------------------------------------------
+				{% endcomment %}
+								
+					<h3 title="Users who belong to your Circle.">Members</h3>
+					{% if user.circle %}
+						{% for username in user.circle %}
+						<a href="/user/{{ username }}/" class="username">{{username}}</a>
+						<a href="circle/remove/{{username}}/">remove</a>
+						</br>
+						{% endfor %}
+					{% else %}
+						Your Circle has no members.
+					{% endif %}
+				
+				{% comment %}
+				---------------------------------------------------------
+						CIRCLE MEMBERS							      )))
+				---------------------------------------------------------
+				{% endcomment %}
+				
+				{% comment %}
+				---------------------------------------------------------
+				(((		CIRCLE MEMBERSHIPS
+				---------------------------------------------------------
+				{% endcomment %}								
+
+				<h3 title="Users whose Circle's you belong to.">Memberships</h3>
+				{% if user.circlepermissions %}
+					{% for username in user.circlepermissions %}
+					<a href="/user/{{ username }}/" class="username">{{username}}</a>
+					<a href="circle/leave/{{username}}">leave</a>
+					</br>
+					{% endfor %}
+				{% else %}
+					You don't belong to any Writer's Circles.
+				{% endif %}
+
+				
+				{% comment %}
+				---------------------------------------------------------
+						CIRCLE MEMBERSHIPS						      )))
+				---------------------------------------------------------
+				{% endcomment %}	
+				
+				{% comment %}
+				---------------------------------------------------------
+				(((		CIRCLE INVITATIONS
+				---------------------------------------------------------
+				{% endcomment %}
+								
+				{% if user.username == page_user.username and user.invitations %}
+					<h3 title="Users who have invited you to join their circle.">Invites</h3>
+					{% for username in user.invitations %}
+						<a href="circle/accept/{{username}}/">accept</a>
+						<a href="/user/{{ username }}/" class="username">{{username}}</a>
+						<a href="circle/decline/{{username}}/">decline</a>
+						</br>
+					{% endfor %}
+				{% endif %}
+				
+				{% comment %}
+				---------------------------------------------------------
+						CIRCLE INVITATIONS						      )))
+				---------------------------------------------------------
+				{% endcomment %}
+				
+				{% comment %}
+				---------------------------------------------------------
+				(((		INVITES OUTSTANDING
+				---------------------------------------------------------
+				{% endcomment %}
+								
+				{% if user.invitees %}
+					<h3 title="Users you have invited to join your Circle.">Standing Invitations</h3>
+					{% for username in user.invitees %}
+						<a href="/user/{{ username }}/" class="username">{{username}}</a>
+						<a href="circle/withdraw/{{username}}/" title="Withdraw this outstanding invitation.">withdraw</a>
+						</br>
+					{% endfor %}
+				{% endif %}
+				
+				{% comment %}
+				---------------------------------------------------------
+						INVITES OUTSTANDING						      )))
+				---------------------------------------------------------
+				{% endcomment %}
+
+{% endblock content %}

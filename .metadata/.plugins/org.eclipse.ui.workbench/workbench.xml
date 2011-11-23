@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workbench progressCount="40" version="2.0">
+<workbenchAdvisor/>
+<window height="1160" maximized="true" width="960" x="643" y="-9">
+<fastViewData fastViewLocation="1024"/>
+<perspectiveBar>
+<itemSize x="160"/>
+</perspectiveBar>
+<coolbarLayout locked="0">
+<coolItem id="group.file" itemType="typeGroupMarker"/>
+<coolItem id="org.eclipse.ui.workbench.file" itemType="typeToolBarContribution" x="122" y="22"/>
+<coolItem id="additions" itemType="typeGroupMarker"/>
+<coolItem id="com.aptana.ui.globalActionSet" itemType="typeToolBarContribution" x="130" y="22"/>
+<coolItem id="org.eclipse.debug.ui.launchActionSet" itemType="typeToolBarContribution" x="137" y="22"/>
+<coolItem id="org.eclipse.search.searchActionSet" itemType="typeToolBarContribution" x="53" y="22"/>
+<coolItem id="org.eclipse.ui.edit.text.actionSet.presentation" itemType="typeToolBarContribution" x="84" y="22"/>
+<coolItem id="group.nav" itemType="typeGroupMarker"/>
+<coolItem id="org.eclipse.ui.workbench.navigate" itemType="typeToolBarContribution" x="91" y="22"/>
+<coolItem id="group.editor" itemType="typeGroupMarker"/>
+<coolItem id="com.aptana.editor.yaml" itemType="typePlaceholder" x="-1" y="-1"/>
+<coolItem id="com.aptana.editor.css" itemType="typeToolBarContribution" x="-1" y="-1"/>
+<coolItem id="com.aptana.editor.text" itemType="typePlaceholder" x="-1" y="-1"/>
+<coolItem id="com.aptana.editor.js" itemType="typeToolBarContribution" x="-1" y="-1"/>
+<coolItem id="com.aptana.editor.html" itemType="typeToolBarContribution" x="-1" y="-1"/>
+<coolItem id="org.python.pydev.editor.PythonEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
+<coolItem id="group.help" itemType="typeGroupMarker"/>
+<coolItem id="org.eclipse.ui.workbench.help" itemType="typeToolBarContribution" x="-1" y="-1"/>
+</coolbarLayout>
+<page focus="true" label="Workspace - Web">
+<editors>
+<editorArea activeWorkbook="DefaultEditorWorkbook">
+<info part="DefaultEditorWorkbook">
+<folder appearance="1" expanded="2">
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
+<part id="0"/>
+<part id="1"/>
+<part id="2"/>
+<part id="3"/>
+<part id="4"/>
+<part id="5"/>
+<part id="6"/>
+<part id="7"/>
+<part id="8"/>
+<part id="9"/>
+<part id="10"/>
+</presentation>
+</folder>
+</info>
+</editorArea>
+<editor id="org.python.pydev.editor.PythonEditor" name="main.py" partName="main" title="main" tooltip="C:\Users\Hank\hanksandbox\main.py" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/main.py"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="13828" selectionTopPixel="5670"/>
+</editor>
+<editor id="com.aptana.editor.html" name="admin.html" partName="admin.html" title="admin.html" tooltip="C:\Users\Hank\hanksandbox\templates\admin.html" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/templates/admin.html"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="734" selectionTopPixel="0"/>
+</editor>
+<editor id="com.aptana.editor.html" name="update-model.html" partName="update-model.html" title="update-model.html" tooltip="C:\Users\Hank\hanksandbox\templates\update-model.html" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/templates/update-model.html"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="127" selectionTopPixel="0"/>
+</editor>
+<editor id="com.aptana.editor.html" name="base.html" partName="base.html" title="base.html" tooltip="C:\Users\Hank\hanksandbox\templates\base.html" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/templates/base.html"/>
+<editorState selectionHorizontalPixel="0" selectionLength="51" selectionOffset="687" selectionTopPixel="0"/>
+</editor>
+<editor id="com.aptana.editor.html" name="user.html" partName="user.html" title="user.html" tooltip="C:\Users\Hank\hanksandbox\templates\user.html" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/templates/user.html"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="4159" selectionTopPixel="1733"/>
+</editor>
+<editor id="com.aptana.editor.html" name="delete-account.html" partName="delete-account.html" title="delete-account.html" tooltip="C:\Users\Hank\hanksandbox\templates\delete-account.html" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/templates/delete-account.html"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="581" selectionTopPixel="0"/>
+</editor>
+<editor id="com.aptana.editor.html" name="create.html" partName="create.html" title="create.html" tooltip="C:\Users\Hank\hanksandbox\templates\create.html" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/templates/create.html"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1309" selectionTopPixel="255"/>
+</editor>
+<editor id="com.aptana.editor.html" name="comment_base.html" partName="comment_base.html" title="comment_base.html" tooltip="C:\Users\Hank\hanksandbox\templates\comment_request\comment_base.html" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/templates/comment_request/comment_base.html"/>
+<editorState selectionHorizontalPixel="0" selectionLength="75" selectionOffset="87" selectionTopPixel="0"/>
+</editor>
+<editor activePart="true" focus="true" id="com.aptana.editor.js" name="base.js" partName="base.js" title="base.js" tooltip="C:\Users\Hank\hanksandbox\static\js\base.js" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/static/js/base.js"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1330" selectionTopPixel="612"/>
+</editor>
+<editor id="com.aptana.editor.js" name="comment_system.js" partName="comment_system.js" title="comment_system.js" tooltip="C:\Users\Hank\hanksandbox\static\js\comment_system.js" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/static/js/comment_system.js"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="2456" selectionTopPixel="782"/>
+</editor>
+<editor id="com.aptana.editor.js" name="create.js" partName="create.js" title="create.js" tooltip="C:\Users\Hank\hanksandbox\static\js\create.js" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/static/js/create.js"/>
+<editorState selectionHorizontalPixel="0" selectionLength="3" selectionOffset="83" selectionTopPixel="0"/>
+</editor>
+</editors>
+<views>
+<view id="org.eclipse.ui.navigator.ProjectExplorer" partName="Project Explorer">
+<viewState CommonNavigator.LINKING_ENABLED="0" org.eclipse.ui.navigator.resources.workingSets.showTopLevelWorkingSets="0"/>
+</view>
+<view id="com.aptana.terminal.views.terminal" partName="Terminal"/>
+<view id="com.aptana.samples.ui.SamplesView" partName="Samples">
+<viewState/>
+</view>
+<view id="org.eclipse.ui.views.ProblemView" partName="Problems"/>
+<view id="org.eclipse.ui.console.ConsoleView" partName="Console">
+<viewState/>
+</view>
+<view id="com.aptana.explorer.view" partName="App Explorer">
+<viewState CommonNavigator.LINKING_ENABLED="0" GitChangedFilesFilterEnabled="" activeProject="hanksandbox">
+<project name="hanksandbox">&#x0A;<selection>&#x0A;<element path="/hanksandbox"/>
+</selection>
+</project>
+</viewState>
+</view>
+<view id="org.eclipse.ui.views.ContentOutline" partName="Outline">
+<viewState/>
+</view>
+</views>
+<perspectives activePart="com.aptana.editor.js" activePerspective="com.aptana.ui.WebPerspective">
+<perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
+<descriptor class="com.aptana.ui.internal.WebPerspectiveFactory" id="com.aptana.ui.WebPerspective" label="Web"/>
+<alwaysOnActionSet id="com.aptana.browser.actionSet"/>
+<alwaysOnActionSet id="com.aptana.ruby.debug.ui.RubyDebugActionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.cheatsheets.actionSet"/>
+<alwaysOnActionSet id="org.eclipse.search.searchActionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo"/>
+<alwaysOnActionSet id="org.eclipse.ui.actionSet.keyBindings"/>
+<alwaysOnActionSet id="org.eclipse.ui.actionSet.openFiles"/>
+<alwaysOnActionSet id="com.aptana.editor.common.presentation"/>
+<alwaysOnActionSet id="org.eclipse.debug.ui.launchActionSet"/>
+<alwaysOnActionSet id="org.eclipse.debug.ui.breakpointActionSet"/>
+<alwaysOnActionSet id="com.aptana.js.debug.ui.actionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.NavigateActionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.presentation"/>
+<alwaysOnActionSet id="com.aptana.ui.globalActionSet"/>
+<alwaysOnActionSet id="com.aptana.terminal.actionSet"/>
+<show_view_action id="com.aptana.browser.views.webbrowser"/>
+<show_view_action id="com.aptana.explorer.view"/>
+<show_view_action id="org.eclipse.ui.navigator.ProjectExplorer"/>
+<show_view_action id="com.aptana.ui.io.remoteview"/>
+<show_view_action id="org.eclipse.ui.views.ContentOutline"/>
+<show_view_action id="com.aptana.samples.ui.SamplesView"/>
+<show_view_action id="com.aptana.terminal.views.terminal"/>
+<show_view_action id="org.eclipse.ui.console.ConsoleView"/>
+<show_view_action id="org.eclipse.pde.runtime.LogView"/>
+<show_view_action id="org.eclipse.ui.views.ProblemView"/>
+<show_view_action id="org.eclipse.ui.views.TaskList"/>
+<new_wizard_action id="com.aptana.ui.wizards.NewWebProject"/>
+<new_wizard_action id="com.aptana.ruby.core.ui.rubyProjectWizard"/>
+<new_wizard_action id="com.aptana.ui.wizards.new.file"/>
+<new_wizard_action id="org.eclipse.ui.wizards.new.folder"/>
+<new_wizard_action id="org.eclipse.ui.editors.wizards.UntitledTextFileWizard"/>
+<new_wizard_action id="org.radrails.rails.ui.projectWizard"/>
+<perspective_action id="org.eclipse.debug.ui.DebugPerspective"/>
+<hide_toolbar_item_id id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
+<view id="com.aptana.explorer.view"/>
+<view id="org.eclipse.ui.navigator.ProjectExplorer"/>
+<view id="org.eclipse.ui.views.ContentOutline"/>
+<fastViewBars>
+<fastViewBar fastViewLocation="1024" id="terminalArea" orientation="256" selectedTabId="org.eclipse.ui.console.ConsoleView" style="0">
+<fastViews>
+<view id="org.eclipse.ui.console.ConsoleView" ratio="0.3"/>
+<view id="com.aptana.terminal.views.terminal" ratio="0.3"/>
+<view id="org.eclipse.ui.views.ProblemView" ratio="0.3"/>
+</fastViews>
+</fastViewBar>
+<fastViewBar fastViewLocation="16384" id="org.eclipse.ui.internal.ViewStack@176484e" orientation="256" selectedTabId="com.aptana.samples.ui.SamplesView" style="0">
+<fastViews>
+<view id="com.aptana.samples.ui.SamplesView" ratio="0.3"/>
+</fastViews>
+</fastViewBar>
+</fastViewBars>
+<layout>
+<mainWindow>
+<info folder="true" part="left">
+<folder activePageID="org.eclipse.ui.navigator.ProjectExplorer" appearance="2" expanded="2">
+<page content="com.aptana.explorer.view" label="App Explorer"/>
+<page content="org.eclipse.ui.navigator.ProjectExplorer" label="Project Explorer"/>
+<page content="com.aptana.ui.io.remoteview" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
+<part id="0"/>
+<part id="1"/>
+</presentation>
+</folder>
+</info>
+<info folder="true" part="stickyFolderRight" ratio="0.75" ratioLeft="882" ratioRight="294" relationship="2" relative="left">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.internal.introview" label="LabelNotFound"/>
+<page content="org.eclipse.ui.cheatsheets.views.CheatSheetView" label="LabelNotFound"/>
+</folder>
+</info>
+<info part="org.eclipse.ui.editorss" ratio="0.14930925" ratioLeft="281" ratioRight="1601" relationship="2" relative="left"/>
+<info folder="true" part="terminalArea" ratio="0.75" ratioLeft="636" ratioRight="212" relationship="4" relative="org.eclipse.ui.editorss">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.ui.console.ConsoleView" label="LabelNotFound"/>
+<page content="com.aptana.terminal.views.terminal" label="LabelNotFound"/>
+<page content="org.eclipse.pde.runtime.LogView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.views.ProblemView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.views.TaskList" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
+</folder>
+</info>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@65fe31" ratio="0.74920297" ratioLeft="705" ratioRight="236" relationship="2" relative="org.eclipse.ui.editorss">
+<folder activePageID="org.eclipse.ui.views.ContentOutline" appearance="2" expanded="2">
+<page content="org.eclipse.ui.views.ContentOutline" label="Outline"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
+<part id="0"/>
+</presentation>
+</folder>
+</info>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@176484e" ratio="0.75" ratioLeft="636" ratioRight="212" relationship="4" relative="left">
+<folder appearance="2" expanded="2">
+<page content="com.aptana.samples.ui.SamplesView" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
+</folder>
+</info>
+</mainWindow>
+</layout>
+</perspective>
+</perspectives>
+<workingSets/>
+<navigationHistory>
+<editors>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/hanksandbox/main.py"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/hanksandbox/templates/admin.html"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/hanksandbox/templates/update-model.html"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/hanksandbox/templates/user.html"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/hanksandbox/templates/delete-account.html"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/hanksandbox/templates/create.html"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/hanksandbox/templates/comment_request/comment_base.html"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.js" uri="file:/C:/Users/Hank/hanksandbox/static/js/base.js"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.js" uri="file:/C:/Users/Hank/hanksandbox/static/js/comment_system.js"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.js" uri="file:/C:/Users/Hank/hanksandbox/static/js/create.js"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/hanksandbox/templates/base.html"/>
+</editors>
+<item historyLabel="main" index="0">
+<position info="not_deleted" x="70920" y="0"/>
+</item>
+<item historyLabel="update-model.html" index="2">
+<position info="not_deleted" x="127" y="0"/>
+</item>
+<item historyLabel="admin.html" index="1">
+<position info="not_deleted" x="558" y="0"/>
+</item>
+<item historyLabel="main" index="0">
+<position/>
+</item>
+<item historyLabel="admin.html" index="1">
+<position info="not_deleted" x="610" y="0"/>
+</item>
+<item historyLabel="main" index="0">
+<position info="not_deleted" x="7066" y="0"/>
+</item>
+<item historyLabel="user.html" index="3">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="user.html" index="3">
+<position/>
+</item>
+<item historyLabel="admin.html" index="1">
+<position info="not_deleted" x="610" y="0"/>
+</item>
+<item historyLabel="main" index="0">
+<position info="not_deleted" x="7057" y="0"/>
+</item>
+<item historyLabel="user.html" index="3">
+<position info="not_deleted" x="4530" y="0"/>
+</item>
+<item historyLabel="delete-account.html" index="4">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="main" index="0">
+<position info="not_deleted" x="51963" y="13"/>
+</item>
+<item historyLabel="user.html" index="3">
+<position info="not_deleted" x="5219" y="0"/>
+</item>
+<item historyLabel="main" index="0">
+<position info="not_deleted" x="52505" y="0"/>
+</item>
+<item historyLabel="delete-account.html" index="4">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="main" index="0">
+<position info="not_deleted" x="53104" y="0"/>
+</item>
+<item historyLabel="delete-account.html" index="4">
+<position info="not_deleted" x="495" y="0"/>
+</item>
+<item historyLabel="admin.html" index="1">
+<position info="not_deleted" x="749" y="0"/>
+</item>
+<item historyLabel="delete-account.html" index="4">
+<position info="not_deleted" x="495" y="0"/>
+</item>
+<item historyLabel="main" index="0">
+<position info="not_deleted" x="53104" y="0"/>
+</item>
+<item historyLabel="user.html" index="3">
+<position info="not_deleted" x="5219" y="0"/>
+</item>
+<item historyLabel="main" index="0">
+<position info="not_deleted" x="10081" y="24"/>
+</item>
+<item historyLabel="admin.html" index="1">
+<position info="not_deleted" x="749" y="0"/>
+</item>
+<item historyLabel="admin.html" index="1">
+<position info="not_deleted" x="743" y="0"/>
+</item>
+<item historyLabel="main" index="0">
+<position info="not_deleted" x="39390" y="0"/>
+</item>
+<item historyLabel="admin.html" index="1">
+<position info="not_deleted" x="734" y="0"/>
+</item>
+<item historyLabel="main" index="0">
+<position info="not_deleted" x="39390" y="0"/>
+</item>
+<item historyLabel="user.html" index="3">
+<position info="not_deleted" x="5073" y="0"/>
+</item>
+<item historyLabel="delete-account.html" index="4">
+<position info="not_deleted" x="495" y="0"/>
+</item>
+<item historyLabel="delete-account.html" index="4">
+<position info="not_deleted" x="296" y="0"/>
+</item>
+<item historyLabel="main" index="0">
+<position info="not_deleted" x="52375" y="0"/>
+</item>
+<item historyLabel="delete-account.html" index="4">
+<position info="not_deleted" x="296" y="0"/>
+</item>
+<item historyLabel="delete-account.html" index="4">
+<position info="not_deleted" x="581" y="0"/>
+</item>
+<item historyLabel="main" index="0">
+<position info="not_deleted" x="13828" y="0"/>
+</item>
+<item historyLabel="user.html" index="3">
+<position info="not_deleted" x="4159" y="0"/>
+</item>
+<item historyLabel="create.html" index="5">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="comment_base.html" index="6">
+<position info="not_deleted" x="87" y="75"/>
+</item>
+<item historyLabel="create.html" index="5">
+<position info="not_deleted" x="318" y="0"/>
+</item>
+<item historyLabel="base.js" index="7">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="base.js" index="7">
+<position info="not_deleted" x="859" y="0"/>
+</item>
+<item historyLabel="comment_system.js" index="8">
+<position info="not_deleted" x="2451" y="3"/>
+</item>
+<item historyLabel="create.js" index="9">
+<position info="not_deleted" x="83" y="3"/>
+</item>
+<item historyLabel="create.html" index="5">
+<position info="not_deleted" x="1309" y="0"/>
+</item>
+<item historyLabel="base.js" index="7">
+<position info="not_deleted" x="859" y="0"/>
+</item>
+<item historyLabel="base.js" index="7">
+<position info="not_deleted" x="1350" y="0"/>
+</item>
+<item historyLabel="comment_system.js" index="8">
+<position info="not_deleted" x="2456" y="0"/>
+</item>
+<item historyLabel="base.js" index="7">
+<position info="not_deleted" x="1330" y="0"/>
+</item>
+<item historyLabel="base.html" index="10">
+<position info="not_deleted" x="687" y="51"/>
+</item>
+<item active="true" historyLabel="base.js" index="7">
+<position info="not_deleted" x="1330" y="0"/>
+</item>
+</navigationHistory>
+<input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
+</page>
+<workbenchWindowAdvisor/>
+<actionBarAdvisor/>
+<trimLayout>
+<trimArea IMemento.internal.id="16384">
+<trimItem IMemento.internal.id="org.eclipse.ui.internal.ViewStack@176484e"/>
+</trimArea>
+<trimArea IMemento.internal.id="128">
+<trimItem IMemento.internal.id="org.eclipse.ui.internal.WorkbenchWindow.topBar"/>
+</trimArea>
+<trimArea IMemento.internal.id="1024">
+<trimItem IMemento.internal.id="org.eclise.ui.internal.FastViewBar"/>
+<trimItem IMemento.internal.id="org.eclipse.jface.action.StatusLineManager"/>
+<trimItem IMemento.internal.id="org.eclipse.ui.internal.progress.ProgressRegion"/>
+<trimItem IMemento.internal.id="terminalArea"/>
+</trimArea>
+</trimLayout>
+</window>
+<mruList>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.js" name="create.js" tooltip="C:\Users\Hank\hanksandbox\static\js\create.js">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/static/js/create.js"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.js" name="comment_system.js" tooltip="C:\Users\Hank\hanksandbox\static\js\comment_system.js">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/static/js/comment_system.js"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.js" name="base.js" tooltip="C:\Users\Hank\hanksandbox\static\js\base.js">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/static/js/base.js"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="comment_base.html" tooltip="C:\Users\Hank\hanksandbox\templates\comment_request\comment_base.html">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/templates/comment_request/comment_base.html"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="create.html" tooltip="C:\Users\Hank\hanksandbox\templates\create.html">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/templates/create.html"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="delete-account.html" tooltip="C:\Users\Hank\hanksandbox\templates\delete-account.html">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/templates/delete-account.html"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="user.html" tooltip="C:\Users\Hank\hanksandbox\templates\user.html">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/templates/user.html"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="functions.py" tooltip="C:\Users\Hank\hanksandbox\functions.py">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/functions.py"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="models.py" tooltip="C:\Users\Hank\hanksandbox\models.py">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/models.py"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="base.html" tooltip="C:\Users\Hank\hanksandbox\templates\base.html">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/templates/base.html"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="update_models.html" tooltip="C:\Users\Hank\hanksandbox\templates\update_models.html">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/templates/update_models.html"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="update-model.html" tooltip="C:\Users\Hank\hanksandbox\templates\update-model.html">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/templates/update-model.html"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="admin.html" tooltip="C:\Users\Hank\hanksandbox\templates\admin.html">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/templates/admin.html"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="tasks.py" tooltip="C:\Users\Hank\qv\apps\account\tasks.py">
+<persistable uri="file:/C:/Users/Hank/qv/apps/account/tasks.py"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="tasks.py" tooltip="C:\Users\Hank\qv\apps\newsletter\tasks.py">
+<persistable uri="file:/C:/Users/Hank/qv/apps/newsletter/tasks.py"/>
+</file>
+</mruList>
+</workbench>

@@ -1,0 +1,22 @@
+	
+	
+
+			
+	<div class="stream_item streamDocument">
+		
+		<div class="title">
+			<a href="{{doc.get_url}}">
+				{{doc.title}}
+			</a></div>
+		
+		<div class="header">
+			{{doc.date}}- <a href="/user/{{doc.author.username}}/">{{doc.author.username}}</a> 
+		</div>
+		
+		{% if doc.get_description %}
+			<div class="stream_description">{{doc.get_description}}</div>
+		{% else %}
+			<div class="stream_description">{{doc.get_stripped}}</div>
+		{% endif %}
+		
+	</div>

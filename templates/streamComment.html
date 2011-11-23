@@ -1,0 +1,35 @@
+
+
+<div class="stream_item" id="{{doc.key}}">
+					
+	<div class="header">
+	<a href="/user/{{doc.author.username}}/">{{doc.author.username}}</a> replied to 
+	{% if doc.get_page_object.username %}
+	<a href="/user/{{doc.get_page_object.username}}/">{{doc.get_page_object.username}}</a>'s page 
+	{% else %}
+	<a href="/{{doc.get_page_object.author.username}}/document/{{doc.get_page_object.filename}}/">{{doc.get_page_object.title}}</a>
+	{% endif %}
+	</div>
+					
+	<div class="comment">
+		<div class="header">
+			<a href="{{doc.get_url}}#{{doc.key}}">{{doc.subject}} (Rating: {{doc.rating}})</a>
+		</div>	
+		<div class="commentBox" >
+			<div class="top">
+			    <small>[<i>{{ doc.date.ctime }}</i>]</small>
+				</b>
+				{% if doc.author %}
+					<a href="/user/{{ doc.author.username }}/" id="{{doc.key}}bookmark"><code>{{ doc.author.username }}</code></a> 
+				{% else %}
+					<i>anonymous</i>
+				{% endif %}
+				</b>
+				wrote:<br>
+
+			</div>
+					
+			<div class="content">{% autoescape off %}{{ doc.content }}{% endautoescape %}</div>
+		</div>	
+	</div>
+</div>

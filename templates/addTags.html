@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Add Tags to {{document.filename}}
+{% endblock %}
+
+{% block content %}
+
+<h1>Add Tags to {{document.title}}</h1>
+Tags give other users a way to find your content based on their areas of interest. It is best to be focused in your use
+ of tags. If you use tags that match your document poorly you may attract users who are not actually interested in your
+ content and who will likely rate it less favorably.
+<h2>Current Tags</h2>
+{% if message %}
+<span class="warning">{{message}}</span></br>
+{% endif %}
+{% if document.tags %}
+	{% for tagTitle in document.tags %}
+		{{tagTitle}} 
+		<form action="/addtag/{{baseTag.title}}/{{document.filename}}/" method="post">
+			<input type="hidden" name="request" value="remove" />
+			<input type="hidden" name="added"	value="{{tagTitle}}" />
+			<input type="submit" value="remove" />
+		</form>
+	{% endfor %}	
+{% else %}
+	This document currently has no tags associated with it.
+{% endif %}
+
+{% if document.get_tag_number >= 3 %}
+<span class="warning">
+	Documents may only be associated with three tags. If you wish to add more tags to this document you will need to 
+	remove some of the current tags associated with it.
+</span></br>
+{% else %}
+	<h2>Add Tag</h2>
+	Current parent tag: {{ baseTag.title }}
+	{% if not baseTag.title == 'Root' %}
+		<a href="/addtag/{{baseTag.parent_tag.title}}/{{document.filename}}/">go up a level</a>
+	{% endif %}
+	</br>
+	{% for tag in baseTag.get_children %}
+		{% if tag.get_children %}
+		<a href="/addtag/{{tag.title}}/{{document.filename}}/">{{tag.title}}</a> 
+		<span title="{{tag.title}} has {{tag.get_children|length}} child tags.">({{tag.get_children|length}})</span>
+		{% else %}
+		{{tag.title}}
+		{% endif %}
+		{% if not tag.title in document.tags%}
+			:  
+			<form action="/addtag/{{baseTag.title}}/{{document.filename}}/" method="post">
+				<input type="hidden" name="request" value="add" />
+				<input type="hidden" name="added"	value="{{tag.title}}" />
+				<input type="submit" value="add" />
+			</form>
+		{% else %}
+		Tagged
+		</br>
+		{% endif %}
+		</br>
+	{% endfor %}
+{% endif %}
+<hr/>
+<form action="{{document.get_url}}">
+	<input type="submit" value="Finish Tagging" />
+</form>
+
+{% endblock %}
