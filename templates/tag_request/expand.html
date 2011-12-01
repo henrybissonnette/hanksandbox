@@ -42,7 +42,7 @@
 	
 	<ul>
 		<!-- NEW: This code enables the administrative new tag button -->
-		{% if user.admin %}
+		{% if user.is_admin %}
 		<div id="new{{parent_title}}" class="new_tag">
 			{% include 'newbutton.html' %}
 		</div>
@@ -73,7 +73,7 @@
 					<!-- EXPAND: END -->
 					
 					<!-- ADD allows user to tag their documents -->
-					{% ifequal user_type "user" %}
+					{% if user and document %}
 					<script type="text/javascript">	
 							$(document).ready(function(){
 								$("a#add{{tag.title}}").click(function(){
@@ -103,7 +103,7 @@
 					</script> 
 						
 					<a href="javascript:;"  title="Include tag" id="add{{tag.title}}" class="subtle">add</a>
-					{% endifequal %}
+					{% endif %}
 					<!-- ADD: END -->
 					
 					{% ifequal user_type "admin"%}
