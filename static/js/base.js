@@ -352,10 +352,11 @@ $(document).ready(function(){
 	var isIE = navigator.appName === 'Microsoft Internet Explorer';
 	if(!isIE){
 		$('div.stream_item').corner()
-		$('div.pagetop').corner('40 px')
+		$('div.pagetop').corner('40px')
 		$('div.bodycontent').corner('40 px')
-		$('.round').corner('40 px')
+		$('.round').corner('40px')
 		$('.aButton').corner('40 px')
+		$('.roundtop').corner('40px top')
 	}
 })
 

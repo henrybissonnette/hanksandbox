@@ -6,9 +6,8 @@ $(document).ready(function(){
 	var doc = $('h1.document').metadata()
 	
 	$('.tagButton').each(function(){
-		added_tags.push($(this).attr('value'))	
-	})	
-	
+		added_tags.push("'"	+$(this).attr('value')+"'"	)
+	})
 	function confirmSubmit(message)
 	{
 	var agree=confirm(message);
@@ -98,7 +97,7 @@ $(document).ready(function(){
 		$('div#tags').load(
 						'tag_base/',
 						{"user_type":"user"}
-						);
+						)
 	});	
 	
 	

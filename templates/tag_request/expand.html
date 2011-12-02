@@ -4,7 +4,6 @@
 	--- the  following handles the X that will close this expansion
 	--- and all subexpansions.
 	{% endcomment %}
-	
 	{% if parent_title != 'Root' %}
 		<script type="text/javascript">
 			//sets up the close div button
@@ -73,7 +72,7 @@
 					<!-- EXPAND: END -->
 					
 					<!-- ADD allows user to tag their documents -->
-					{% if user and document %}
+					{% if user and document or user and tags %}
 					<script type="text/javascript">	
 							$(document).ready(function(){
 								$("a#add{{tag.title}}").click(function(){

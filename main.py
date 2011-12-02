@@ -1561,7 +1561,20 @@ class Message(baseHandler):
             if message.recipient.username == user.username:               
                 message.remove() 
         self.redirect('../../../')
- 
+
+class Meta(baseHandler):
+    def myGet(self):
+        user = get_user()
+        metaDocs = get_documents(['Meta'])
+        context = {
+                   'metaDocs':  metaDocs,
+                   'user':      user,
+                   'login':     users.create_login_url(self.request.uri),
+                   'logout':    users.create_logout_url(self.request.uri)                       
+                   }     
+        tmpl = path.join(path.dirname(__file__), 'templates/meta.html')
+        self.response.out.write(template.render(tmpl, context))           
+
 class PostComment(CommentPage):
     def post(self):
         self.showForm()        
@@ -1766,15 +1779,13 @@ class Tag_Browser(webapp.RequestHandler):
         
 class TagManager(baseHandler):
     def myPost(self, request):
-        user = get_user()
-        if self.admincheck():
-             
-            if request == 'create':
+        user = get_user()            
+        if request == 'create':
+            if self.admincheck():
                 create_title = cleaner(self.request.get('new_title').replace(' ','_'))
                 parent_title = self.request.get('parent_title')
                 tag = Tag(key_name=create_title)
                 tag.title = create_title
-                logging.info('in create tag = '+tag.title)
                 if parent_title:
                     tag.parent_tag = Tag.get_by_key_name(parent_title)
                 else:
@@ -1791,17 +1802,17 @@ class TagManager(baseHandler):
                         root.set_descendants()
                         root.put()
                         tag.parent_tag = root
-                        
+                            
                 tag.set_ancestors()
                 tag.set_descendants()
                 tag.put() 
-                
+                    
                 if user.is_admin():
                     user_type='admin' 
                 if parent_title:              
                     parent = tag.parent_tag
                     tags = parent.children.order('title')
-                    
+                        
                     context = {
                         'user':     user,
                         'parent':   parent,
@@ -1815,68 +1826,70 @@ class TagManager(baseHandler):
                     root_tags = Tag.all().filter('parent_tag ==', None).fetch(100)
                     context = {
                                'user':     user,
-                               'user_type':user_type,
+                                'user_type':user_type,
                                'tags': root_tags,
                                }
                     tmpl = path.join(path.dirname(__file__), 'templates/tag_request/base.html')
                     self.response.out.write(template.render(tmpl, context))
                 
-            if request == 'newform':
-                new_title = self.request.get('title')
-                context = {
-                    'parent_title':      new_title,
-                   }  
-                tmpl = path.join(path.dirname(__file__), 'templates/tag_request/newform.html')
-                self.response.out.write(template.render(tmpl, context))
+        if request == 'newform':
+            new_title = self.request.get('title')
+            context = {
+                'parent_title':      new_title,
+               }  
+            tmpl = path.join(path.dirname(__file__), 'templates/tag_request/newform.html')
+            self.response.out.write(template.render(tmpl, context))
                 
-            if request == 'expand':
+        if request == 'expand':
     
-                user_type = self.request.get('user_type')
-                expand_title = self.request.get('title')
-                parent = Tag.get_by_key_name(expand_title)
-                tags = parent.children.order('title')
-                context = {
-                    'user':     user,
-                    'parent':   parent,
-                    'user_type':user_type,
-                    'tags':     tags,
-                    'parent_title':    expand_title,
-                   }  
-                tmpl = path.join(path.dirname(__file__), 'templates/tag_request/expand.html')
-                self.response.out.write(template.render(tmpl, context))    
+            user_type = self.request.get('user_type')
+            expand_title = self.request.get('title')
+            parent = Tag.get_by_key_name(expand_title)
+            tags = parent.children.order('title')
+            context = {
+                'user':     user,
+                'parent':   parent,
+                'user_type':user_type,
+                'tags':     tags,
+                'parent_title':    expand_title,
+               }  
+            tmpl = path.join(path.dirname(__file__), 'templates/tag_request/expand.html')
+            self.response.out.write(template.render(tmpl, context))    
                 
-            if request == 'contract':
-                if self.request.get('destination'):
-                    destination = self.request.get('destination')
-                else:
-                    destination = 'empty.html'
-                context = {}
-                tmpl = path.join(path.dirname(__file__), 'templates/tag_request/' + destination)
-                self.response.out.write(template.render(tmpl, context))  
+        if request == 'contract':
+            if self.request.get('destination'):
+                destination = self.request.get('destination')
+            else:
+                destination = 'empty.html'
+            context = {}
+            tmpl = path.join(path.dirname(__file__), 'templates/tag_request/' + destination)
+            self.response.out.write(template.render(tmpl, context))  
                 
-            if request == 'addto':
-                added_tags_pre = self.request.get('added_tags')
-                added_tags = [Tag.get_by_key_name(title) for title in  eval(added_tags_pre)]
-                context = {'added_tags':added_tags}
-                tmpl = path.join(path.dirname(__file__), 'templates/tag_request/addto.html')
-                self.response.out.write(template.render(tmpl, context))  
+        if request == 'addto':
+            added_tags_pre = self.request.get('added_tags')
+            logging.info(added_tags_pre)
+            added_tags = [Tag.get_by_key_name(title) for title in  eval(added_tags_pre)]
+            context = {'added_tags':added_tags}
+            tmpl = path.join(path.dirname(__file__), 'templates/tag_request/addto.html')
+            self.response.out.write(template.render(tmpl, context))  
                 
-            if request == 'base':
-                user_type = self.request.get('user_type')
-                root = Tag.all().filter('title ==', 'Root').fetch(1)[0]
-                root_tags = root.get_children()
-                context = {
-                           'user':     user,
-                           'user_type':user_type,
-                           'tags': root_tags,
-                           }
-                tmpl = path.join(path.dirname(__file__), 'templates/tag_request/base.html')
-                self.response.out.write(template.render(tmpl, context))
-                      
-            if request == 'remove':
+        if request == 'base':
+            user_type = self.request.get('user_type')
+            root = Tag.all().filter('title ==', 'Root').fetch(1)[0]
+            root_tags = root.get_children()
+            context = {
+                       'user':     user,
+                        'user_type':user_type,
+                       'tags': root_tags,
+                       }
+            tmpl = path.join(path.dirname(__file__), 'templates/tag_request/base.html')
+            self.response.out.write(template.render(tmpl, context))
+                  
+        if request == 'remove':
+            if self.admincheck():
                 removed = self.request.get('title')
                 Tag.get_by_key_name(removed).exterminate()
-                
+                    
                 context = {}
                 tmpl = path.join(path.dirname(__file__), 'templates/tag_request/empty.html')
                 self.response.out.write(template.render(tmpl, context))
@@ -2037,7 +2050,8 @@ application = webapp.WSGIApplication([
     ('/invite_handler/', Invite_Handler),
     ('/invite/', Invite),
     ('/availability/', Username_Check),
-    ('/update-model/', Update_Model),                                      
+    ('/update-model/', Update_Model),  
+    ('/meta/',Meta),                                    
     ('.*/tag_(.*)/', TagManager),
     ('/admin/', Admin),
     ('.*/message/(.*)/(.*)/',Message),
