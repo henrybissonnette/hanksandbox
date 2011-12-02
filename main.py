@@ -101,7 +101,8 @@ def remove_duplicates(seq, idfun=None):
        if marker in seen: continue
        seen[marker] = 1
        result.append(item)
-   return result
+   return result
+    
 
 class CommentaryObj:
     """
@@ -194,10 +195,16 @@ class Commentary:
         self.sum_delta = [1] * sum([item for sublist in self.delta for item in sublist])
         self.keys = [str(comment.key()) for comment in self.comment_tree[0]]   
         self.comment_data = zip(self.comment_tree[0], self.keys, self.delta)
-
-
-class User(db.Model):
     
+class User(db.Model):
+    """
+    USER accesses the collections:
+    
+    works (created documents)
+    mycomments (created comments)
+    bugs (submitted bug reports)
+    ratings (submitted votes)
+    """
     age = db.IntegerProperty()
     circle = db.StringListProperty(default=[])
     circlepermissions = db.StringListProperty(default=[])
@@ -702,6 +709,11 @@ class Document(db.Model):
     def get_tag_number(self):
         return len(self.tags)
             
+class BugReport(db.Model):
+    date = db.DateTimeProperty(auto_now_add=True)
+    report = db.ReferenceProperty(Document, collection_name="bug")
+    user = db.ReferenceProperty(User, collection_name="bugs")
+    status = db.StringProperty(default="Open")
 
 class Comment(db.Model):
     """It might also be more elegant to 
@@ -1095,7 +1107,7 @@ class Admin(baseHandler):
                        'logout':    users.create_logout_url(self.request.uri)                       
                        }     
             tmpl = path.join(path.dirname(__file__), 'templates/admin.html')
-            self.response.out.write(template.render(tmpl, context))         
+            self.response.out.write(template.render(tmpl, context))        
         
 class Circle(baseHandler):
     
@@ -1324,8 +1336,10 @@ class Create_Document(baseHandler):
         self.nonUserBoot()
         user = get_user()
         userdocuments = user.works
+        documentType = self.request.get('documentType')
         
         context = {
+                   'documentType':documentType,
                    'userdocuments':userdocuments,
                    'user':      user,
                    'login':     users.create_login_url(self.request.uri),
@@ -1352,6 +1366,7 @@ class Create_Document(baseHandler):
         username = self.request.get('username')
         draft = self.request.get('draft')
         scriptless = self.request.get('scriptless')
+        documentType = self.request.get('documentType')
         
         # username only gets passed on an edit
         if username:

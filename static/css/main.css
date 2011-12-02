@@ -1,5 +1,4 @@
 
-
 /**************************************/
 /***********EVERY PAGE****************/
 
@@ -10,7 +9,6 @@ div.bodywrap{
 }
 
 div.bodycontent{
-
 	border:solid 2px #333;
 	padding:50px;
 	min-width:650px;
@@ -19,15 +17,29 @@ div.bodycontent{
 
 
 div.pageframe{
-	
 	margin-left: 20px;
 	padding-bottom:40px;
 	width:100%;
 }
 
-
 body {
     height: 100%;
+}
+
+div.bottomlinks{
+	margin-top:0px;
+	margin-right:0px;
+	margin-left:0px;
+    padding: 0 5em;
+    height:110px;
+    overflow:hidden;
+    border:solid 2px white;
+	padding-top: 2%;
+	text-align: center;
+	clear: both;
+	bottom: 10px;
+	right: 10px;
+	left: 10px;
 }
 
 /************************************************/
@@ -95,14 +107,14 @@ a.username:hover{
 }
 
 .aButton{
-	border:solid 1px #999;
 	text-decoration: none;
-	color:#000;
+	background-color:#242e2f;;
+	color:#fff;
 	padding: 3px;
 }
 
 .aButton:hover{
-	border-color: #000;
+	background-color:#555;
 }
 
 .scriptOnly{
@@ -184,10 +196,22 @@ div.bodycontent,#sidebar,hr.menu,.menu_head,.sidebar_link:hover,a.subtle:hover{
 
 /* dark background, namely, main header */
 div.pagetop,.comment .header,.unselected,.commentHeaderMin:hover,div.commentBox {
-
     color: #fff;
     background: #242e2f;
+}
 
+.dark {
+    color: #fff;
+    background: #242e2f;	
+}
+
+.dark a{
+	color:#fff;
+	text-decoration: none;
+}
+
+.dark a:hover{
+	text-decoration: underline;
 }
 
 .stream_header{
@@ -544,13 +568,6 @@ a.div_close{
 }
 
 
-div.bottomlinks{
-
-	padding-top: 2%;
-	text-align: center;
-	clear: both;
-}
-
 /**************Tag System********************/
 
 .toprule{
@@ -606,6 +623,10 @@ div.comment .header{
 	padding-left:10px;
 	margin-top:2px;
 	margin-bottom: -5px;
+}
+
+div.comment .header:hover{
+	background-color: #555;
 }
 
 div.comment .header a{

@@ -28,7 +28,7 @@
 				<a href="/home" title="Don't worry, this is just a placeholder until the site has a name." class="home headeritem">EssayHost.</a>
 					
 				{% if user %}
-					Hello {{ user.username }}!
+					Hello <span class="username">{{ user.username }}</span>!
 					[<a class="header headeritem" href="{{ logout }}">sign out</a>]
 					<a class="header headeritem" href="/user/{{ user.username }}/">MyPage</a>
 				{% else %}
@@ -62,9 +62,11 @@
   		{% block postBody %}
   		{% endblock %}
     	<br/>
-	    <div class="bottomlinks">
-			<a  href="/tag/Meta/">Meta</a>|
-		</div>
+    <div class="push"></div>	
+    
+	</div>
+	<div class="bottomlinks dark round">
+		<a  href="/tag/Meta/">Meta </a>
 	</div>
 	
 </body>
