@@ -7,7 +7,7 @@
 {% endblock title%}
 
 {% block scripts %}
-	{% if user.username == document.author.username %}
+	{% if user.username == document.author.username and not document.special%}
 	<script type="text/javascript" src="/static/js/edit.js"></script>
 	{% endif %}
 	<script type="text/javascript" src="/static/js/comment_system.js"></script>
@@ -50,11 +50,15 @@
 ---------------------------------------------------------
 {% endcomment %}
 <div class="tab {name:'Document',initial:'true'}">
-	<h1 class="creator"><a title="Visit {{document.author.username}}'s  Page" class="creator" href="/user/{{document.author.username}}/">
-		{{document.author.username}}{% if document.draft %} : draft{% endif %}
-		</a></h1>
-
-	
+	<h1 class="creator">
+		<a title="Visit {{document.author.username}}'s  Page" class="creator" href="/user/{{document.author.username}}/">
+			{{document.author.username}}
+			{% if document.draft %} : draft{% endif %}
+		</a>
+		<a title="More Meta Ticket's " class="creator" href="/meta/">
+		{% if 'feature' in document.type %} : Feature Request{% endif %}
+		{% if 'bug' in document.type %} : Bug Report{% endif %}
+		</a></h1>	
 	<h1 class="document {filename:'{{document.filename}}',author:'{{document.author.username}}'}" >{{document.title}}</h1>
 	
 	{% if document.subtitle %}
@@ -210,7 +214,7 @@
 	
 {% if user.username == document.author.username %}
 <div class="tab {name:'Edit'}">
-<div class="scriptOnly tabs">
+<div class="scriptOnly {% if not document.special %}tabs{% endif %}">
 {% comment %}
 ---------------------------------------------------------
 (((		EDIT
@@ -226,15 +230,19 @@
 	<h1 class="embed">Edit</h1>
 	<form action="/create"  method=post>
 		<table>
+			{% if not document.special %}
 			<tr>
 				<td>File Name: </td><td><input type="text" id="filename" name="filename" size=40 value="{{document.filename}}" /></td>
 			</tr>
+			{% endif %}
 			<tr>
 				<td>Title: </td><td><input type="text" name="title" size=80 value="{{document.title}}" /></td>
 			</tr>
+			{% if not document.special %}
 			<tr>
 				<td>Subtitle (optional): </td><td><input id="create_input" type="text" name="subtitle" size=80 value="{{document.subtitle}}" /></td>
 			</tr>
+			{% endif %}
 			<tr>
 				<td>Description: </td><td><input type="text" name="description" size=80 value="{{document.get_description}}" 
 					title="Used in streams and search results. Use it to attract readers who will be interested in your content. Max 150 characters. No special characters or HTML tags allowed."/></td>
@@ -249,7 +257,9 @@
 		<input type="hidden" name="existing_filename" value="{{document.filename}}"/>
 	    <textarea name=document_content rows=20 cols=75>{{document.content}}</textarea>
 	    <br>
-	    <input type="checkbox" name="draft" value="True" {% if document.draft or not document %}checked{% endif %} /> Mark as Draft | 
+	    {% if not document.special %}
+	    <input type="checkbox" name="draft" value="True" {% if document.draft or not document %}checked{% endif %} /> Mark as Draft |
+	    {% endif %} 
 	    <input type=checkbox name="subscribe" value="subscribe" {% if user.username in document.subscribers or not edit %}checked{%endif%}>
 	    	<span>Recieve email notifications if someone replies to this Document.</span>
 	    </input>
@@ -289,13 +299,13 @@
 	(((		TAG
 	---------------------------------------------------------
 	{% endcomment %}
-	
+	{% if not document.special %}
 		<h2>Current Tags</h2>
 		<div id="added_tags">{% include 'tag_request/addto.html' %}</div>
 		<div id="tags">
 			<button  title="Use tags to identify your topic" id="browse_tags" class="subtlebutton">Add Tags</button>
 		</div>
-		
+	{% endif %}	
 	{% comment %}
 	---------------------------------------------------------
 			DELETE								     	  )))

@@ -84,6 +84,43 @@ indexes:
 - kind: Document
   properties:
   - name: draft
+  - name: special
+  - name: date
+    direction: desc
+
+- kind: Document
+  properties:
+  - name: draft
+  - name: special
+  - name: tags
+  - name: date
+    direction: desc
+
+- kind: Document
+  properties:
+  - name: draft
+  - name: special
+  - name: type
+  - name: date
+    direction: desc
+
+- kind: Document
+  properties:
+  - name: draft
+  - name: special==
+  - name: date
+    direction: desc
+
+- kind: Document
+  properties:
+  - name: draft
+  - name: specialType
+  - name: date
+    direction: desc
+
+- kind: Document
+  properties:
+  - name: draft
   - name: tags
   - name: date
     direction: desc

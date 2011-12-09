@@ -51,6 +51,7 @@
 			<input type="hidden" name="added_tag" class="include_{{tag.title}}" value="{{tag.title}}"/>
 			</div>
 			{% endfor%}
+			<input type="hidden" name="documentType" value="{{documentType}}" />
 			<input type="hidden" name="username" value="{{document.author.username}}"/>
 			<input type="hidden" name="existing_filename" value="{{document.filename}}"/>
 			<input type="hidden" class="scriptless" name="scriptless" value="true"/>

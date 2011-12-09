@@ -25,12 +25,12 @@
 		
 		<h2> <span class="username">{{ page_user.username }}</span>'s Essays		
 		{% ifequal page_user.username user.username %}
-		<a href="/create" class="aButton" title="Begin writing a new essay.">Create</a>
+		<a href="/create/document/" class="aButton" title="Begin writing a new essay.">Create</a>
 		{% endifequal %}
 		 </h2>
 		
 		{% for doc in page_user.works %}
-		{% if not doc.draft %}
+		{% if not doc.draft and not doc.special%}
 		{% include 'streamDocument.html'%}
 		{% endif %}
 		{% endfor %}
@@ -169,7 +169,26 @@
 		---------------------------------------------------------
 				PERSONAL INFO							      )))
 		---------------------------------------------------------
-		{% endcomment %}			
+		{% endcomment %}
+		
+		{% comment %}
+		---------------------------------------------------------
+		(((		SPECIAL DOCUMENTS
+		---------------------------------------------------------
+		{% endcomment %}	
+		<h2>Meta Tickets</h2>
+		
+		{% for doc in page_user.works %}
+		{% if doc.special %}
+		{% include 'streamDocument.html' %}
+		{% endif %}
+		{% endfor %}
+		
+		{% comment %}
+		---------------------------------------------------------
+				PERSONAL INFO							      )))
+		---------------------------------------------------------
+		{% endcomment %}						
 		</div>								
 		<div class="tabs right_half">
 			

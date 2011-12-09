@@ -37,10 +37,16 @@ def get_document(name, filename, title=None):
     except:
         return None
 
-def get_documents(tag_list=[], tag_not_list=[], number=1000, type=None):
+def get_documents(tag_list=[], tag_not_list=[], number=1000, draft=False, type=None, specialType=None):
     """ tag_list should be a string list of tags """
         
     document_query = Document.all()
+    if specialType:
+        document_query.filter("type ==",specialType)
+    else:
+        document_query.filter("special ==",False)
+    if not draft:
+        document_query.filter("draft ==",False)
     if type: 
         document_query.filter("type ==",type)
     for tag in tag_list:
@@ -709,11 +715,12 @@ class Document(db.Model):
     def get_tag_number(self):
         return len(self.tags)
             
-class BugReport(db.Model):
+class Ticket(db.Model):
     date = db.DateTimeProperty(auto_now_add=True)
-    report = db.ReferenceProperty(Document, collection_name="bug")
-    user = db.ReferenceProperty(User, collection_name="bugs")
+    report = db.ReferenceProperty(Document, collection_name="ticket")
+    user = db.ReferenceProperty(User, collection_name="tickets")
     status = db.StringProperty(default="Open")
+    message = db.StringProperty()
 
 class Comment(db.Model):
     """It might also be more elegant to 
@@ -896,7 +903,8 @@ class Tag(db.Model):
     def get_documents(self, own = False):
         
         if self.title == 'Root':
-            return Document.all().filter("draft ==",False).order('-date').fetch(1000)
+            #return Document.all().filter("draft ==",False).filter('special==',False).order('-date').fetch(1000)
+            return get_documents()
         else:
             if own:
                 return get_documents([self.title])
@@ -1324,38 +1332,50 @@ class CommentHandler(CommentPage):
             
 
 class Create_Document(baseHandler):
-    #this get should probably be merged with edit
-    def myGet(self):
+    """handles new documents and edits"""
+    def myGet(self,request):
         user = get_user()
         if user:
-            self.getMain(user)
+            self.getMain(request, user)
         else:
             self.boot()
             
-    def getMain(self,user):
+    def getMain(self,request, user):
         self.nonUserBoot()
         user = get_user()
         userdocuments = user.works
-        documentType = self.request.get('documentType')
         
-        context = {
-                   'documentType':documentType,
-                   'userdocuments':userdocuments,
-                   'user':      user,
-                   'login':     users.create_login_url(self.request.uri),
-                   'logout':    users.create_logout_url(self.request.uri)
-                   }     
-        tmpl = path.join(path.dirname(__file__), 'templates/create.html')
-        self.response.out.write(template.render(tmpl, context))   
+        if request == "document":
         
-    def myPost(self):
+            context = {
+                       'documentType':request,
+                       'userdocuments':userdocuments,
+                       'user':      user,
+                       'login':     users.create_login_url(self.request.uri),
+                       'logout':    users.create_logout_url(self.request.uri)
+                       }     
+            tmpl = path.join(path.dirname(__file__), 'templates/create.html')
+            self.response.out.write(template.render(tmpl, context))   
+            
+        else:
+            context = {
+                       'documentType':request,
+                       'userdocuments':userdocuments,
+                       'user':      user,
+                       'login':     users.create_login_url(self.request.uri),
+                       'logout':    users.create_logout_url(self.request.uri)
+                       }     
+            tmpl = path.join(path.dirname(__file__), 'templates/ticket.html')
+            self.response.out.write(template.render(tmpl, context))               
+        
+    def myPost(self,request):
         user = get_user()
         if user:
-            self.postMain(user)
+            self.postDocument(request,user)
         else:
             self.boot()
-    
-    def postMain(self, user):
+            
+    def postDocument(self, request, user):
         new = False
         existing_filename = self.request.get('existing_filename')
         filename = self.request.get('filename')
@@ -1395,7 +1415,6 @@ class Create_Document(baseHandler):
         
         if user:
             if user.username:
-                logging.info(str(user))
                 document.author = user
                 document.authorname = user.username 
             else:
@@ -1407,6 +1426,7 @@ class Create_Document(baseHandler):
         document.subtitle = escape(self.request.get('subtitle'))
         document.filename = filename
         document.set_description(description)
+        document.type.append(documentType)
         if draft == 'True':
             document.draft = True
         else:
@@ -1415,6 +1435,10 @@ class Create_Document(baseHandler):
             document.draft = False
         if scriptless:
             self.validate(document)
+        if documentType == 'feature' or documentType == 'bug':
+            document.special = True
+            document.filename = str(document.key())
+            self.makeTicket(document,user)
         document.put()         
        
         if new and not document.draft:
@@ -1427,10 +1451,16 @@ class Create_Document(baseHandler):
                     messages.email_document(document),
                     html = messages.email_document_html(document)
                 )
-        if scriptless == 'true':
+        if scriptless == 'true' and documentType == 'document':
             self.redirect('/addtag/Root/'+document.filename+'/')
         else:
-            self.redirect('/' + document.authorname + '/document/'+  filename + '/')
+            self.redirect('/' + document.authorname + '/document/'+  document.filename + '/')
+      
+    def makeTicket(self, document,user):
+        ticket = Ticket()
+        ticket.user = user
+        ticket.report = document
+        ticket.put()
             
     def validate(self, document):
         document.parse()
@@ -1566,7 +1596,11 @@ class Meta(baseHandler):
     def myGet(self):
         user = get_user()
         metaDocs = get_documents(['Meta'])
+        featureRequests = get_documents(specialType='feature')
+        bugReports = get_documents(specialType='bug')
         context = {
+                   'bugReports': bugReports,
+                   'featureRequests': featureRequests,
                    'metaDocs':  metaDocs,
                    'user':      user,
                    'login':     users.create_login_url(self.request.uri),
@@ -1972,11 +2006,11 @@ class UserBase(baseHandler):
         context = {
                 'pageObject': creator,
                 'commentary':creator.get_commentary(),
-               'commentType': 'userpage',
-               'page_user': creator,
-               'user': user,
-               'login':     users.create_login_url(self.request.uri),
-               'logout':    users.create_logout_url(self.request.uri)
+                'commentType': 'userpage',
+                'page_user': creator,
+                'user': user,
+                'login':     users.create_login_url(self.request.uri),
+                'logout':    users.create_logout_url(self.request.uri)
                }     
         tmpl = path.join(path.dirname(__file__), 'templates/user_base.html')
         self.response.out.write(template.render(tmpl, context))  
@@ -2057,7 +2091,7 @@ application = webapp.WSGIApplication([
     ('.*/message/(.*)/(.*)/',Message),
     ('/user/(.*)/', UserPage),
     ('/register', Register),
-    ('/create', Create_Document),
+    ('/create/(.*)/', Create_Document),
     (r'/(.*)/document/(.*)/edit/delete/', Delete_Document),
     (r'/(.*)/document/(.*)/edit/', Edit_Document),
     (r'/(.*)/document/(.*)/reply/(.+)', View_Document),  

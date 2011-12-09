@@ -5,9 +5,15 @@
 	<div class="stream_item streamDocument">
 		
 		<div class="title">
+			{% if 'feature' in doc.type %}Feature Request: {% endif %}
+			{% if 'bug' in doc.type %}Bug Report: {% endif %}
 			<a href="{{doc.get_url}}">
 				{{doc.title}}
-			</a></div>
+			</a>
+			{% if doc.special %}
+			({{doc.ticket.0.status}})
+			{% endif %}
+		</div>
 		
 		<div class="header">
 			{{doc.date}}- <a href="/user/{{doc.author.username}}/">{{doc.author.username}}</a> 

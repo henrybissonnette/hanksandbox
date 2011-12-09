@@ -31,7 +31,7 @@ body {
 div.bottomlinks{
 	text-align: center;
     border:solid 2px white;
-    min-height: 110px;
+    min-height: 100px;
     padding:10px;
 }
 
@@ -135,6 +135,7 @@ a.username:hover{
 	background-color:#242e2f;;
 	color:#fff;
 	padding: 3px;
+	cursor: pointer;
 }
 
 .aButton:hover{

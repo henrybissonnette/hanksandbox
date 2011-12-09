@@ -311,11 +311,13 @@ function hank(){
 	this.streamDoc = function(){
 		$('.streamDocument').each(function(){
 			$(this).addClass('clickable')
-			$('.title a',this).hide()
+			url = $('.title a',this).attr('href')
+			/*$('.title a',this).hide()   OLD WAY -- New and improved now
 			title = $('.title a',this).html()
-			$('.title',this).append(title)
-			$(this).click(function(){
-				url = $('.title a',this).attr('href')
+			$('.title',this).append(title)*/
+			title = $('.title a',this).html()
+			$('.title a',this).replaceWith(title)
+			$(this).click(function(){				
 				window.location = url
 			})
 		})
@@ -343,6 +345,7 @@ $(document).ready(function(){
 	myHank.streamDoc()
 	myHank.streamComment()
 	myHank.prepareScriptVersion()
+	basic_MCE()
 
 })
 
