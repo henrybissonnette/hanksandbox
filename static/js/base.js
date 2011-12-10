@@ -8,7 +8,7 @@ function basic_MCE()
 		        mode : "textareas",
 			    theme : "advanced",
 			    plugins: "lists"/*,tinyautosave"*/,
-			    content_css : "static/css/custom_content.css",
+			    content_css : "/static/css/custom_content.css",
 			            
 			    theme_advanced_buttons1 : /*"tinyautosave,|,"*/"bold,italic,underline,strikethrough,|,link,unlink,|,bullist, numlist,|,blockquote,undo,|,formatselect,charmap", 
 			    theme_advanced_buttons2 : "", 
