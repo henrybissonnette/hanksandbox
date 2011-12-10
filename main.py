@@ -1424,7 +1424,8 @@ class Create_Document(baseHandler):
         title = escape(self.request.get('title'))
         document.title = title
         document.subtitle = escape(self.request.get('subtitle'))
-        document.filename = filename
+        if filename:
+            document.filename = filename
         document.set_description(description)
         document.type.append(documentType)
         if draft == 'True':

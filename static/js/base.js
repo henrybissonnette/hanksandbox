@@ -2,16 +2,15 @@
 //include tiny mce in textareas when pages render
 //still needs to be independently loaded with ajaxed forms
 function basic_MCE()
-	{
-		
+	{		
 		tinyMCE.init({
 				
 		        mode : "textareas",
 			    theme : "advanced",
-			    plugins: "lists,tinyautosave",
+			    plugins: "lists"/*,tinyautosave"*/,
 			    content_css : "static/css/custom_content.css",
 			            
-			    theme_advanced_buttons1 : "tinyautosave,|,bold,italic,underline,strikethrough,|,link,unlink,|,bullist, numlist,|,blockquote,undo,|,formatselect,charmap", 
+			    theme_advanced_buttons1 : /*"tinyautosave,|,"*/"bold,italic,underline,strikethrough,|,link,unlink,|,bullist, numlist,|,blockquote,undo,|,formatselect,charmap", 
 			    theme_advanced_buttons2 : "", 
 			    theme_advanced_buttons3 : "" ,
 			    theme_advanced_statusbar_location : "bottom",
@@ -311,7 +310,7 @@ function hank(){
 	this.streamDoc = function(){
 		$('.streamDocument').each(function(){
 			$(this).addClass('clickable')
-			url = $('.title a',this).attr('href')
+			var url = $('.title a',this).attr('href')
 			/*$('.title a',this).hide()   OLD WAY -- New and improved now
 			title = $('.title a',this).html()
 			$('.title',this).append(title)*/
@@ -345,7 +344,7 @@ $(document).ready(function(){
 	myHank.streamDoc()
 	myHank.streamComment()
 	myHank.prepareScriptVersion()
-	basic_MCE()
+
 
 })
 
