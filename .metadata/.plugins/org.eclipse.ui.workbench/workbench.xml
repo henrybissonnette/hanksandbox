@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<workbench progressCount="35" version="2.0">
+<workbench progressCount="40" version="2.0">
 <workbenchAdvisor/>
 <window height="1160" maximized="true" width="960" x="430" y="-9">
 <fastViewData fastViewLocation="1024"/>
@@ -45,27 +45,27 @@
 </editorArea>
 <editor id="org.python.pydev.editor.PythonEditor" name="main.py" partName="main" title="main" tooltip="C:\Users\Hank\hanksandbox\main.py" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/main.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="74602" selectionTopPixel="33422"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="66245" selectionTopPixel="30107"/>
 </editor>
-<editor id="com.aptana.editor.html" name="expand.html" partName="expand.html" title="expand.html" tooltip="C:\Users\Hank\hanksandbox\templates\tag_request\expand.html" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/templates/tag_request/expand.html"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1094" selectionTopPixel="0"/>
-</editor>
-<editor id="com.aptana.editor.js" name="base.js" partName="base.js" title="base.js" tooltip="C:\Users\Hank\hanksandbox\static\js\base.js" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/static/js/base.js"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="10282" selectionTopPixel="0"/>
-</editor>
-<editor id="com.aptana.editor.html" name="base.html" partName="base.html" title="base.html" tooltip="C:\Users\Hank\hanksandbox\templates\base.html" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/templates/base.html"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1089" selectionTopPixel="85"/>
+<editor id="com.aptana.editor.html" name="tag_page.html" partName="tag_page.html" title="tag_page.html" tooltip="C:\Users\Hank\hanksandbox\templates\tag_page.html" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/templates/tag_page.html"/>
+<editorState selectionHorizontalPixel="0" selectionLength="49" selectionOffset="956" selectionTopPixel="215"/>
 </editor>
 <editor id="com.aptana.editor.css" name="main.css" partName="main.css" title="main.css" tooltip="C:\Users\Hank\hanksandbox\static\css\main.css" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/static/css/main.css"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="885" selectionTopPixel="521"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1988" selectionTopPixel="1938"/>
 </editor>
-<editor activePart="true" focus="true" id="com.aptana.editor.html" name="user.html" partName="user.html" title="user.html" tooltip="C:\Users\Hank\hanksandbox\templates\user.html" workbook="DefaultEditorWorkbook">
+<editor id="com.aptana.editor.html" name="user.html" partName="user.html" title="user.html" tooltip="C:\Users\Hank\hanksandbox\templates\user.html" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/templates/user.html"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="5153" selectionTopPixel="1919"/>
+<editorState selectionHorizontalPixel="0" selectionLength="34" selectionOffset="2158" selectionTopPixel="0"/>
+</editor>
+<editor activePart="true" focus="true" id="com.aptana.editor.js" name="subscribeTag.js" partName="subscribeTag.js" title="subscribeTag.js" tooltip="C:\Users\Hank\hanksandbox\static\js\subscribeTag.js" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/static/js/subscribeTag.js"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1021" selectionTopPixel="198"/>
+</editor>
+<editor id="com.aptana.editor.js" name="comment_system.js" partName="comment_system.js" title="comment_system.js" tooltip="C:\Users\Hank\hanksandbox\static\js\comment_system.js" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/hanksandbox/static/js/comment_system.js"/>
+<editorState selectionHorizontalPixel="0" selectionLength="22" selectionOffset="3861" selectionTopPixel="0"/>
 </editor>
 </editors>
 <views>
@@ -91,7 +91,7 @@
 <viewState/>
 </view>
 </views>
-<perspectives activePart="com.aptana.editor.html" activePerspective="com.aptana.ui.WebPerspective">
+<perspectives activePart="com.aptana.editor.js" activePerspective="com.aptana.ui.WebPerspective">
 <perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
 <descriptor class="com.aptana.ui.internal.WebPerspectiveFactory" id="com.aptana.ui.WebPerspective" label="Web"/>
 <alwaysOnActionSet id="com.aptana.browser.actionSet"/>
@@ -197,167 +197,163 @@
 <workingSets/>
 <navigationHistory>
 <editors>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.css" uri="file:/C:/Users/Hank/qv/static/css/main.css"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/qv/templates/base.html"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/settings.py"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/qv/apps/core/templates/core/deal.html"/>
 <editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/hanksandbox/main.py"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/hanksandbox/templates/tag_request/expand.html"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.js" uri="file:/C:/Users/Hank/hanksandbox/static/js/base.js"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/hanksandbox/templates/base.html"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.css" uri="file:/C:/Users/Hank/hanksandbox/static/css/main.css"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/hanksandbox/templates/tag_page.html"/>
 <editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/hanksandbox/templates/user.html"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/hanksandbox/templates/base.html"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.js" uri="file:/C:/Users/Hank/hanksandbox/static/js/subscribeTag.js"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.js" uri="file:/C:/Users/Hank/hanksandbox/static/js/base.js"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.js" uri="file:/C:/Users/Hank/hanksandbox/static/js/tag_browser.js"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.js" uri="file:/C:/Users/Hank/hanksandbox/static/js/comment_system.js"/>
 </editors>
-<item historyLabel="main.css" index="0">
-<position info="not_deleted" x="1177" y="0"/>
+<item historyLabel="user.html" index="2">
+<position info="not_deleted" x="2158" y="34"/>
 </item>
-<item historyLabel="base.html" index="1">
-<position info="not_deleted" x="953" y="0"/>
+<item historyLabel="tag_page.html" index="1">
+<position info="not_deleted" x="1267" y="0"/>
 </item>
-<item historyLabel="main.css" index="0">
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="841" y="0"/>
+</item>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="52" y="0"/>
+</item>
+<item historyLabel="subscribeTag.js" index="3">
 <position/>
 </item>
-<item historyLabel="base.html" index="1">
+<item historyLabel="subscribeTag.js" index="3">
 <position/>
 </item>
-<item historyLabel="settings" index="2">
-<position info="not_deleted" x="1311" y="0"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="51" y="0"/>
 </item>
-<item historyLabel="main.css" index="0">
-<position info="not_deleted" x="1547" y="0"/>
+<item historyLabel="tag_page.html" index="1">
+<position info="not_deleted" x="869" y="0"/>
 </item>
-<item historyLabel="base.html" index="1">
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="51" y="0"/>
+</item>
+<item historyLabel="tag_page.html" index="1">
+<position info="not_deleted" x="1151" y="0"/>
+</item>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="51" y="0"/>
+</item>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="840" y="0"/>
+</item>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="68" y="0"/>
+</item>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="839" y="0"/>
+</item>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="137" y="0"/>
+</item>
+<item historyLabel="subscribeTag.js" index="3">
 <position/>
 </item>
-<item historyLabel="base.html" index="1">
-<position info="not_deleted" x="481" y="0"/>
-</item>
-<item historyLabel="main.css" index="0">
+<item historyLabel="subscribeTag.js" index="3">
 <position/>
 </item>
-<item historyLabel="base.html" index="1">
-<position info="not_deleted" x="1280" y="0"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="836" y="0"/>
 </item>
-<item historyLabel="deal.html" index="3">
-<position info="not_deleted" x="0" y="0"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="173" y="0"/>
 </item>
-<item historyLabel="base.html" index="1">
-<position info="not_deleted" x="1280" y="0"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="190" y="0"/>
 </item>
-<item historyLabel="main.css" index="0">
-<position info="not_deleted" x="1340" y="0"/>
-</item>
-<item historyLabel="base.html" index="1">
-<position info="not_deleted" x="4929" y="0"/>
-</item>
-<item historyLabel="main.css" index="0">
-<position info="not_deleted" x="1608" y="0"/>
-</item>
-<item historyLabel="base.html" index="1">
+<item historyLabel="subscribeTag.js" index="3">
 <position/>
 </item>
-<item historyLabel="main.css" index="0">
-<position info="not_deleted" x="2048" y="0"/>
+<item historyLabel="tag_page.html" index="1">
+<position info="not_deleted" x="1180" y="50"/>
 </item>
-<item historyLabel="base.html" index="1">
-<position info="not_deleted" x="5591" y="0"/>
-</item>
-<item historyLabel="main.css" index="0">
+<item historyLabel="subscribeTag.js" index="3">
 <position/>
 </item>
-<item historyLabel="base.html" index="1">
-<position info="not_deleted" x="419" y="0"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="240" y="0"/>
 </item>
-<item historyLabel="main.css" index="0">
-<position info="not_deleted" x="1149" y="0"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="375" y="0"/>
 </item>
-<item historyLabel="base.html" index="1">
-<position info="not_deleted" x="419" y="0"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="388" y="0"/>
 </item>
-<item historyLabel="settings" index="2">
-<position info="not_deleted" x="1311" y="0"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="835" y="0"/>
 </item>
-<item historyLabel="main" index="4">
-<position info="not_deleted" x="0" y="0"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="405" y="0"/>
 </item>
-<item historyLabel="expand.html" index="5">
-<position info="not_deleted" x="2554" y="0"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="812" y="0"/>
 </item>
-<item historyLabel="main" index="4">
-<position info="not_deleted" x="39186" y="5"/>
+<item historyLabel="main" index="0">
+<position info="not_deleted" x="66259" y="0"/>
 </item>
-<item historyLabel="expand.html" index="5">
-<position info="not_deleted" x="2741" y="0"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="78" y="0"/>
 </item>
-<item historyLabel="main" index="4">
-<position info="not_deleted" x="74261" y="13"/>
+<item historyLabel="main" index="0">
+<position info="not_deleted" x="66259" y="0"/>
 </item>
-<item historyLabel="expand.html" index="5">
-<position info="not_deleted" x="1261" y="0"/>
+<item historyLabel="tag_page.html" index="1">
+<position info="not_deleted" x="1389" y="0"/>
 </item>
-<item historyLabel="main" index="4">
-<position info="not_deleted" x="74261" y="13"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="78" y="0"/>
 </item>
-<item historyLabel="base.js" index="6">
-<position info="not_deleted" x="0" y="0"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="705" y="0"/>
 </item>
-<item historyLabel="base.js" index="6">
-<position info="not_deleted" x="157" y="0"/>
+<item historyLabel="main" index="0">
+<position info="not_deleted" x="66245" y="0"/>
 </item>
-<item historyLabel="base.html" index="7">
-<position info="not_deleted" x="699" y="0"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="174" y="0"/>
 </item>
-<item historyLabel="base.js" index="6">
-<position info="not_deleted" x="10030" y="0"/>
+<item historyLabel="base.js" index="4">
+<position info="not_deleted" x="1026" y="0"/>
 </item>
-<item historyLabel="main" index="4">
-<position info="not_deleted" x="74602" y="0"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="174" y="0"/>
 </item>
-<item historyLabel="base.html" index="7">
-<position info="not_deleted" x="1541" y="0"/>
+<item historyLabel="tag_browser.js" index="5">
+<position info="not_deleted" x="2796" y="271"/>
 </item>
-<item historyLabel="main" index="4">
-<position info="not_deleted" x="74602" y="0"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="692" y="0"/>
 </item>
-<item historyLabel="expand.html" index="5">
-<position info="not_deleted" x="1261" y="0"/>
+<item historyLabel="tag_browser.js" index="5">
+<position info="not_deleted" x="2718" y="0"/>
 </item>
-<item historyLabel="base.js" index="6">
-<position info="not_deleted" x="10030" y="0"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="692" y="0"/>
 </item>
-<item historyLabel="base.html" index="7">
-<position info="not_deleted" x="1541" y="0"/>
+<item historyLabel="comment_system.js" index="6">
+<position info="not_deleted" x="3861" y="22"/>
 </item>
-<item historyLabel="expand.html" index="5">
-<position info="not_deleted" x="1094" y="0"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="692" y="0"/>
 </item>
-<item historyLabel="base.js" index="6">
-<position info="not_deleted" x="10282" y="0"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="1575" y="0"/>
 </item>
-<item historyLabel="main" index="4">
-<position info="not_deleted" x="74602" y="0"/>
+<item historyLabel="main" index="0">
+<position info="not_deleted" x="66245" y="0"/>
 </item>
-<item historyLabel="expand.html" index="5">
-<position info="not_deleted" x="1094" y="0"/>
+<item historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="1680" y="0"/>
 </item>
-<item historyLabel="base.js" index="6">
-<position info="not_deleted" x="10282" y="0"/>
+<item historyLabel="tag_page.html" index="1">
+<position info="not_deleted" x="956" y="49"/>
 </item>
-<item historyLabel="main.css" index="8">
-<position info="not_deleted" x="308" y="0"/>
-</item>
-<item historyLabel="user.html" index="9">
-<position info="not_deleted" x="1505" y="0"/>
-</item>
-<item historyLabel="main.css" index="8">
-<position info="not_deleted" x="308" y="0"/>
-</item>
-<item historyLabel="base.html" index="10">
-<position info="not_deleted" x="1089" y="0"/>
-</item>
-<item active="true" historyLabel="user.html" index="9">
-<position info="not_deleted" x="1505" y="0"/>
+<item active="true" historyLabel="subscribeTag.js" index="3">
+<position info="not_deleted" x="1680" y="0"/>
 </item>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
@@ -380,41 +376,32 @@
 </trimLayout>
 </window>
 <mruList>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.js" name="comment_system.js" tooltip="C:\Users\Hank\hanksandbox\static\js\comment_system.js">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/static/js/comment_system.js"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.js" name="tag_browser.js" tooltip="C:\Users\Hank\hanksandbox\static\js\tag_browser.js">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/static/js/tag_browser.js"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.js" name="base.js" tooltip="C:\Users\Hank\hanksandbox\static\js\base.js">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/static/js/base.js"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.js" name="subscribeTag.js" tooltip="C:\Users\Hank\hanksandbox\static\js\subscribeTag.js">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/static/js/subscribeTag.js"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="document.html" tooltip="C:\Users\Hank\hanksandbox\templates\document.html">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/templates/document.html"/>
+</file>
 <file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="user.html" tooltip="C:\Users\Hank\hanksandbox\templates\user.html">
 <persistable uri="file:/C:/Users/Hank/hanksandbox/templates/user.html"/>
 </file>
 <file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.css" name="main.css" tooltip="C:\Users\Hank\hanksandbox\static\css\main.css">
 <persistable uri="file:/C:/Users/Hank/hanksandbox/static/css/main.css"/>
 </file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="base.html" tooltip="C:\Users\Hank\hanksandbox\templates\base.html">
-<persistable uri="file:/C:/Users/Hank/hanksandbox/templates/base.html"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.js" name="base.js" tooltip="C:\Users\Hank\hanksandbox\static\js\base.js">
-<persistable uri="file:/C:/Users/Hank/hanksandbox/static/js/base.js"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="expand.html" tooltip="C:\Users\Hank\hanksandbox\templates\tag_request\expand.html">
-<persistable uri="file:/C:/Users/Hank/hanksandbox/templates/tag_request/expand.html"/>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="tag_page.html" tooltip="C:\Users\Hank\hanksandbox\templates\tag_page.html">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/templates/tag_page.html"/>
 </file>
 <file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="main.py" tooltip="C:\Users\Hank\hanksandbox\main.py">
 <persistable uri="file:/C:/Users/Hank/hanksandbox/main.py"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="deal.html" tooltip="C:\Users\Hank\qv\apps\core\templates\core\deal.html">
-<persistable uri="file:/C:/Users/Hank/qv/apps/core/templates/core/deal.html"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.svg" name="gotham-webfont.svg" tooltip="C:\Users\Hank\qv\static\gotham-webfont.svg">
-<persistable uri="file:/C:/Users/Hank/qv/static/gotham-webfont.svg"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.eclipse.ui.systemExternalEditor" name="header.png" tooltip="C:\Users\Hank\qv\static\img\header.png">
-<persistable uri="file:/C:/Users/Hank/qv/static/img/header.png"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="online.py" tooltip="C:\Users\Hank\qv\scripts\online.py">
-<persistable uri="file:/C:/Users/Hank/qv/scripts/online.py"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="settings.py" tooltip="C:\Users\Hank\qv\settings.py">
-<persistable uri="file:/C:/Users/Hank/qv/settings.py"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="fix_subscription.py" tooltip="C:\Users\Hank\qv\scripts\fix_subscription.py">
-<persistable uri="file:/C:/Users/Hank/qv/scripts/fix_subscription.py"/>
 </file>
 <file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="base.html" tooltip="C:\Users\Hank\qv\templates\base.html">
 <persistable uri="file:/C:/Users/Hank/qv/templates/base.html"/>
@@ -422,8 +409,17 @@
 <file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="urls.py" tooltip="C:\Users\Hank\qv\urls.py">
 <persistable uri="file:/C:/Users/Hank/qv/urls.py"/>
 </file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="manage.py" tooltip="C:\Users\Hank\qv\manage.py">
-<persistable uri="file:/C:/Users/Hank/qv/manage.py"/>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.css" name="main.css" tooltip="C:\Users\Hank\qv\static\css\main.css">
+<persistable uri="file:/C:/Users/Hank/qv/static/css/main.css"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="comment_base.html" tooltip="C:\Users\Hank\hanksandbox\templates\comment_request\comment_base.html">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/templates/comment_request/comment_base.html"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.css" name="custom_content.css" tooltip="C:\Users\Hank\hanksandbox\static\css\custom_content.css">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/static/css/custom_content.css"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.text" name="changelog.txt" tooltip="C:\Users\Hank\hanksandbox\static\tinymce\changelog.txt">
+<persistable uri="file:/C:/Users/Hank/hanksandbox/static/tinymce/changelog.txt"/>
 </file>
 </mruList>
 </workbench>

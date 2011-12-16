@@ -126,7 +126,16 @@
 					{% if user.username == page_user.username or user.is_admin%}
 					<span title="Comments with Ratings lower than your rating threshold will display minimized.">Rating Threshold</span>:
 					{{user.threshold}}	
-					{% endif %}				
+					{% endif %}		
+					<br/>
+					Tag Subscriptions: 
+					{% if user.subscriptions_tag %}
+						{% for tag in user.subscriptions_tag %}
+						<a href="/tag/{{tag.title}}/">{{tag.title}}</a>	
+						{% endfor %}
+					{% else %}
+						None
+					{% endif %}
 				</div>
 			{% comment %}
 			---------------------------------------------------------

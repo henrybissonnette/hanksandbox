@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block scripts %}
+<script type="text/javascript" src="/static/js/subscribeTag.js"></script>
 {% endblock %}
 
 {% block leftside %}
@@ -45,14 +46,25 @@
 
 {% block content %}
 
-	<h1>{{ maintag.title }}</h1>
-
+	<h1>
+		{{ maintag.title }} 
+		{% if user %}
+			{% if not maintag.title in user.subscriptions_tag %}
+			<a href="subscribe-tag/scriptless_add/{{maintag.title}}/" class="subscribe_tag aButton {tag:'{{maintag.title}}'}"  
+			title="New documents with this tag will automatically appear in your stream.">
+				Subscribe
+			</a>			
+			{% else %}
+			<a href="subscribe-tag/scriptless_remove/{{maintag.title}}/" class="subscribe_tag aButton {tag:'{{maintag.title}}'}"
+			title="Remove this tag from your subscriptions.">
+				Unsubscribe
+			</a>			
+			{% endif %}
+		{% endif %}
+	</h1>
 	{% for doc in maintag.get_documents%}
-	{% if not document.draft %}
-	<div>
-		<a href="{{doc.get_url}}">{{doc.title}}</a> by 
-		<a class="username" href="{{doc.author.get_url}}">{{doc.author.username}}</a>
-	</div>
+	{% if not doc.draft %}
+		{% include 'streamDocument.html' %}
 	{% endif %}
 	{% endfor %}
 

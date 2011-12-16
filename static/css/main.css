@@ -130,9 +130,22 @@ a.username:hover{
 	color: #555;
 }
 
+.button{
+	margin-left:10px;
+	font-size: 15px;
+	background-color:#242e2f;
+	color:#fff;
+	cursor: pointer;
+}
+
+.button:hover{
+	background-color:#555;
+}
+
 .aButton{
+	font-size: 15px;
 	text-decoration: none;
-	background-color:#242e2f;;
+	background-color:#242e2f;
 	color:#fff;
 	padding: 3px;
 	cursor: pointer;

@@ -30,7 +30,7 @@
 	<div class="left_half">			
 		<a href="{%if document%}{{document.get_url}}{%else%}}{{user.get_url}}{%endif%}" title="Return to previous page.">Cancel</a>
 		<h1 class="embed">{% if document %}Edit{% else %}Create{% endif %}</h1>
-		<form action="/create"  method=post>
+		<form action="/create/document/"  method=post>
 			<table>
 				<tr>
 					<td>File Name: </td><td><input type="text" id="filename" name="filename" size=40 value="{{document.filename}}" /></td>

@@ -518,6 +518,16 @@ class User(db.Model):
         subscribee.put()
         self.put()
         return message
+    
+    def subscribeTag(self, tagTitle, subscribe):
+        logging.info('in subscribe tag')
+        if subscribe and not tagTitle in self.subscriptions_tag:
+            logging.info('subscribing')
+            self.subscriptions_tag.append(tagTitle)
+        if not subscribe and tagTitle in self.subscriptions_tag:
+            logging.info('unsubscribing')
+            self.subscriptions_tag.remove(tagTitle)
+        self.put()
         
     def withdrawCircle(self, username):
         self.invitees.remove(username)
@@ -971,8 +981,7 @@ class AJAX(webapp.RequestHandler):
         if request == 'subscribe-query':
             self.subscribeQuery()
         if request == 'delete-comment':
-            self.deleteComment()
-        
+            self.deleteComment()        
             
     def deleteComment(self):
         selfKey = self.request.get('selfKey')
@@ -1026,6 +1035,7 @@ class AJAX(webapp.RequestHandler):
             isSubscribed = 'false'
         logging.info('subscribed? '+isSubscribed)
         self.response.out.write(isSubscribed)
+        
         
 class baseHandler(webapp.RequestHandler):
     
@@ -1776,7 +1786,23 @@ class Subscription_Handler(baseHandler):
         user.set_subscription(subscriptions,username)
         self.redirect('../../')
         #self.response.out.write(message)
+  
+class Subscribe_Tag(webapp.RequestHandler):
+    
+    def get(self, scriptless, request, tagTitle):
+        self.makeRequest(request, tagTitle)
+        if scriptless:
+            self.redirect('../../../')
+
+    def makeRequest(self,request, tagTitle):
+        user = get_user()
+        if request == 'add':
+            user.subscribeTag(tagTitle, True)
+        if request == 'remove':
+            user.subscribeTag(tagTitle, False)
         
+
+      
 class Tag_Browser(webapp.RequestHandler):
     def post(self):        
         
@@ -2072,6 +2098,8 @@ class View_Document(baseHandler):
 application = webapp.WSGIApplication([
     ('/ajax/(.*)/',AJAX),
     ('.*/rate/', Rating),
+    ('.*/tag_(.*)/', TagManager),
+    ('.*/subscribe-tag/(.*)_(.*)/(.*)/', Subscribe_Tag),
     ('/reply-base/', ReplyBase),
     ('.*/comment/', CommentHandler),
     ('.*/circle/(.*)/(.*)/', Circle),
@@ -2087,7 +2115,6 @@ application = webapp.WSGIApplication([
     ('/availability/', Username_Check),
     ('/update-model/', Update_Model),  
     ('/meta/',Meta),                                    
-    ('.*/tag_(.*)/', TagManager),
     ('/admin/', Admin),
     ('.*/message/(.*)/(.*)/',Message),
     ('/user/(.*)/', UserPage),

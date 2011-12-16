@@ -31,7 +31,7 @@
 	-----------------------------Left Column Tabs-------------------------------------
 	{% endcomment %}	
 	<div class="tabs left_half">
-		<div class="tab {name:'Recent Documents',initial:'true'}">
+		<div class="tab {name:'Recent Documents'}">
 			<h1>Recent Documents</h1>
 		
 			{% for doc in main_documents %}
@@ -40,7 +40,7 @@
 			{% endif %}
 			{% endfor %}
 		</div>
-		<div class="tab {name:'Browse by Tag'}">
+		<div class="tab {name:'Browse by Tag',initial:'true'}">
 			<h1>Browse by Tag</h1>
 			<div id="tag_browser" class="tag_browser">
 				A tag browser is available for javascript enabled user agents. You may use the links on the left side to browse articles by tag.
