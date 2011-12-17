@@ -183,8 +183,7 @@ function streamDoc(doc){
 		
 		var header = document.createElement('div')
 		header.className='stream_header'
-		header.innerHTML = doc['date']+'- <a href="/user/'+doc['author']+'/">'+doc['author']+'</a> '
-		
+		header.innerHTML = doc['date']+'- <a href="/user/'+doc['author']+'/" class="username">'+doc['author']+'</a> '
 
 		var content = document.createElement('div')
 		content.className = 'stream_description'

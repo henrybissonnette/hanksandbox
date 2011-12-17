@@ -394,8 +394,13 @@ class User(db.Model):
             affected.append(other)      
             
         for comment in self.mycomments:
-            #potential ERROR if some comments are descendants of others
-            comment.remove()
+            try:
+                comment.remove()
+            except:
+                pass
+            
+        for comment in user.mypagecomments:
+            comment.remove(message='Your comment on '+self.username+'\'s page has been deleted because '+self.username+'\'s account has been deleted.')
             
         for document in self.works:
             document.remove()
@@ -405,6 +410,14 @@ class User(db.Model):
             
         for rating in self.ratings:
             rating.delete()
+            
+        #deliver message to affected
+        affected = remove_duplicates(affected)
+        for user in affected:
+            message = StreamMessage()
+            message.recipient = user
+            message.content = self.username+'\'s account has been deleted. RIP '+self.username
+            message.put()
             
         self.delete()
              
@@ -460,7 +473,7 @@ class User(db.Model):
         self.put()
         
     def set_subscription(self, subscriptions, subscribee):
-        """ SUBSCRIPTIONS is a list of values one each for email and stream 
+        """ SUBSCRIPTIONS is a list of values (0,1) one each for email and stream 
         subscription on either comments or documents. Subscribee should be a 
         username string. """
         flag = None
@@ -700,7 +713,15 @@ class Document(db.Model):
         
         replies = self.comments
         for reply in replies:
-            reply.remove()
+            reply.remove(message='Your comment on '+self.title+' by '+self.authorname+' has been deleted because '+self.title+' has been deleted.')
+            
+        for vote in self.ratings:
+            vote.delete()
+        
+        for username in self.favorites():
+            user = get_user(username)
+            user.favorites.remove(self.key())
+            user.put()            
             
         self.delete()
         
@@ -812,7 +833,7 @@ class Comment(db.Model):
         self.rating = rating
         self.put()
     
-    def remove(self):
+    def remove(self, message=''):
         
         ratings = self.ratings
         for rating in ratings:
@@ -820,7 +841,14 @@ class Comment(db.Model):
         
         children = self.replies
         for child in children:
-            child.remove()
+            child.remove(message)
+          
+        if not message:
+            message = 'A comment of yours was deleted because '+this.subject+' by '+this.author.username+' was deleted.'  
+        streamMessage = StreamMessage()
+        streamMessage.recipient = self.author
+        streamMessage.content = message
+        streamMessage.put()
             
         self.delete()
         
@@ -1804,8 +1832,8 @@ class Subscribe_Tag(webapp.RequestHandler):
 
       
 class Tag_Browser(webapp.RequestHandler):
-    def post(self):        
-        
+    def post(self):
+        months = ['Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.','Sep.','Oct.','Nov.','Dec.']
         focal = self.request.get('tag')
         obj = {}
         #if focal != 'root':
@@ -1827,12 +1855,11 @@ class Tag_Browser(webapp.RequestHandler):
             newDoc['title']=str(doc.title)
             newDoc['description']=doc.get_description()
             newDoc['author']=doc.authorname
-            newDoc['date']=str(doc.date)
+            newDoc['date']=months[doc.date.month-1]+' '+str(doc.date.day)+', '+str(doc.date.year)
             newDoc['filename']=doc.filename
             newDoc['key']=str(doc.key())
             documents.append(newDoc)
         obj['documents']=documents
-        
         jsonObj = json.dumps(obj)
 
             
@@ -2098,6 +2125,7 @@ class View_Document(baseHandler):
 application = webapp.WSGIApplication([
     ('/ajax/(.*)/',AJAX),
     ('.*/rate/', Rating),
+    ('/tag_browser/',Tag_Browser),
     ('.*/tag_(.*)/', TagManager),
     ('.*/subscribe-tag/(.*)_(.*)/(.*)/', Subscribe_Tag),
     ('/reply-base/', ReplyBase),
@@ -2105,7 +2133,6 @@ application = webapp.WSGIApplication([
     ('.*/circle/(.*)/(.*)/', Circle),
     ('/delete-account/', DeleteAccount),
     ('/postcomment/', PostComment),
-    ('/tag_browser/',Tag_Browser),
     ('/addtag/(.*)/(.*)/', AddTag),
     ('/tag/(.+)/',Tag_Page),
     ('/(.*)/document/(.*)/favorite/',Favorite),

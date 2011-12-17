@@ -16,7 +16,7 @@
 		</div>
 		
 		<div class="header">
-			{{doc.date}}- <a href="/user/{{doc.author.username}}/">{{doc.author.username}}</a> 
+			{{doc.date.date}}- <a href="/user/{{doc.author.username}}/" class="username">{{doc.author.username}}</a> 
 		</div>
 		
 		{% if doc.get_description %}
