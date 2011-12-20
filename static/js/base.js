@@ -356,7 +356,7 @@ $(document).ready(function(){
 		$('div.stream_item').corner()
 		$('div.pagetop').corner('40px')
 		$('div.bodycontent').corner('40px')
-		$('.round').corner('40px')
+		$('.round').corner('30px')
 		$('.aButton').corner('40px')
 		$('.roundtop').corner('40px top')
 	}

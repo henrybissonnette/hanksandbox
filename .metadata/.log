@@ -14118,3 +14118,465 @@ java.lang.Exception: Unable to resolve file
 java.lang.Exception: Unable to resolve file
 	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
 	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 12:47:04.085
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 12:47:08.591
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 12:47:10.089
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 12:47:13.594
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 12:47:14.599
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 12:47:16.104
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 12:47:17.609
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 12:47:26.613
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:41:53.696
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:41:55.697
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:41:59.702
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:42:11.208
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:42:13.710
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:42:14.715
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:42:23.720
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:42:46.520
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:42:48.026
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:42:51.048
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:42:53.052
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:51:05.212
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:51:05.213
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:51:06.238
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:51:06.239
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:51:07.768
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:51:07.772
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:51:09.805
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:51:09.806
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 15:52:02.661
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:52:42.637
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:52:42.638
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:52:44.667
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:52:44.668
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:52:48.695
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:52:48.696
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:52:56.224
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:52:56.225
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:52:58.753
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:52:58.754
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:52:59.782
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:52:59.783
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:04.357
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:04.358
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:08.952
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:08.953
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:10.481
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:10.483
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:12.001
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:12.002
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:13.516
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:13.516
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:16.541
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:16.541
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:21.114
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:21.115
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:22.642
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:22.644
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:23.670
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:23.671
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:25.495
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:25.496
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:27.523
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-17 16:53:27.525
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-20 08:27:24.728
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-20 08:27:24.743
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-20 08:27:27.252
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2011-12-20 08:27:27.252
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)

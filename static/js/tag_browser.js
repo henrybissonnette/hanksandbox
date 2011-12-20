@@ -51,6 +51,7 @@ function tag_browser(location, data){
 		this.display_path()
 		this.display_children()
 		this.display_documents()
+		$('.stream_item').corner()
 	}
 
 	this.display_path = function(){
@@ -174,7 +175,6 @@ function streamDoc(doc){
 		container.id = location + '_streamDoc_'+doc['key']
 		container.className = 'browser_streamDoc stream_item clickable'
 		container.onclick = direct
-		$('.stream_item').corner()
 		
 
 		var title = document.createElement('div')

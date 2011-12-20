@@ -107,7 +107,7 @@ main =Template(u'''
     <html>
     <body>
     <div id="frame">
-        <h1 id="mainhead">Essay.com</h1>
+        <h1 id="mainhead"><a href="http://essayhost.appspot.com/">Essay.com</a></h1>
         ${content}
     </div>
     </body>
@@ -179,7 +179,7 @@ def email_comment(comment):
         authorfetch='anonymous'
         
     if len(comment.stripped_content)>300:
-        content = comment.stripped_content[:300]+'... follow link to read the rest of '+comment.author+'\'s comment.'
+        content = comment.stripped_content[:300]+'... follow link to read the rest of '+comment.author.username+'\'s comment.'
     else:
         content = comment.stripped_content
         

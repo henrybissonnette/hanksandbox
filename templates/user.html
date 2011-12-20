@@ -153,11 +153,18 @@
 					<h2 class="notab">Edit</h2>
 					Comments with Ratings lower than your rating threshold will display minimized.
 					<form action="/userinfo/" method="post">
-						<input name="threshold" type="number" />
+						Rating Threshold: <input name="threshold" type="number" size=2 value={{page_user.minimizeThreshold}} />
 						<input type="hidden" name="attribute" value="threshold">
-						<input type="submit" value="Set Threshold" />				
+						<br/>
+						First Name: <input type="text" name="firstname" value="{{page_user.firstname}}"  />
+						<br/>
+						Last Name: <input type="text" name="lastname" value="{{page_user.lastname}}" />	
+						<input type="checkbox" name="displayname" value="displayname" {%if page_user.name_preference == 'realname'%}checked{%endif%}/>	
+						Display my name on documents.
+						<br/>
+						<input type="submit" value="Save Settings" />			
 					</form>
-					
+				
 					</br>
 					<form action="/delete-account/" method="post">
 						<input type="submit" value="Delete my Account" title="Delete your Account?!" />

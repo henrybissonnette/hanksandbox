@@ -218,6 +218,8 @@ class User(db.Model):
     displayname = db.StringProperty()
     email_log = db.ListProperty(db.Key,default=[])
     favorites = db.ListProperty(db.Key,default=[])
+    fistname = db.StringProperty(default='')
+    lastname = db.StringProperty(default='')
     google = db.UserProperty()
     invitations = db.StringListProperty(default=[])
     invitees = db.StringListProperty(default=[])
@@ -239,6 +241,7 @@ class User(db.Model):
     subscriptions_tag = db.StringListProperty(default=[])
     
     minimizeThreshold = db.IntegerProperty(default=3)
+    namePreference = db.StringProperty(default='username')
     object_type = db.StringProperty(default = 'User')
     username = db.StringProperty()
     
@@ -399,7 +402,7 @@ class User(db.Model):
             except:
                 pass
             
-        for comment in user.mypagecomments:
+        for comment in self.mypagecomments:
             comment.remove(message='Your comment on '+self.username+'\'s page has been deleted because '+self.username+'\'s account has been deleted.')
             
         for document in self.works:
@@ -718,7 +721,7 @@ class Document(db.Model):
         for vote in self.ratings:
             vote.delete()
         
-        for username in self.favorites():
+        for username in self.favorites:
             user = get_user(username)
             user.favorites.remove(self.key())
             user.put()            

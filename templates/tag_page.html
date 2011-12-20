@@ -14,20 +14,20 @@
 		<ul>
 			
 			<li>
-				<a href="/home/" title='return to top'>Home</a>
+				<a class="margin" href="/home/" title='return to top'>Home</a>
 			</li>
 			
 			
 			{% for ancestor in maintag.get_ancestors reversed %}
 			<li>
-			<a href="/tag/{{ancestor.title}}/" title='{{ancestor.title}}'>{{ancestor.title}}</a>
+			<a href="/tag/{{ancestor.title}}/" class="margin" title='{{ancestor.title}}'>{{ancestor.title}}</a>
 			</li>
 			{% endfor %}
 			
 			
 			<li>
 				<hr/>
-				{{maintag.title}}
+				<b>{{maintag.title}}</b>
 				<hr/>
 			</li>
 
@@ -35,7 +35,7 @@
 			
 			{% for child in maintag.get_children %}
 			<li>
-				<a href="/tag/{{child.title}}/" title='{{child.title}}'>{{child.title}}</a>
+				<a href="/tag/{{child.title}}/" class="margin" title='{{child.title}}'>{{child.title}}</a>
 			</li>
 			{% endfor %}
 			
