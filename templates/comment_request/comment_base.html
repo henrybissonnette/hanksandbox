@@ -48,7 +48,7 @@
 				{% endfor %}
 			{% endif %}
 			
-			<div class="comment" >
+			<div class="comment" id="{{comment.key}}">
 				<div class="header">
 					<span class="subject">{{comment.subject}}</span>
 					<span class="commentRating" value="{{comment.rating}}">(Rating: {{comment.rating}})</span>
@@ -65,28 +65,31 @@
 						</b>
 						wrote:<br>
 		
-						{% if user %}
-							{% if not comment.author.username == user.username%}
-								{% if user.username not in comment.raters %}
-															
+						{% if user and user.modPoints or user.is_admin %}
+							{% if not comment.author.username == user.username or user.is_admin%}
+								{% if user.username not in comment.raters or user.is_admin %}
+									{% if comment.rating < 5 %}					
 									<form action="/rate/" method="post" class="rate">
 										<input type="hidden" name="key" value="{{key}}" />
 										<input type="hidden" name="rating" value="up" />
 										<input type="hidden" name="scriptless" value="true" />
 										<input  type="submit" value="rate up" />
 									</form>
+									{% endif %}
+									{% if comment.rating > -1 %}	
 									<form action="/rate/" method="post" class="rate">
 										<input type="hidden" name="key" value="{{key}}" />
 										<input type="hidden" name="rating" value="down" />
 										<input type="hidden" name="scriptless" value="true" />
 										<input  type="submit" value="rate down" />
 									</form>
+									{% endif %}
 								{% else %}
 									<span class="rate">Thanks for rating.</span>
 								{% endif %}
 							{% endif %}	
 						{% else %}
-							<span class="rate">Sign in to rate.</span>
+							<span class="rate">Registered users can gain the ability to moderate comments.</span>
 						{% endif %}
 					</div>
 					

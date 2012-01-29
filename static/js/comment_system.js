@@ -53,7 +53,7 @@ $(document).ready(function(){
 		if ($('input[type="submit"]', this).val()=="Edit"){
 			commentData['subjectValue']=$(this).siblings('.header').children('.subject').text()
 			commentData['selfKeyValue']=$('input[name="selfKey"]', this).val()
-			commentData['contentValue']=$(this).siblings('.commentBox').children('.comment .content').text()
+			commentData['contentValue']=$(this).siblings('.commentBox').children('.comment .content').html()
 			commentData['submitValue']='Save'				
 			commentData['subscribeChecked']=subscribeCheck
 
@@ -114,10 +114,10 @@ $(document).ready(function(){
 
 /* RATING SYSTEM */
 $(document).ready(function(){
-	$('form[action="/rate/"]').submit(function(event){
+	$('.commentBox form[action="/rate/"]').submit(function(event){
 		event.preventDefault()
 	})
-	$('form[action="/rate/"] input[type="submit"]').click(function(){
+	$('.commentBox form[action="/rate/"] input[type="submit"]').click(function(){
 		var rating = $(this).siblings('input[name="rating"]').val()
 		var key = $(this).siblings('input[name="key"]').val()
 		$.ajax({
@@ -125,8 +125,8 @@ $(document).ready(function(){
 			url: "/ajax/rate/",
 			data: 'key='+key+'&rating='+rating,
 			success: function(currentRating){
-				$('#comment'+key+' .commentBox form[action="/rate/"]').replaceWith('<span class="rate">Thanks for rating this comment.</span>')
-				$('#comment'+key+' .header .commentRating').html('(Rating: '+currentRating+')')
+				$('.comment#'+key+' .commentBox form[action="/rate/"]').replaceWith('<span class="rate">Thanks for rating this comment.</span>')
+				$('.comment#'+key+' .header .commentRating').html('(Rating: '+currentRating+')')
 				}
 		})
 	})

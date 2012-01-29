@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}
+	{% if document %}
+		Edit Feature Request
+	{% else %}
+		New Feature Request
+	{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block tabs %}
+{% endblock %}
+
+
+
+{% block content %}
+
+{% comment %}
+----------------------------------------------------------------------------
+--------------------------------WRITE---------------------------------------
+----------------------------------------------------------------------------
+{% endcomment %}
+
+	<div class="left_half">			
+		<a href="{%if document%}{{document.get_url}}{%else%}}/meta/{%endif%}" title="Return to previous page.">Cancel</a>
+		{% if documentType == 'feature' %}
+		<h1 class="embed">Feature Request</h1>
+		<p>
+			Use feature requests to suggest changes that you think would make the site better. We can't implement every feature suggested in this way,
+			but we will read and consider all suggestions. Thanks for your input! 
+		</p>
+		{% endif %}
+		
+		{% if documentType == 'bug' %}
+		<h1 class="embed">Bug Report</h1>
+		<p>
+			Use Bug Reports to let us know when something seems to be wrong with the site. We will fix any problems found as soon as possible.
+			If you provide as much detail as possible it may help us solve the problem more quickly. Thanks for feedback and assistance! 
+		</p>
+		{% endif %}
+		<form action="/create/{{documentType}}/"  method=post>
+			<table>
+				<tr>
+					<td>Title: </td><td><input type="text" name="title" size=80 value="{{document.title}}" /></td>
+				</tr>
+				<tr>
+					<td>Description: </td><td><input type="text" name="description" size=80 value="{{document.get_description}}" 
+						title="Used in streams and search results. Use it to attract readers who will be interested in your content. Max 150 characters. No special characters or HTML tags allowed."/></td>
+				</tr>
+			</table>
+			{% for tag in added_tags %}
+			<div class="include_{{tag.title}}">
+			<input type="hidden" name="added_tag" class="include_{{tag.title}}" value="{{tag.title}}"/>
+			</div>
+			{% endfor%}
+			<input type="hidden" name="documentType" value="{{documentType}}" />
+			<input type="hidden" name="username" value="{{document.author.username}}"/>
+			<input type="hidden" name="existing_filename" value="{{document.filename}}"/>
+			<input type="hidden" class="scriptless" name="scriptless" value="true"/>
+		    <textarea name=document_content rows=20 cols=75>{{document.content}}</textarea>
+		    <br>
+		    <input type=checkbox name="subscribe" value="subscribe" {% if user.username in document.subscribers or not edit %}checked{%endif%}>
+		    	<span>Recieve email notifications if someone replies to your 
+		    		{% if documentType == 'feature' %}feature request.{% endif %}
+		    		{% if documentType == 'bug' %}bug report.{% endif %}
+		    	</span>
+		    </input>
+		    <br/>
+		    <input type=submit value="Submit"/>
+		</form>
+		
+		
+		{% if document %}
+		<form action="delete/" method="get">
+			<input type="submit" value="Delete" title="Permanently delete this document."/>
+		</form>
+		{% endif %}
+	</div>
+	<div class="marginalNote scriptless">
+		HTML tags are allowed. Accepted tags are: 
+		<span title='Creates a hyperlink. Example: &lt a href="www.economist.com"&gt at The Economist&lt/a&gt'>'a'</span>, 'blockquote', 
+		<span title="Start a new line. No opening tag, just &lt /br&gt">'br'</span>, <span title="italicize"'i'</span>,
+		<span title="emphasize">'em'</span> , <span title="bold">'b'</span>, 
+		<span title="Ordered list. Each list item should be contained in li tags.">'ol'<span>,
+		<span title="Unordered list. Bulleted rather than numbered list items.">'ul'</span>,
+		<span title="List item. Only works inside ol or ul tags."> 'li'</span>, 
+		<span title="Paragraph. Enclose each pragraph in these.">'p'</span>
+		<span title="Heading. Use this if you want to break your essay into sections.">'h3'</span>. 
+		To begin a tag use &lt tag &gt text &lt /tag &gt. For example
+		&lt em &gt text &lt /em &gt , will emphasize the text like <em>this</em>. Mouse over the tags for more info. 
+
+	</div>
+	</div>
+
+	
+{% endblock %}

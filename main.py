@@ -11,7 +11,7 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from cgi import escape
 from django.utils.html import strip_tags
 import os, re, logging, sys,datetime,math,urllib
-import messages, string
+import messages, string, random
 from BeautifulSoup import BeautifulSoup
 from django.utils import simplejson as json
 
@@ -37,7 +37,7 @@ def get_document(name, filename, title=None):
     except:
         return None
 
-def get_documents(tag_list=[], tag_not_list=[], number=1000, draft=False, type=None, specialType=None):
+def get_documents(tag_list=[], tag_not_list=[], number=1000, draft=False, type=None, specialType=None, since=None):
     """ tag_list should be a string list of tags """
         
     document_query = Document.all()
@@ -49,6 +49,9 @@ def get_documents(tag_list=[], tag_not_list=[], number=1000, draft=False, type=N
         document_query.filter("draft ==",False)
     if type: 
         document_query.filter("type ==",type)
+    if since:
+        document_query.filter("date >=",since)    
+    
     for tag in tag_list:
         document_query.filter("tags ==",tag)
     for tag in tag_not_list:
@@ -96,20 +99,20 @@ def is_document(object):
         return False
 
 def remove_duplicates(seq, idfun=None): 
-   # order preserving
-   if idfun is None:
+    # order preserving
+    if idfun is None:
        #why use this instead of plain old equality?
        def idfun(x): return x
-   seen = {}
-   result = []
-   for item in seq:
-       marker = idfun(item)
-       if marker in seen: continue
-       seen[marker] = 1
-       result.append(item)
-   return result
+    seen = {}
+    result = []
+    for item in seq:
+        marker = idfun(item)
+        if marker in seen: 
+            continue
+        seen[marker] = 1
+        result.append(item)
+    return result
     
-
 class CommentaryObj:
     """
     Intended to replace the awkward code of the commentary object. Should be
@@ -239,7 +242,7 @@ class User(db.Model):
     subscriptions_document = db.StringListProperty(default=[])
     # tags I subscribe to
     subscriptions_tag = db.StringListProperty(default=[])
-    
+
     minimizeThreshold = db.IntegerProperty(default=3)
     namePreference = db.StringProperty(default='username')
     object_type = db.StringProperty(default = 'User')
@@ -280,6 +283,11 @@ class User(db.Model):
             document.favorites.append(self.username)
         document.put()
         self.put()
+    
+    def addModPoint(self):
+        newPoint = ModPoint()
+        newPoint.user = self
+        newPoint.put()
         
     def declineInvitation(self, username):
         self.invitations.remove(username)
@@ -334,6 +342,9 @@ class User(db.Model):
         message.recipient = other
         message.content = self.get_url(html=True)+' has left your Writer\'s Circle'
         message.put()
+        
+    def modPointCount(self):
+        return len(self.modPoints)
         
     def publications(self):
         self.works.filter('draft ==', False)
@@ -685,14 +696,16 @@ class Document(db.Model):
         
     def set_rating(self):
         votes = self.ratings 
-        rating = 0;
-        view_mass = 0;
-        for viewer in self.viewers:
-            user_view = get_user(viewer)
-            view_mass =  view_mass + (1+user_view.reputation)
+        rating = 0
+        #view_mass = 0;
+        #for viewer in self.viewers:
+        #    user_view = get_user(viewer)
+        #    view_mass =  view_mass + (1+user_view.reputation)
+        #for vote in votes:
+        #    rating = rating + vote.value*(1+vote.user.reputation)
+        #rating = rating/view_mass
         for vote in votes:
-            rating = rating + vote.value*(1+vote.user.reputation)
-        rating = rating/view_mass
+            rating += vote.value
         self.rating = rating
         self.put()
             
@@ -746,8 +759,22 @@ class Document(db.Model):
             except:
                 pass
             self.put()
+            
     def get_tag_number(self):
         return len(self.tags)
+    
+    def votesPerView(self):
+        return self.viewers/self.rating
+    
+    def voteRep(self):
+        repSum = 0
+        for vote in self.ratings:
+            if vote.value > 0:
+                repSum += vote.user.reputation
+            if vote.value < 0:
+                repSum -= vote.user.reputation
+        voteRep = repSum/len(self.ratings)
+        return voteRep
             
 class Ticket(db.Model):
     date = db.DateTimeProperty(auto_now_add=True)
@@ -769,7 +796,8 @@ class Comment(db.Model):
     article = db.ReferenceProperty(Document,collection_name='comments')
     object_type = db.StringProperty(default = 'Comment')
     user_page = db.ReferenceProperty(User, collection_name='mypagecomments')
-    rating = db.IntegerProperty(default=0)
+    rating = db.IntegerProperty(default=1)
+    modifier = db.StringProperty(default=None)
     stripped_content = db.TextProperty()
     subject = db.StringProperty()
     subscribers = db.StringListProperty(default=[])
@@ -822,21 +850,32 @@ class Comment(db.Model):
         
     def set_rating(self):
         votes = self.ratings
-        rating = 40
-        tally = 10
+        rating = 1
         for vote in votes:
-            if vote == -1:
-                tenBase = 0
-            else: 
-                tenBase = 10
-            rating = rating + tenBase*(vote.user.reputation)
-            tally = tally + vote.user.reputation           
-        rating = rating/tally
-        logging.info('rating = '+str(rating))
+            if vote.value > 0:
+                rating += 1
+            if vote.value < 0:
+                rating -= 1
         self.rating = rating
         self.put()
+        #rating = 0
+        #for vote in votes:
+        #    rating = rating + vote        
+        #if -2 < rating < 6 : 
+        #    self.rating = rating
+        #    self.put()
+        #else: 
+        #    raise Exception('comment rating would be outside -1 to 5')
     
     def remove(self, message=''):
+        
+        if not message:
+            message = 'A comment of yours was deleted because '+self.subject+' by '+self.author.username+' was deleted.'  
+        else:
+            streamMessage = StreamMessage()
+            streamMessage.recipient = self.author
+            streamMessage.content = message
+            streamMessage.put()
         
         ratings = self.ratings
         for rating in ratings:
@@ -845,14 +884,7 @@ class Comment(db.Model):
         children = self.replies
         for child in children:
             child.remove(message)
-          
-        if not message:
-            message = 'A comment of yours was deleted because '+this.subject+' by '+this.author.username+' was deleted.'  
-        streamMessage = StreamMessage()
-        streamMessage.recipient = self.author
-        streamMessage.content = message
-        streamMessage.put()
-            
+                    
         self.delete()
         
     def subscribe(self, user):
@@ -871,6 +903,11 @@ class StreamMessage(db.Model):
     
     def remove(self):
         self.delete()
+        
+class ModPoint(db.Model):
+    date = db.DateTimeProperty(auto_now_add=True)
+    user = db.ReferenceProperty(User, collection_name='modPoints')
+        
 
 class Mypage(db.Model):
     creator = db.ReferenceProperty(User)
@@ -989,6 +1026,7 @@ class VoteDocument(Vote):
     
 class VoteComment(Vote):
     comment = db.ReferenceProperty(Comment, collection_name='ratings')
+    modifier = db.StringProperty(default=None)
     type = db.StringProperty(default = 'comment')     
     
 
@@ -1030,22 +1068,35 @@ class AJAX(webapp.RequestHandler):
         self.response.out.write(jsonObj)
                   
     def rate(self):
+        """ This code also occurs in Rating. Changes here must be duplicated there.
+        Should be unified somehow."""
+        
         user = get_user()
         rating = self.request.get('rating')
         key = self.request.get('key')
 
-        object = Comment.get(db.Key(key))
-        vote = VoteComment()
-        vote.comment = object
+        object = db.get(db.Key(key))
+        if object.object_type == 'Comment':
+            vote = VoteComment()
+            vote.comment = object
+        if object.object_type == 'Document':
+            vote = VoteDocument()
+            vote.document = object
 
-        if not user.username in object.raters:
+        if not user.username in object.raters or user.is_admin():
             vote.user = user
             
-            if not (user.username in object.raters or user == object.author or not user):   
+            if not (user.username in object.raters or user == object.author or not user) or user.is_admin():   
                 if rating == "up":
-                    vote.value = 1
+                    if object.object_type == 'Comment' and object.rating >= 5:
+                        vote.value = 0
+                    else:
+                        vote.value = 1
                 else:
-                    vote.value = -1
+                    if object.object_type == 'Comment' and object.rating <= -1:
+                        vote.value = 0
+                    else:
+                        vote.value = -1
                     
                 object.raters.append(user.username)
                 vote.current_rating = object.rating
@@ -1656,33 +1707,35 @@ class PostComment(CommentPage):
         self.showForm()        
         
 class Rating(baseHandler):
-    
+    """ This code also occurs in AJAX/rate. Changes here must be duplicated there.
+    Should be unified somehow."""    
     def myPost(self):
         
         user = get_user()
         rating = self.request.get('rating')
         key = self.request.get('key')
-        username = self.request.get('username')
-        filename = self.request.get('filename')
         scriptless = self.request.get('scriptless')
-        if key:
-            object = Comment.get(db.Key(key))
+        object = db.get(key)
+        if object.object_type == 'Comment':
             vote = VoteComment()
             vote.comment = object
-        else:
-            object = get_document(username,filename)
+        if object.object_type == 'Document':
             vote = VoteDocument()
             vote.document = object
-        if not user.username in object.raters:
-            
+        if not user.username in object.raters or user.is_admin():
             vote.user = user
             
-            if not (user.username in object.raters or user == object.author or not user):
-    
+            if not (user.username in object.raters or user == object.author or not user) or user.is_admin():
                 if rating == "up":
-                    vote.value = 1
+                    if object.object_type == 'Comment' and object.rating >= 5:
+                        vote.value = 0
+                    else:
+                        vote.value = 1
                 else:
-                    vote.value = -1
+                    if object.object_type == 'Comment' and object.rating <= -1:
+                        vote.value = 0
+                    else:
+                        vote.value = -1
                     
                 object.raters.append(user.username)
                 vote.current_rating = object.rating
@@ -1958,7 +2011,6 @@ class TagManager(baseHandler):
                 
         if request == 'addto':
             added_tags_pre = self.request.get('added_tags')
-            logging.info(added_tags_pre)
             added_tags = [Tag.get_by_key_name(title) for title in  eval(added_tags_pre)]
             context = {'added_tags':added_tags}
             tmpl = path.join(path.dirname(__file__), 'templates/tag_request/addto.html')
@@ -1999,20 +2051,68 @@ class Tag_Page(baseHandler):
         tmpl = path.join(path.dirname(__file__), 'templates/tag_page.html')
         self.response.out.write(template.render(tmpl, context))  
         
+class Tasks(webapp.RequestHandler):
+    def Get(self, request):
         
+        if request == 'modPoints':
+            self.modPoints()
             
+    def modPoints(self):
+        period = datetime.datetime.now()-datetime.timedelta(hours=12)
+        weekAgo = datetime.datetime.now()-datetime.timedelta(weeks=1)
+        
+        newDocs = get_documents(since=period)
+        newComments = Comments.all().filter('date >=',period)       
+                
+        users = Users.all().filter()
+        
+        # remove unused modpoints and add to allocation pool
+        recycledPoints = 0
+        oldPoints = ModPoints.all().filter('date >=',period)       
+        for point in oldPoints:
+            recycledPoints += 1
+            point.delete()
+                    
+        # one mod point per comment + recycleds
+        newModPoints = len(newComments) + recycledPoints
+        
+        allocationFunction = [0]
+        i=0
+        #build reputation function
+        while(i<=len(users)):
+            allocationFunction[i+1]=users[i].reputation + allocationFunction[i]
+            i+=1
+        
+        #assign mod points to users
+        while(newModPoints>0):
+            x = random.uniform(0,1)
+            FofX = x*allocationFunction[-1]
+            for index, y in enumerate(allocationFunction):
+                if x<y:
+                    if not users[index].is_admin(): # admins do not need modpoints
+                        users[index].addModPoint
+                        newModPoints -= 1
+                    break
+                    
+
+                    
+            
+        #for user in users:
+        #   user.set_reputation()
+        
+        #for user in users:
+        #    user.set_modpoints()
+        
+    
 class Update_Model(baseHandler):
     
     def myPost(self):
-        logging.info('in update models')
         modelClass = self.request.get('modelClass')
         
         if not modelClass:
             modelClass = hank['updatingModel']
             self.update(modelClass)
-        else:
-            logging.info('a model has been sent')
-            
+        else:            
             test = eval(modelClass+'()')
             hank['updatingModel'] = modelClass
             if self.admincheck():
@@ -2126,6 +2226,7 @@ class View_Document(baseHandler):
         
 
 application = webapp.WSGIApplication([
+    ('/tasks/(.*)/',Tasks),
     ('/ajax/(.*)/',AJAX),
     ('.*/rate/', Rating),
     ('/tag_browser/',Tag_Browser),

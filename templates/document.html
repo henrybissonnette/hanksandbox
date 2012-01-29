@@ -10,6 +10,7 @@
 	{% if user.username == document.author.username and not document.special%}
 	<script type="text/javascript" src="/static/js/edit.js"></script>
 	{% endif %}
+	<script type="text/javascript" src="/static/js/document.js"></script>
 	<script type="text/javascript" src="/static/js/comment_system.js"></script>
 	<script type="text/javascript" src="/static/js/subscribeTag.js"></script>
 {% endblock %}
@@ -96,6 +97,7 @@
 	{% for tag in document.get_leaftags %}
 		<form action="{{tag.get_url}}" method="get">
 			<input class="tagButton" type="submit" value="{{tag.title}}" />
+			{% if user %}
 			{% if not tag.title in user.subscriptions_tag %}
 				<a href="subscribe-tag/scriptless_add/{{tag.title}}/" class="subscribe_tag aButton {tag:'{{tag.title}}'}" 
 				title="New documents with this tag will automatically appear in your stream.">
@@ -106,6 +108,7 @@
 				title="Remove this tag from your subscriptions.">
 					Unsubscribe
 				</a>			
+			{% endif %}
 			{% endif %}
 		</form> 
 		<br/>
@@ -170,22 +173,32 @@
 		(((		RATINGS
 		---------------------------------------------------------
 		{% endcomment %}
+		
+			<span class="docinfoitem" id="rating">Rating: {{document.rating}}</span>
+			{% if user %}
+				{% if not document.author.username == user.username or user.is_admin%}
+					{% if user.username not in document.raters or user.is_admin %}			
+						<form action="/rate/" method="post" class="rate">
+							<input type="hidden" name="key" value="{{document.key}}" />
+							<input type="hidden" name="rating" value="up" />
+							<input type="hidden" name="scriptless" value="true" />
+							<input  type="submit" value="rate up" />
+						</form>
+						<form action="/rate/" method="post" class="rate">
+							<input type="hidden" name="key" value="{{document.key}}" />
+							<input type="hidden" name="rating" value="down" />
+							<input type="hidden" name="scriptless" value="true" />
+							<input  type="submit" value="rate down" />
+						</form>
+					{% else %}
+						<span class="rate">Thanks for rating.</span>
+					{% endif %}
+				{% endif %}	
+			{% else %}
+				<span class="rate">Sign in to vote on documents.</span>
+			{% endif %}
 			
 
-			{% if document.authorname == user.username  or not user %}
-				<span class="docinfoitem">Rating: {{document.rating}}</span>
-			{% else %}
-				
-				
-					{% if user.username in document.raters %}
-					<span class="docinfoitem">Thanks for your feedback. Rating: {{document.rating}}</span>
-					{% else %}						
-					<div class="docinfoitem" id="rate">
-						<a href="javascript:;" title="Vote Document Up" class="rate_up"></a>
-						<a href="javascript:;" title="Vote Document Down" class="rate_down"></a>
-					</div>	
-					{% endif %}
-			{% endif %}
 		{% comment %}
 		---------------------------------------------------------
 				RATINGS									      )))

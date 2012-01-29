@@ -32,22 +32,6 @@ $(document).ready(function(){
 			})				
 	})
 
-	$("a.rate_up").click(function(){
-		$("div#rate").load('rate/',{
-			"rating":"up",
-			"filename":doc.filename,
-			"username":doc.author,
-			});
-	});
-	$("a.rate_down").click(function(){
-		$("div#rate").load('rate/',{
-			"rating":"down",
-			"filename":doc.filename,
-			"username":doc.author,
-			});
-	});
-	
-
 
 	
 	//the following two items validate filenames

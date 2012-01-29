@@ -42,6 +42,13 @@
 
 			</b>
 		</div>
+		{% if user %}
+		<ul id="notifications">
+			{% if user.modpoints %}
+			<li>You have {{user.modPointCount}} modpoints.</li>
+			{% endif %}
+		</ul>
+		{% endif %}
 	</div>
 	
 	<div class="pageframe">
