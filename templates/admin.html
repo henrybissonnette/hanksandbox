@@ -29,9 +29,10 @@
 </form>
 	
 <h1>Users</h1>
+<a href="/modpoints/modPoints/">Assign ModPoints</a>
 <hr/>
 {% for account in accounts %}
-<a href="{{account.get_url}}" class="username">{{account.username}}</a>
+<a href="{{account.get_url}}" class="username">{{account.username}}(Rep:{{account.reputation}}/Mod:{{account.modPointCount}})</a>
 {% endfor %}
 	<script type="text/javascript">
 	/*		$(document).ready(function(){

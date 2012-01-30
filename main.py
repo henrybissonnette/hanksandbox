@@ -285,6 +285,7 @@ class User(db.Model):
         self.put()
     
     def addModPoint(self):
+        logging.info('selected user = '+self.username)
         newPoint = ModPoint()
         newPoint.user = self
         newPoint.put()
@@ -344,7 +345,8 @@ class User(db.Model):
         message.put()
         
     def modPointCount(self):
-        return len(self.modPoints)
+        logging.info(self.username+'\'s modpoints ='+str(self.modPoints.fetch(1000)))
+        return len(self.modPoints.fetch(1000))
         
     def publications(self):
         self.works.filter('draft ==', False)
@@ -451,39 +453,45 @@ class User(db.Model):
     
     def set_reputation(self):
         
-        reputation=1
-        myworks = self.works.fetch(1000)
-        mycomments = self.mycomments
-        total_views = 0
+        #reputation=1
+        #myworks = self.works.fetch(1000)
+        #mycomments = self.mycomments
+        #total_views = 0
             
-        for document in myworks:
-            reputation = reputation + 4*document.rating
-            total_views = total_views + document.views
+        #for document in myworks:
+        #    reputation = reputation + 4*document.rating
+        #    total_views = total_views + document.views
         
-        for comment in mycomments: 
-            reputation = reputation + comment.rating
+        #for comment in mycomments: 
+        #    reputation = reputation + comment.rating
             
-        if self.get_age() < 100:
-            reputation = reputation*math.sqrt(self.get_age())/10
+        #if self.get_age() < 100:
+        #    reputation = reputation*math.sqrt(self.get_age())/10
             
-        if reputation < 0:
-            reputation = -(math.sqrt(math.fabs(reputation))/100)*97
-        else:
-            reputation = (math.sqrt(reputation)/100)*97
+        #if reputation < 0:
+        #    reputation = -(math.sqrt(math.fabs(reputation))/100)*97
+        #else:
+        #    reputation = (math.sqrt(reputation)/100)*97
             
-        prolificity = len(myworks)
-        if prolificity >= 1:
-            reputation = reputation + 1           
-            if prolificity >= 10:
-                reputation = reputation + 1
-                if total_views/prolificity <= 20:
-                    reputation = reputation - 2
-                if prolificity >= 30:
-                    reputation = reputation + 1 
-                    if total_views/prolificity <= 30:
-                        reputation = reputation - 2
-                        
-        self.reputation = int(reputation)    
+        #prolificity = len(myworks)
+        #if prolificity >= 1:
+        #    reputation = reputation + 1           
+        #    if prolificity >= 10:
+        #        reputation = reputation + 1
+        #        if total_views/prolificity <= 20:
+        #            reputation = reputation - 2
+        #        if prolificity >= 30:
+        #            reputation = reputation + 1 
+        #            if total_views/prolificity <= 30:
+        #                reputation = reputation - 2
+        comments = self.mycomments  
+        works = self.works
+        rep = 0
+        for comment in comments:
+            rep += comment.rating
+        for work in works:
+            rep += work.rating             
+        self.reputation = rep  
         self.put()
         
     def set_subscription(self, subscriptions, subscribee):
@@ -555,6 +563,10 @@ class User(db.Model):
             logging.info('unsubscribing')
             self.subscriptions_tag.remove(tagTitle)
         self.put()
+        
+    def useModPoint(self):
+        points = self.modPoints.order('date').fetch(1000)
+        points[0].delete()
         
     def withdrawCircle(self, username):
         self.invitees.remove(username)
@@ -1079,6 +1091,8 @@ class AJAX(webapp.RequestHandler):
         if object.object_type == 'Comment':
             vote = VoteComment()
             vote.comment = object
+            if not user.is_admin():
+                user.useModPoint()
         if object.object_type == 'Document':
             vote = VoteDocument()
             vote.document = object
@@ -1207,7 +1221,9 @@ class Admin(baseHandler):
                        'logout':    users.create_logout_url(self.request.uri)                       
                        }     
             tmpl = path.join(path.dirname(__file__), 'templates/admin.html')
-            self.response.out.write(template.render(tmpl, context))        
+            self.response.out.write(template.render(tmpl, context)) 
+        else:
+             self.boot()      
         
 class Circle(baseHandler):
     
@@ -1719,6 +1735,8 @@ class Rating(baseHandler):
         if object.object_type == 'Comment':
             vote = VoteComment()
             vote.comment = object
+            if not user.is_admin():
+                user.useModPoint()
         if object.object_type == 'Document':
             vote = VoteDocument()
             vote.document = object
@@ -2052,8 +2070,7 @@ class Tag_Page(baseHandler):
         self.response.out.write(template.render(tmpl, context))  
         
 class Tasks(webapp.RequestHandler):
-    def Get(self, request):
-        
+    def get(self, request):
         if request == 'modPoints':
             self.modPoints()
             
@@ -2062,13 +2079,14 @@ class Tasks(webapp.RequestHandler):
         weekAgo = datetime.datetime.now()-datetime.timedelta(weeks=1)
         
         newDocs = get_documents(since=period)
-        newComments = Comments.all().filter('date >=',period)       
+        newComments = Comment.all().filter('date >=',period).fetch(1000)       
                 
-        users = Users.all().filter()
+        users = User.all().fetch(1000)
+        logging.info('users = '+str(users))
         
         # remove unused modpoints and add to allocation pool
         recycledPoints = 0
-        oldPoints = ModPoints.all().filter('date >=',period)       
+        oldPoints = ModPoint.all().filter('date <=',period)       
         for point in oldPoints:
             recycledPoints += 1
             point.delete()
@@ -2079,18 +2097,21 @@ class Tasks(webapp.RequestHandler):
         allocationFunction = [0]
         i=0
         #build reputation function
-        while(i<=len(users)):
-            allocationFunction[i+1]=users[i].reputation + allocationFunction[i]
+        while(i<len(users)):
+            logging.info('i = '+ str(i))
+            allocationFunction.append(users[i].reputation + allocationFunction[i])
             i+=1
-        
+        logging.info('allocationFunction = '+ str(allocationFunction))
         #assign mod points to users
         while(newModPoints>0):
+            logging.info('newModPoints = '+str(newModPoints))
             x = random.uniform(0,1)
             FofX = x*allocationFunction[-1]
             for index, y in enumerate(allocationFunction):
-                if x<y:
-                    if not users[index].is_admin(): # admins do not need modpoints
-                        users[index].addModPoint
+                logging.info('index = '+str(index))
+                if FofX <= y:
+                    if not users[index-1].is_admin(): # admins do not need modpoints
+                        users[index-1].addModPoint()
                         newModPoints -= 1
                     break
                     
@@ -2189,6 +2210,7 @@ class UserPage(baseHandler):
     def myGet(self, page_user):
         creator = get_user(page_user)
         user = get_user()
+        creator.set_reputation()
         context = {
                    'pageObject': creator,
                    'commentType': 'userpage',
@@ -2226,6 +2248,7 @@ class View_Document(baseHandler):
         
 
 application = webapp.WSGIApplication([
+    ('/modpoints/(.*)/',Tasks),
     ('/tasks/(.*)/',Tasks),
     ('/ajax/(.*)/',AJAX),
     ('.*/rate/', Rating),

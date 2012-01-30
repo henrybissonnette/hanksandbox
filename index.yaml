@@ -144,6 +144,11 @@ indexes:
   - name: date
     direction: desc
 
+- kind: ModPoint
+  properties:
+  - name: user
+  - name: date
+
 - kind: Tag
   properties:
   - name: parent_tag
