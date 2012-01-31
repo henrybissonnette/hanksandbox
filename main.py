@@ -17,7 +17,7 @@ from django.utils import simplejson as json
 
 hank = {
         'domainstring':'http://essayhost.appspot.com/',
-        'adminlist':['henrydbissonnette@gmail.com',],
+        'adminlist':['henrydbissonnette@gmail.com','Joseph.A.Bissonnette@gmail.com'],
         'updatingModel':None,
         }
 
@@ -880,14 +880,15 @@ class Comment(db.Model):
     
     def remove(self, message=''):
         
-        if not message:
-            message = 'A comment of yours was deleted because '+self.subject+' by '+self.author.username+' was deleted.'  
-        else:
-            streamMessage = StreamMessage()
-            streamMessage.recipient = self.author
-            streamMessage.content = message
-            streamMessage.put()
-        
+        if self.author:
+            if not message:
+                message = 'A comment of yours was deleted because '+self.subject+' by '+self.author.username+' was deleted.'  
+            else:
+                streamMessage = StreamMessage()
+                streamMessage.recipient = self.author
+                streamMessage.content = message
+                streamMessage.put()
+            
         ratings = self.ratings
         for rating in ratings:
             rating.delete()

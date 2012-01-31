@@ -95,7 +95,7 @@
 					
 					<div class="content">{% autoescape off %}{{ comment.content }}{% endautoescape %}</div>
 				</div>	
-				{% if user and user.username == comment.author.username or user.admin %}
+				{% if user and user.username == comment.author.username or user.is_admin %}
 			
 				<form action="/postcomment/" method="post">
 					<input type="hidden" name="selfKey" value="{{key}}" />
