@@ -45,7 +45,7 @@
 		{% if user %}
 		<ul id="notifications">
 			<li>Your reputation is: {{user.reputation}}</li>
-			{% if user.modPoints %}
+			{% if user.modPointCount > 0 %}
 			<li>You have {{user.modPointCount}} modpoints.</li>
 			{% endif %}
 		</ul>

@@ -345,7 +345,6 @@ class User(db.Model):
         message.put()
         
     def modPointCount(self):
-        logging.info(self.username+'\'s modpoints ='+str(self.modPoints.fetch(1000)))
         return len(self.modPoints.fetch(1000))
         
     def publications(self):
@@ -2075,18 +2074,17 @@ class Tasks(webapp.RequestHandler):
             self.modPoints()
             
     def modPoints(self):
-        period = datetime.datetime.now()-datetime.timedelta(hours=12)
+        period = datetime.datetime.now()-datetime.timedelta(hours=6)
         weekAgo = datetime.datetime.now()-datetime.timedelta(weeks=1)
         
         newDocs = get_documents(since=period)
         newComments = Comment.all().filter('date >=',period).fetch(1000)       
                 
         users = User.all().fetch(1000)
-        logging.info('users = '+str(users))
         
         # remove unused modpoints and add to allocation pool
         recycledPoints = 0
-        oldPoints = ModPoint.all().filter('date <=',period)       
+        oldPoints = ModPoint.all().filter('date <=',weekAgo)       
         for point in oldPoints:
             recycledPoints += 1
             point.delete()
@@ -2101,14 +2099,11 @@ class Tasks(webapp.RequestHandler):
             logging.info('i = '+ str(i))
             allocationFunction.append(users[i].reputation + allocationFunction[i])
             i+=1
-        logging.info('allocationFunction = '+ str(allocationFunction))
         #assign mod points to users
         while(newModPoints>0):
-            logging.info('newModPoints = '+str(newModPoints))
             x = random.uniform(0,1)
             FofX = x*allocationFunction[-1]
             for index, y in enumerate(allocationFunction):
-                logging.info('index = '+str(index))
                 if FofX <= y:
                     if not users[index-1].is_admin(): # admins do not need modpoints
                         users[index-1].addModPoint()

@@ -1,4 +1,4 @@
 cron:
 - description: assign mod points
-  url: /tasks/modPoints
-  schedule: every 12 hours
+  url: /tasks/modPoints/
+  schedule: every 6 hours
