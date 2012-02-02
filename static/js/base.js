@@ -7,8 +7,13 @@ function basic_MCE()
 				
 		        mode : "textareas",
 			    theme : "advanced",
-			    plugins: "lists"/*,tinyautosave"*/,
+			    plugins: "lists,paste"/*,tinyautosave"*/,
 			    content_css : "/static/css/custom_content.css",
+			    
+            	paste_auto_cleanup_on_paste : true,
+            	paste_remove_styles: true,
+            	paste_remove_styles_if_webkit: true,
+            	paste_strip_class_attributes: true,
 			            
 			    theme_advanced_buttons1 : /*"tinyautosave,|,"*/"bold,italic,underline,strikethrough,|,link,unlink,|,bullist, numlist,|,blockquote,undo,|,formatselect,charmap", 
 			    theme_advanced_buttons2 : "", 
@@ -303,7 +308,7 @@ function hank(){
 						
 			})
 			var isIE = navigator.appName === 'Microsoft Internet Explorer';
-			if(!isIE){
+			if(true){//!isIE
 				$('.tab').corner('top')
 			}
 		}
@@ -352,7 +357,7 @@ $(document).ready(function(){
 
 $(document).ready(function(){
 	var isIE = navigator.appName === 'Microsoft Internet Explorer';
-	if(!isIE){
+	if(true){//isIE
 		$('div.stream_item').corner()
 		$('div.pagetop').corner('40px')
 		$('div.bodycontent').corner('40px')

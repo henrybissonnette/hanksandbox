@@ -2187,7 +2187,13 @@ class UserBase(baseHandler):
                 'logout':    users.create_logout_url(self.request.uri)
                }     
         tmpl = path.join(path.dirname(__file__), 'templates/user_base.html')
-        self.response.out.write(template.render(tmpl, context))  
+        self.response.out.write(template.render(tmpl, context))
+        
+class UserInfo(baseHandler):
+    def myPost(self):
+          firstname = self.request.get('firstname')
+          lastname = self.request.get('lastname')
+          threshold = self.request.get('threshold')
             
 class Username_Check(webapp.RequestHandler):
     def post(self):
@@ -2252,6 +2258,7 @@ class View_Document(baseHandler):
         
 
 application = webapp.WSGIApplication([
+    ('/userinfo/',UserInfo),
     ('/modpoints/(.*)/',Tasks),
     ('/tasks/(.*)/',Tasks),
     ('/ajax/(.*)/',AJAX),

@@ -25,7 +25,7 @@
 {% endcomment %}
 
 	<div class="left_half">			
-		<a href="{%if document%}{{document.get_url}}{%else%}}/meta/{%endif%}" title="Return to previous page.">Cancel</a>
+		<a href="{%if document%}{{document.get_url}}{%else%}/meta/{% endif %}" title="Return to previous page.">Cancel</a>
 		{% if documentType == 'feature' %}
 		<h1 class="embed">Feature Request</h1>
 		<p>
