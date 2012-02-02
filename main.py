@@ -2223,24 +2223,32 @@ class UserPage(baseHandler):
 class View_Document(baseHandler):
     
     def myGet(self, name, filename, reply_id=None):
+        
         user = get_user()
         document = get_document(name, filename)
-        document.set_view()        
-
-        context = {
-            'commentType': 'document',
-            'rating_threshold': 1,
-            'commentary': document.get_commentary(),
-            'pageObject': document,
-            'document': document,
-            'filename': filename,
-            'name':     name,
-            'user':      user,
-            'login':     users.create_login_url(self.request.uri),
-            'logout':    users.create_logout_url(self.request.uri)
-        }
-        tmpl = path.join(path.dirname(__file__), 'templates/document.html')
-        self.response.out.write(template.render(tmpl, context))  
+        
+        if document.draft and not user:
+            self.boot()
+        else:
+            if document.draft and not (user.username == document.author.username or user.username in document.author.circle):
+                self.boot()
+            else:            
+                document.set_view()        
+        
+                context = {
+                    'commentType': 'document',
+                    'rating_threshold': 1,
+                    'commentary': document.get_commentary(),
+                    'pageObject': document,
+                    'document': document,
+                    'filename': filename,
+                    'name':     name,
+                    'user':      user,
+                    'login':     users.create_login_url(self.request.uri),
+                    'logout':    users.create_logout_url(self.request.uri)
+                }
+                tmpl = path.join(path.dirname(__file__), 'templates/document.html')
+                self.response.out.write(template.render(tmpl, context))  
         
 
 application = webapp.WSGIApplication([
