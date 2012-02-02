@@ -676,9 +676,9 @@ class Document(db.Model):
         return [Tag.get_by_key_name(title) for title in self.leaftags]
     
     def parse(self):
-        acceptableElements = ['a','blockquote','br','em','i',
-                              'ol','ul','li','p','b']
-        acceptableAttributes = ['href']
+        acceptableElements = ['a','blockquote','br','em','i','h3',
+                              'ol','ul','li','p','b','strong']
+        acceptableAttributes = ['href', 'target']
         counter = 0
         contentTemp = self.content  
         while True:
@@ -687,7 +687,10 @@ class Document(db.Model):
             removed = False        
             for tag in soup.findAll(True): # find all tags
                 if tag.name not in acceptableElements:
-                    tag.extract() # remove the bad ones
+                    if tag.contents:
+                        tag.replaceWith(tag.contents[0])
+                    else:
+                        tag.extract()
                     removed = True
                 else: # it might have bad attributes               
                     for attr in tag._getAttrMap().keys():
@@ -831,20 +834,23 @@ class Comment(db.Model):
         return url
     
     def parse(self):
-        acceptableElements = ['a','blockquote','br','em','i',
-                              'ol','ul','li','p','b']
-        acceptableAttributes = ['href']
+        acceptableElements = ['a','blockquote','br','em','i','h3',
+                              'ol','ul','li','p','b','strong']
+        acceptableAttributes = ['href', 'target']
         while True:
             soup = BeautifulSoup(self.content)
             removed = False        
             for tag in soup.findAll(True): # find all tags
-                if tag.name not in acceptable_elements:
-                    tag.extract() # remove the bad ones
+                if tag.name not in acceptableElements:
+                    if tag.contents:
+                        tag.replaceWith(tag.contents[0])
+                    else:
+                        tag.extract()
                     removed = True
                 else: # it might have bad attributes
                     # a better way to get all attributes?
                     for attr in tag._getAttrMap().keys():
-                        if attr not in acceptable_attributes:
+                        if attr not in acceptableAttributes:
                             del tag[attr]
     
             # turn it back to html
@@ -1361,8 +1367,9 @@ class CommentHandler(CommentPage):
             comment.content = content
             comment.subject = subject
             comment.get_stripped()
-            if scriptless == 'true':
-                comment.content = comment.stripped_content
+            comment.parse()
+            #if scriptless == 'true':
+            #    comment.content = comment.stripped_content
             
             try:
                 if comment.get_page_object().draft:
@@ -1542,8 +1549,9 @@ class Create_Document(baseHandler):
             if document.draft == True:
                 new = True
             document.draft = False
-        if scriptless:
-            self.validate(document)
+        document.parse()
+        #if scriptless:
+        #    self.validate(document)
         if documentType == 'feature' or documentType == 'bug':
             document.special = True
             document.filename = str(document.key())
