@@ -130,7 +130,7 @@
 				<div class="tab {name:'Personal Info',initial:'true'}">
 					<h2 class="notab">Personal Info</h2>
 					First Name: {{page_user.firstname}}</br>
-					Last Name:{{page_user.lastname}}</br>
+					Last Name: {{page_user.lastname}}</br>
 					{% if user.username == page_user.username or user.is_admin%}
 					<span title="Comments with Ratings lower than your rating threshold will display minimized.">Rating Threshold</span>:
 					{{page_user.minimizeThreshold}}	
@@ -158,18 +158,19 @@
 			{% endcomment %}
 			{% if user.username == page_user.username or user.is_admin%}
 				<div class="tab {name:'Edit'}">
-					<h2 class="notab">Edit</h2>
-					Comments with Ratings lower than your rating threshold will display minimized.
+					<h2 class="notab">Edit</h2>					
 					<form action="/userinfo/" method="post">
-						Rating Threshold: <input name="threshold" type="number" size=2 value={{page_user.minimizeThreshold}} />
-						<input type="hidden" name="attribute" value="threshold">
-						<br/>
 						First Name: <input type="text" name="firstname" value="{{page_user.firstname}}"  />
 						<br/>
 						Last Name: <input type="text" name="lastname" value="{{page_user.lastname}}" />	
 						<input type="checkbox" name="displayname" value="displayname" {%if page_user.name_preference == 'realname'%}checked{%endif%}/>	
 						Display my name on documents.
 						<br/>
+						Comments with Ratings lower than your rating threshold will display minimized.</br>
+						Rating Threshold: <input name="threshold" type="number" size=2 value={{page_user.minimizeThreshold}} />
+						<input type="hidden" name="attribute" value="threshold">
+						<br/>
+
 						<input type="submit" value="Save Settings" />			
 					</form>
 				

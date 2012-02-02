@@ -221,7 +221,7 @@ class User(db.Model):
     displayname = db.StringProperty()
     email_log = db.ListProperty(db.Key,default=[])
     favorites = db.ListProperty(db.Key,default=[])
-    fistname = db.StringProperty(default='')
+    firstname = db.StringProperty(default='')
     lastname = db.StringProperty(default='')
     google = db.UserProperty()
     invitations = db.StringListProperty(default=[])
@@ -2191,10 +2191,21 @@ class UserBase(baseHandler):
         
 class UserInfo(baseHandler):
     def myPost(self):
-          firstname = self.request.get('firstname')
-          lastname = self.request.get('lastname')
-          threshold = self.request.get('threshold')
-          displayname = self.request.get('displayname')
+        
+        firstname = self.request.get('firstname')
+        lastname = self.request.get('lastname')
+        threshold = self.request.get('threshold')
+        displayname = self.request.get('displayname')
+          
+        user = get_user()
+        user.firstname = firstname
+        user.lastname = lastname
+        user.minimizeThreshold = int(threshold)
+        if displayname and (firstname or lastname):
+            user.displayname = firstname +' '+lastname
+        user.put()
+        self.redirect(user.get_url())
+              
           
             
 class Username_Check(webapp.RequestHandler):
