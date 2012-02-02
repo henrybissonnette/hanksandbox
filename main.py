@@ -676,9 +676,10 @@ class Document(db.Model):
         return [Tag.get_by_key_name(title) for title in self.leaftags]
     
     def parse(self):
-        acceptableElements = ['a','blockquote','br','em','i','h3',
+        acceptableElements = ['a','blockquote','br','em','span','i','h3',
                               'ol','ul','li','p','b','strong']
-        acceptableAttributes = ['href', 'target']
+        acceptableAttributes = ['href', 'target','style']
+        acceptableStyles = ["text-decoration: line-through;","text-decoration: underline;"]
         counter = 0
         contentTemp = self.content  
         while True:
@@ -695,7 +696,12 @@ class Document(db.Model):
                 else: # it might have bad attributes               
                     for attr in tag._getAttrMap().keys():
                         if attr not in acceptableAttributes:
-                            del tag[attr]
+                            del(tag[attr])
+                            removed = True
+                        else:
+                            if attr == 'style' and not tag[attr] in acceptableStyles:
+                                del(tag[attr])   
+                                removed = True                  
     
             # turn it back to html
             fragment = unicode(soup)
@@ -834,9 +840,10 @@ class Comment(db.Model):
         return url
     
     def parse(self):
-        acceptableElements = ['a','blockquote','br','em','i','h3',
+        acceptableElements = ['a','blockquote','br','span','em','i','h3',
                               'ol','ul','li','p','b','strong']
-        acceptableAttributes = ['href', 'target']
+        acceptableAttributes = ['href', 'target','style']
+        acceptableStyles = ["text-decoration: line-through;","text-decoration: underline;"]
         while True:
             soup = BeautifulSoup(self.content)
             removed = False        
@@ -848,10 +855,14 @@ class Comment(db.Model):
                         tag.extract()
                     removed = True
                 else: # it might have bad attributes
-                    # a better way to get all attributes?
                     for attr in tag._getAttrMap().keys():
                         if attr not in acceptableAttributes:
-                            del tag[attr]
+                            del(tag[attr])
+                            removed = True
+                        else:
+                            if attr == 'style' and not tag[attr] in acceptableStyles:
+                                del(tag[attr])   
+                                removed = True 
     
             # turn it back to html
             fragment = unicode(soup)
