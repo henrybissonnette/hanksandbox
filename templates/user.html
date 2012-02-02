@@ -71,7 +71,13 @@
 				{% endif %}
 				
 				{% if doc.object_type == 'Comment' %}
-					{% include 'streamComment.html' %}
+					{% if doc.draft %}
+						{% if user.username in doc.page_object.author.circle %}
+							{% include 'streamComment.html' %}
+						{% endif %}
+					{% else %}
+						{% include 'streamComment.html' %}
+					{% endif %}
 				{% endif %}
 				
 				{% if doc.object_type == 'StreamMessage' %}

@@ -2194,6 +2194,8 @@ class UserInfo(baseHandler):
           firstname = self.request.get('firstname')
           lastname = self.request.get('lastname')
           threshold = self.request.get('threshold')
+          displayname = self.request.get('displayname')
+          
             
 class Username_Check(webapp.RequestHandler):
     def post(self):
