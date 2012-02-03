@@ -138,14 +138,15 @@
 		{% if user and user.username != document.author.username and not document.key in user.favorites %}
 			<div id="favorite_div" class="docinfoitem">
 			<button id="favorite" >Favorite</button>
+			<a href="{{document.get_url}}favorite/add/" class="aButton">Add to Favorites</a>
 			</div>
 			{% endif %}
 			{% if user and user.username != document.author.username and document.key in user.favorites %}
 			<div class="docinfoitem" id="favorite_div">
-			This document is one of your favorites.
+			This document is one of your favorites. <a href="{{document.get_url}}favorite/remove/" class="aButton">Remove</a>
 			</div>
 		{% endif %}
-		
+		<span class="docinfoitem">Favorites: {{document.favCount}}</span></br>
 		{% comment %}
 		---------------------------------------------------------
 				FAVORITE								      )))

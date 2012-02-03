@@ -39,9 +39,11 @@
 	--- It consists of a list of tags, each with several interactions.
 	{% endcomment %}
 	
+
+	
 	<ul>
 		<!-- NEW: This code enables the administrative new tag button -->
-		{% if user.is_admin %}
+		{% if browse_type == "admin" and user.is_admin %}
 		<div id="new{{parent_title}}" class="new_tag">
 			{% include 'newbutton.html' %}
 		</div>
@@ -53,13 +55,13 @@
 			<div id="self_{{tag.title}}">
 								
 				<li id="{{tag.title}}">
-					{% if not tag.children.0 and user_type != 'admin' %}
+					{% if not tag.children.0 and browse_type != 'admin' %}
 					<!-- EXPAND: enables the expansion of the tag tree to view current tag's children. -->
 					{{tag.title}} 
 
 					{% else %}
 					<script type="text/javascript">
-						divtrigger("a#branch{{tag.title}}","div#expand_{{tag.title}}",'tag_expand/',{"title":"{{tag.title}}","user_type":"{{user_type}}"})
+						divtrigger("a#branch{{tag.title}}","div#expand_{{tag.title}}",'tag_expand/',{"title":"{{tag.title}}","browse_type":"{{browse_type}}"})
 						
 						$('#branch{{tag.title}}').click(function(){
 					    $('div#expand_{{tag.title}}').addClass('toprule');
@@ -72,7 +74,7 @@
 					<!-- EXPAND: END -->
 					
 					<!-- ADD allows user to tag their documents -->
-					{% if user and document or user and tags %}
+					{% if browse_type != 'admin' %}
 					<script type="text/javascript">	
 							$(document).ready(function(){
 								$("a#add{{tag.title}}").click(function(){
@@ -105,7 +107,7 @@
 					{% endif %}
 					<!-- ADD: END -->
 					
-					{% ifequal user_type "admin"%}
+					{% ifequal browse_type "admin"%}
 					<!-- REMOVE: BEGIN -->
 					<script type="text/javascript">
 					divtrigger("a#remove{{tag.title}}","div#{% if parent_title %}expand_{{parent_title}}{% else %}self_{{tag.title}}{% endif %}",

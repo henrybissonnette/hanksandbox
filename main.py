@@ -277,7 +277,7 @@ class User(db.Model):
         message.put()
     
     def add_favorite(self, document):
-        if not document.key in self.favorites:
+        if not document.key() in self.favorites:
             self.favorites.append(document.key())
         if not self.username in document.favorites:
             document.favorites.append(self.username)
@@ -449,6 +449,14 @@ class User(db.Model):
         message.recipient = other
         message.content = 'You have been removed from '+self.get_url(html=True)+'\'s Writer\'s Circle'
         message.put()
+        
+    def remove_favorite(self, document):
+        if document.key() in self.favorites:
+            self.favorites.remove(document.key())
+        if self.username in document.favorites:
+            document.favorites.remove(self.username)
+        document.put()
+        self.put()
     
     def set_reputation(self):
         
@@ -649,6 +657,9 @@ class Document(db.Model):
                                 pass
                             self.type.append('meta')                    
         self.put()
+        
+    def favCount(self):
+        return len(self.favorites)
     
     def get_url(self,includeDomain=False):
         if includeDomain:
@@ -1231,8 +1242,9 @@ class Admin(baseHandler):
         user = get_user()
         if self.admincheck():
             accounts = User.all().fetch(1000)
+            logging.info('accounts = '+str(accounts))
             context = {
-                       'accounts':     accounts,
+                       'accounts':  accounts,
                        'user':      user,
                        'login':     users.create_login_url(self.request.uri),
                        'logout':    users.create_logout_url(self.request.uri)                       
@@ -1656,10 +1668,23 @@ class Edit_Document(baseHandler):
         self.response.out.write(template.render(tmpl, context))
         
 class Favorite(baseHandler):
-    def myPost(self,user,filename):
+    
+    def myGet(self,user,filename,action):
         document = get_document(user,filename)
         user = get_user()
-        user.add_favorite(document)
+        if action == 'add':
+            user.add_favorite(document)
+        if action == 'remove':
+            user.remove_favorite(document) 
+        self.redirect('../../')   
+            
+    def myPost(self,user,filename,action):
+        document = get_document(user,filename)
+        user = get_user()
+        if action == 'add':
+            user.add_favorite(document)
+        if action == 'remove':
+            user.remove_favorite(document)
       
 class Home(baseHandler):
     
@@ -1989,7 +2014,7 @@ class TagManager(baseHandler):
                 tag.put() 
                     
                 if user.is_admin():
-                    user_type='admin' 
+                    browse_type='admin' 
                 if parent_title:              
                     parent = tag.parent_tag
                     tags = parent.children.order('title')
@@ -1997,7 +2022,7 @@ class TagManager(baseHandler):
                     context = {
                         'user':     user,
                         'parent':   parent,
-                        'user_type':user_type,
+                        'browse_type':browse_type,
                         'tags':     tags,
                         'parent_title':    parent.title,
                        }  
@@ -2007,7 +2032,7 @@ class TagManager(baseHandler):
                     root_tags = Tag.all().filter('parent_tag ==', None).fetch(100)
                     context = {
                                'user':     user,
-                                'user_type':user_type,
+                                'browse_type':browse_type,
                                'tags': root_tags,
                                }
                     tmpl = path.join(path.dirname(__file__), 'templates/tag_request/base.html')
@@ -2023,14 +2048,15 @@ class TagManager(baseHandler):
                 
         if request == 'expand':
     
-            user_type = self.request.get('user_type')
+            browse_type = self.request.get('browse_type')
+            logging.info('browse_type = '+browse_type)
             expand_title = self.request.get('title')
             parent = Tag.get_by_key_name(expand_title)
             tags = parent.children.order('title')
             context = {
                 'user':     user,
                 'parent':   parent,
-                'user_type':user_type,
+                'browse_type':browse_type,
                 'tags':     tags,
                 'parent_title':    expand_title,
                }  
@@ -2054,12 +2080,12 @@ class TagManager(baseHandler):
             self.response.out.write(template.render(tmpl, context))  
                 
         if request == 'base':
-            user_type = self.request.get('user_type')
+            browse_type = self.request.get('browse_type')
             root = Tag.all().filter('title ==', 'Root').fetch(1)[0]
             root_tags = root.get_children()
             context = {
                        'user':     user,
-                        'user_type':user_type,
+                        'browse_type':browse_type,
                        'tags': root_tags,
                        }
             tmpl = path.join(path.dirname(__file__), 'templates/tag_request/base.html')
@@ -2305,7 +2331,7 @@ application = webapp.WSGIApplication([
     ('/postcomment/', PostComment),
     ('/addtag/(.*)/(.*)/', AddTag),
     ('/tag/(.+)/',Tag_Page),
-    ('/(.*)/document/(.*)/favorite/',Favorite),
+    ('/(.*)/document/(.*)/favorite/(.*)/',Favorite),
     ('.*/subscribe/(.*)/', Subscription_Handler),
     ('/invite_handler/', Invite_Handler),
     ('/invite/', Invite),

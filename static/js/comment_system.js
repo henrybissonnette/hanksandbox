@@ -99,10 +99,10 @@ $(document).ready(function(){
 						url: "/ajax/delete-comment/",
 						data: "selfKey=" + selfKey,
 						success: function(){
-							if ($('#comment'+selfKey).next().hasClass('nested')){
-								$('#comment'+selfKey).next().remove()
+							if ($('.comment#'+selfKey).next().hasClass('nested')){
+								$('.comment#'+selfKey).next().remove()
 							}
-							$('#comment'+selfKey).remove()
+							$('.comment#'+selfKey).remove()
 						}
 					})						
 				}
