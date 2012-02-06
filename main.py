@@ -301,11 +301,9 @@ class User(db.Model):
         documents = self.events.filter('type =','Document').filter('emailed =',False).order('-date').fetch(1000)
         messages = self.streamMessages.filter('emailed =',False).order('-date').fetch(1000)
         for event in comments+documents:
-            event.emailed = True
-            event.put()
+            event.email()
         for message in messages:
-            message.emailed = True
-            message.put()
+            message.email()
         if comments or documents or messages:
             return {'user':user, 'comments':comments,'documents':documents,'messages':messages}
         else:
@@ -315,8 +313,15 @@ class User(db.Model):
         
         streamItems = []
         
-        streamItems.extend([event.object for event in self.events.filter('type =','Comment').filter('streamCancelled =',False).fetch(1000)])
-        streamItems.extend([event.object for event in self.events.filter('type =','Document').filter('streamCancelled =',False).fetch(1000)])
+        commentEvents = self.events.filter('type =','Comment').filter('streamCancelled =',False).fetch(1000)
+        documentEvents = self.events.filter('type =','Document').filter('streamCancelled =',False).fetch(1000)
+        for set in [commentEvents,documentEvents]:
+            for item in set:
+                try:
+                    streamItems.append(item.object)
+                except:
+                    #this insures against errors from the associated object being deleted before the event is
+                    item.remove
         streamItems.extend(self.streamMessages.filter('streamCancelled =',False).fetch(1000))
             
         orderedItems = sorted(streamItems, key=lambda streamItem: streamItem.date, reverse=True)
@@ -608,8 +613,9 @@ class Event(db.Model):
     def email(self):
         if not self.streamCancelled:
             self.emailed = True
+            self.put()
         else:
-            self.delete()
+            self.remove()
             
     def remove(self):
         self.delete()
@@ -617,8 +623,9 @@ class Event(db.Model):
     def streamCancel(self):
         if not self.emailed:
             self.streamCancelled = True
+            self.put()
         else: 
-            self.delete()   
+            self.remove()   
         
 class Document(db.Model):
     """
@@ -1105,6 +1112,7 @@ class StreamMessage(db.Model):
     
     def email(self):
         self.emailed = True
+        self.put()
         if self.streamCancelled:
             self.remove()
     
@@ -1113,6 +1121,7 @@ class StreamMessage(db.Model):
         
     def streamCancel(self):
         self.streamCancelled = True
+        self.put()
         if self.emailed:
             self.remove()
         

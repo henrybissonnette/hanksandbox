@@ -18,7 +18,9 @@ $(document).ready(function(){
 				}
 		})
 	})
+
 })	
+
 
 
 

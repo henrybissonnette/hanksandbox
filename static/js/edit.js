@@ -91,10 +91,22 @@ $(document).ready(function(){
 				window.history.back();
 		})
 		
-	$('form[action="delete/"]').submit(function(){
-		return confirmSubmit('Do you want to permanently delete this document?')
-	})
+	/**************************
+	 * Delete Button
+	 * */	
 	
+	$('form[action="delete/"]').submit(function(event){
+		event.preventDefault()
+	})		
+
+	$('form[action="delete/"] input[type="submit"]').click(function(){
+		console.log('fuck you')
+		if(confirmSubmit('Do you want to permanently delete this document?')){
+			window.location = document.URL + 'edit/delete/'			
+		}
+	})	
+})
+
 	/*divtrigger("button#browse_tags","div#tags",'tag_base/',{"user_type":"user"})
 	
 				$(document).ready(function(){
@@ -111,6 +123,6 @@ $(document).ready(function(){
 			})
 		*/
 			
-})	
+
 						
 
