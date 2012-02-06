@@ -144,10 +144,23 @@ indexes:
   - name: date
     direction: desc
 
+- kind: Event
+  properties:
+  - name: type
+  - name: user
+  - name: date
+    direction: desc
+
 - kind: ModPoint
   properties:
   - name: user
   - name: date
+
+- kind: StreamMessage
+  properties:
+  - name: recipient
+  - name: date
+    direction: desc
 
 - kind: Tag
   properties:

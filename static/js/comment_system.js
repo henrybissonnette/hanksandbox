@@ -73,10 +73,10 @@ $(document).ready(function(){
 		if ($('input[type="submit"]', this).val()=="Edit"){
 			function retrieveAjax(isSubscribed){
 				if(isSubscribed == 'true'){
-					$('#comment'+commentData.selfKeyValue+' input[name="subscribe"]').attr('checked','checked')
+					$('.comment#'+commentData.selfKeyValue+' input[name="subscribe"]').attr('checked','checked')
 				}
 				else{
-					$('#comment'+commentData.selfKeyValue+' input[name="subscribe"]').removeAttr('checked')
+					$('.comment#'+commentData.selfKeyValue+' input[name="subscribe"]').removeAttr('checked')
 				}
 			}
 

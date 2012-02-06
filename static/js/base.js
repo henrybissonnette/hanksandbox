@@ -145,6 +145,7 @@ function hank(){
 	* 	subjectValue : string
 	* 	contentValue : string
 	* 	aboveKeyValue : string
+	* 	isUser : boolean
 	* 	selfKeyValue : string
 	* 	subscribeChecked : boolean
 	* 	submitValue : string
@@ -196,18 +197,7 @@ function hank(){
 		var submit = document.createElement('input')
 		submit.setAttribute('type','submit')
 		submit.setAttribute('value',data['submitValue'])
-		var subscribe = document.createElement('input')
-		subscribe.setAttribute('type','checkbox')
-		subscribe.setAttribute('name','subscribe')
-		subscribe.setAttribute('value','subscribe')
-		var subscribeMessage = document.createTextNode('Receive email notifications if someone replies to this comment.')
-		subscribe.appendChild(subscribeMessage)		
-		if(data['subscribeChecked']!= undefined){
-			subscribe.checked = data['subscribeChecked']
-		}
-		else{
-			subscribe.checked = true
-		}
+
 		//Combine Elements
 		form.appendChild(exit)
 		form.appendChild(subjectText)
@@ -219,8 +209,6 @@ function hank(){
 			form.appendChild(aboveKey)
 		}
 		form.appendChild(submit)
-		form.appendChild(subscribe)
-		form.appendChild(subscribeMessage)
 		if(data['selfKeyValue'] != undefined){
 			form.appendChild(selfKey)	
 			form.appendChild(document.createElement("br"))

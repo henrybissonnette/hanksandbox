@@ -204,6 +204,7 @@ class Commentary:
         self.sum_delta = [1] * sum([item for sublist in self.delta for item in sublist])
         self.keys = [str(comment.key()) for comment in self.comment_tree[0]]   
         self.comment_data = zip(self.comment_tree[0], self.keys, self.delta)
+        
     
 class User(db.Model):
     """
@@ -213,13 +214,16 @@ class User(db.Model):
     mycomments (created comments)
     bugs (submitted bug reports)
     ratings (submitted votes)
+    streamMessages (events not otherwise associated with an object)
     """
     age = db.IntegerProperty()
     circle = db.StringListProperty(default=[])
     circlepermissions = db.StringListProperty(default=[])
     date = db.DateTimeProperty(auto_now_add=True)
     displayname = db.StringProperty()
-    email_log = db.ListProperty(db.Key,default=[])
+    # email is intended to represent the frequency of mailings
+    # 0-never, 3-daily
+    email = db.IntegerProperty(default = 3)
     favorites = db.ListProperty(db.Key,default=[])
     firstname = db.StringProperty(default='')
     lastname = db.StringProperty(default='')
@@ -230,15 +234,15 @@ class User(db.Model):
     
     # people who subscribe to me in some way
     subscribers = db.StringListProperty(default=[])
-    # people who subscribe to my documents by email
+    # people who subscribe to my documents
     subscribers_document=db.StringListProperty(default=[])
-    # people who subscribe to my comments by email
+    # people who subscribe to my comments
     subscribers_comment=db.StringListProperty(default=[])
-    # people I subscribe to
+    # people I subscribe to in some way
     subscriptions_user = db.StringListProperty(default=[])
-    # people whose comments go in my stream
+    # people whose comments I subscribe to
     subscriptions_comment = db.StringListProperty(default=[])
-    # people whose documents go in my stream
+    # people whose documents I subscribe to
     subscriptions_document = db.StringListProperty(default=[])
     # tags I subscribe to
     subscriptions_tag = db.StringListProperty(default=[])
@@ -247,20 +251,6 @@ class User(db.Model):
     namePreference = db.StringProperty(default='username')
     object_type = db.StringProperty(default = 'User')
     username = db.StringProperty()
-    
-    def is_admin(self):
-        if self.google.email() in hank['adminlist']:
-            return True
-        else:
-            return False
-
-    def get_age(self):
-        age = datetime.datetime.now()-self.date
-        return age.days
-    
-    def get_commentary(self):
-        commentary = Commentary(self.username)
-        return commentary
     
     def acceptInvitation(self, username):
         self.circlepermissions.append(username)
@@ -275,7 +265,7 @@ class User(db.Model):
         message.recipient = inviter
         message.content = self.get_url(html=True)+' has accepted your circle invitation.'
         message.put()
-    
+        
     def add_favorite(self, document):
         if not document.key() in self.favorites:
             self.favorites.append(document.key())
@@ -289,7 +279,7 @@ class User(db.Model):
         newPoint = ModPoint()
         newPoint.user = self
         newPoint.put()
-        
+
     def declineInvitation(self, username):
         self.invitations.remove(username)
         inviter = get_user(username)
@@ -302,22 +292,64 @@ class User(db.Model):
         message.content = self.get_url(html=True)+' has declined your circle invitation.'
         message.put()
         
+    def drafts(self):
+        self.works.filter('draft ==', True)
+        
+    def fetch_email(self):
+        user = self
+        comments = self.events.filter('type =','Comment').filter('emailed =',False).order('-date').fetch(1000)
+        documents = self.events.filter('type =','Document').filter('emailed =',False).order('-date').fetch(1000)
+        messages = self.streamMessages.filter('emailed =',False).order('-date').fetch(1000)
+        for event in comments+documents:
+            event.emailed = True
+            event.put()
+        for message in messages:
+            message.emailed = True
+            message.put()
+        if comments or documents or messages:
+            return {'user':user, 'comments':comments,'documents':documents,'messages':messages}
+        else:
+            return None
+                
+    def fetch_stream(self):
+        
+        streamItems = []
+        
+        streamItems.extend([event.object for event in self.events.filter('type =','Comment').filter('streamCancelled =',False).fetch(1000)])
+        streamItems.extend([event.object for event in self.events.filter('type =','Document').filter('streamCancelled =',False).fetch(1000)])
+        streamItems.extend(self.streamMessages.filter('streamCancelled =',False).fetch(1000))
+            
+        orderedItems = sorted(streamItems, key=lambda streamItem: streamItem.date, reverse=True)
+        return orderedItems
+           
     def fetch_favorites(self):
         favorites = []
         for key in self.favorites:
             favorites.append(Document.get(key))
         return favorites
-            
-    def get_url(self, includeDomain = False, html = False):
-        if includeDomain:
-            return hank['domainstring']+'user/'+self.username+'/'
-        elif html:
-            return '<a href="/user/'+self.username+'/" class="username">'+self.username+'</a>'
-        else:
-            return '/user/'+self.username+'/'
+
+    def get_age(self):
+        age = datetime.datetime.now()-self.date
+        return age.days
     
-    def drafts(self):
-        self.works.filter('draft ==', True)
+    def get_commentary(self):
+        commentary = Commentary(self.username)
+        return commentary
+              
+    def get_url(self, relative = True, html = False):
+        if html:
+            return '<a href="'+hank['domainstring']+'user/'+self.username+'/" class="username">'+self.username+'</a>' 
+        else:
+            if relative:
+                return '/user/'+self.username+'/'
+            else:              
+                return hank['domainstring']+'user/'+self.username+'/'
+    
+    def is_admin(self):
+        if self.google.email() in hank['adminlist']:
+            return True
+        else:
+            return False
         
     def invite(self, username):
         if not username in self.invitees:
@@ -349,27 +381,6 @@ class User(db.Model):
         
     def publications(self):
         self.works.filter('draft ==', False)
-        
-    def fetch_stream(self,number=100):
-
-        documents=[]
-        horizon = datetime.datetime.now()-datetime.timedelta(weeks=1)
-        
-        for name in self.subscriptions_comment:
-            subscribee = get_user(name)
-            documents.extend(Comment.all().filter('author ==',subscribee).filter('date >=', horizon).order('-date').fetch(number))
-            
-        for name in self.subscriptions_document:
-            subscribee = get_user(name)
-            documents.extend(Document.all().filter('author ==',subscribee).filter('date >=', horizon).order('-date').fetch(number))
-            
-        for tag in self.subscriptions_tag:
-            documents.extend(get_documents([tag],number=number))
-            
-        documents.extend(self.streamMessages)
-            
-        ordered = sorted(documents, key=lambda document: document.date, reverse=True)
-        return ordered[:number]
     
     def remove(self):
         affected = []
@@ -419,6 +430,9 @@ class User(db.Model):
             
         for document in self.works:
             document.remove()
+            
+        for event in self.events:
+            event.delete()
             
         for message in self.streamMessages:
             message.remove()
@@ -507,67 +521,50 @@ class User(db.Model):
         username string. """
         flag = None
         subscribee = get_user(subscribee)
+        #overall subscribers and subscribees       
         if not subscriptions:
             if self.username in subscribee.subscribers:
                     subscribee.subscribers.remove(self.username)
 
             if subscribee.username in self.subscriptions_user:
-                    self.subscriptions_user.remove(subscribee.username)
-
-            message = 'This user has been removed from your subscriptions.'    
+                    self.subscriptions_user.remove(subscribee.username)  
         else:
             if self.username not in subscribee.subscribers:
                     subscribee.subscribers.append(self.username)
-                    flag = 1
 
             if subscribee.username not in self.subscriptions_user:
                     self.subscriptions_user.append(subscribee.username)
-                    flag = 1
-               
-        if flag:
-            message = 'This user has been added to your subscriptions.' 
-        else:
-            message = 'Your settings have been saved.'
-        
+        #document subscriptions specifically              
         if 'subscribe_publish' in subscriptions:
             if not subscribee.username in self.subscriptions_document:
                 self.subscriptions_document.append(subscribee.username)
-        else:
-            if subscribee.username in self.subscriptions_document:
-                self.subscriptions_document.remove(subscribee.username)
-                
-        if 'email_publish' in subscriptions:
             if not self.username in subscribee.subscribers_document:
                 subscribee.subscribers_document.append(self.username)
         else:
+            if subscribee.username in self.subscriptions_document:
+                self.subscriptions_document.remove(subscribee.username)
             if self.username in subscribee.subscribers_document:
                 subscribee.subscribers_document.remove(self.username)
-                
+        #comment subscriptions specifically      
         if 'subscribe_comment' in subscriptions:
             if not subscribee.username in self.subscriptions_comment:
                 self.subscriptions_comment.append(subscribee.username)
-        else:
-            if subscribee.username in self.subscriptions_comment:
-                self.subscriptions_comment.remove(subscribee.username)
-        
-        if 'email_comment' in subscriptions:
             if not self.username in subscribee.subscribers_comment:
                 subscribee.subscribers_comment.append(self.username)
         else:
+            if subscribee.username in self.subscriptions_comment:
+                self.subscriptions_comment.remove(subscribee.username)
             if self.username in subscribee.subscribers_comment:
                 subscribee.subscribers_comment.remove(self.username)
-        
+                
         subscribee.put()
         self.put()
-        return message
+
     
     def subscribeTag(self, tagTitle, subscribe):
-        logging.info('in subscribe tag')
         if subscribe and not tagTitle in self.subscriptions_tag:
-            logging.info('subscribing')
             self.subscriptions_tag.append(tagTitle)
         if not subscribe and tagTitle in self.subscriptions_tag:
-            logging.info('unsubscribing')
             self.subscriptions_tag.remove(tagTitle)
         self.put()
         
@@ -585,10 +582,52 @@ class User(db.Model):
         message = StreamMessage()
         message.recipient = other
         message.content = self.get_url(html=True)+'\'s Writer\'s Circle invitation has been withdrawn.'
-        message.put()       
+        message.put()    
+        
+class Event(db.Model):
+    date = db.DateTimeProperty(auto_now_add=True)
+    emailed = db.BooleanProperty(default = False)
+    object = db.ReferenceProperty()
+    object_type = db.StringProperty(default = 'Event')
+    reasons = db.StringListProperty()
+    streamCancelled = db.BooleanProperty(default = False)
+    type = db.StringProperty()
+    user = db.ReferenceProperty(User, collection_name='events')
+ 
+    def save(self):
+        events = self.user.events
+        logging.info('events = '+str(events))
+        events.filter('object ==',self.object)
+        preexisting = events.fetch(1)
+        if preexisting:
+            preexisting[0].reasons.extend(self.reasons)
+            preexisting[0].put()
+        else:
+            self.put()        
+    
+    def email(self):
+        if not self.streamCancelled:
+            self.emailed = True
+        else:
+            self.delete()
+            
+    def remove(self):
+        self.delete()
+            
+    def streamCancel(self):
+        if not self.emailed:
+            self.streamCancelled = True
+        else: 
+            self.delete()   
         
 class Document(db.Model):
+    """
+    Document accesses the collections:
     
+    comments (top level)
+    replies (document replies)
+    """    
+    actionTally = db.IntegerProperty(default=0)
     author = db.ReferenceProperty(User, collection_name = 'works')
     authorname = db.StringProperty()
     content = db.TextProperty()
@@ -596,9 +635,11 @@ class Document(db.Model):
     _description=db.StringProperty(default = '')
     draft = db.BooleanProperty(default=True)
     favorites = db.StringListProperty(default=[])
+    favoriteTally = db.IntegerProperty(default = 0)
     filename = db.StringProperty()
     leaftags = db.StringListProperty(default=[])
     object_type = db.StringProperty(default = 'Document')
+    parentDocument = db.SelfReferenceProperty()
     raters = db.StringListProperty()
     rating = db.IntegerProperty(default=0)
     subscribers = db.StringListProperty(default=[])
@@ -607,6 +648,7 @@ class Document(db.Model):
     title = db.StringProperty()
     views = db.IntegerProperty(default=0)
     viewers = db.StringListProperty(default=[])
+    virgin = db.BooleanProperty(default=True)
     special = db.BooleanProperty(default=False)
     type = db.StringListProperty(default=["not_meta"])
     
@@ -658,14 +700,48 @@ class Document(db.Model):
                             self.type.append('meta')                    
         self.put()
         
+    def createEvents(self):
+        for subscriberName in self.author.subscribers_document:
+            subscriber = get_user(subscriberName) 
+            event = Event()
+            event.type = 'Document'
+            event.object = self
+            event.user = subscriber
+            event.reasons = [self.author.get_url(html=True)+' created a new <a href="'+self.get_url(relative=False)+'">document</a>']
+            event.save()
+            
+        if self.parentDocument and self.parentDocument.author.username != self.author.username:
+            event = Event()
+            event.type = 'Document'
+            event.object = self
+            event.user = self.parentDocument.author
+            event.reasons = [self.author.get_url(html=True)+' created a new <a href="'+self.get_url(relative=False)+'">reply</a> to '+self.parentDocument.title]
+            event.save()     
+            
+        for tagName in self.tags:
+            tag = Tag.get_by_key_name(tagName)
+            for user in tag.getSubscribers():
+                if user.username != self.author.username:
+                    event = Event()
+                    event.type = 'Document'
+                    event.object = self
+                    event.user = user
+                    event.reasons = [self.author.get_url(html=True)+' created a new '+tag.title+' related <a href="'+self.get_url(relative=False)+'">document</a>']
+                    event.save()   
+                    
+        self.setActionTally()                   
+        
     def favCount(self):
         return len(self.favorites)
     
-    def get_url(self,includeDomain=False):
-        if includeDomain:
-            return hank['domainstring']+self.author.username+'/document/'+self.filename+'/'
-        else: 
-            return '/'+self.author.username+'/document/'+self.filename+'/'
+    def get_url(self,relative=True, html = False):
+        if html:
+            return '<a href="'+hank['domainstring']+self.author.username+'/document/'+self.filename+'/">'+html+'</a>'
+        else:
+            if relative:
+                return '/'+self.author.username+'/document/'+self.filename+'/'
+            else: 
+                return hank['domainstring']+self.author.username+'/document/'+self.filename+'/'
     
     def get_stripped(self):
         
@@ -754,6 +830,10 @@ class Document(db.Model):
     
     def remove(self):
         
+        events = Event.all().filter('object =',self).fetch(1000)
+        for event in events:
+            event.delete()
+        
         ratings = self.ratings
         for rating in ratings:
             rating.delete()
@@ -790,7 +870,14 @@ class Document(db.Model):
             except:
                 pass
             self.put()
-            
+
+    def setActionTally(self):
+        current = self
+        if current.parentDocument:
+            current.parentDocument.actionTally += 1
+            current.parentDocument.put()
+            current.parentDocument.setActionTally()
+           
     def get_tag_number(self):
         return len(self.tags)
     
@@ -817,6 +904,7 @@ class Ticket(db.Model):
 class Comment(db.Model):
     """It might also be more elegant to 
     manage depth with a property here."""
+    actionTally = db.IntegerProperty(default=0)
     author = db.ReferenceProperty(User, collection_name = 'mycomments')
     raters = db.StringListProperty()
     commentType = db.TextProperty()
@@ -833,22 +921,83 @@ class Comment(db.Model):
     subject = db.StringProperty()
     subscribers = db.StringListProperty(default=[])
     
-    def get_stripped(self):
-        self.stripped_content=strip_tags(self.content)
-        return self.stripped_content
-    
+    def createEvents(self):
+        if self.author:
+            for subscriberName in self.author.subscribers_comment:
+                subscriber = get_user(subscriberName) 
+                event = Event()
+                event.type = 'Comment'
+                event.object = self
+                event.user = subscriber
+                event.reasons = [self.author.get_url(html=True)+' left a new <a href="'+self.get_url(relative=False)+'">comment</a>']
+                event.save()
+            
+        if self.above and self.above.author and self.above.author.username != self.author.username:
+            event = Event()
+            event.type = 'Comment'
+            event.object = self
+            event.user = self.above.author
+            if self.author:
+                event.reasons = [self.author.get_url(html=True)+' <a href="'+self.get_url(relative=False)+'">replied</a> to your comment '+self.above.subject]
+            else:
+                event.reasons = ['An anonymous user <a href="'+self.get_url(relative=False)+'">replied</a> to your comment '+self.above.subject]
+            event.save()
+            
+        if self.article and self.article.author.username != self.author.username:
+            event = Event()
+            event.type = 'Comment'
+            event.object = self
+            event.user = self.article.author
+            if self.author:
+                event.reasons = [self.author.get_url(html=True)+' <a href="'+self.get_url(relative=False)+'">commented</a> on your document '+self.article.title]
+            else:
+                event.reasons = ['An anonymous user <a href="'+self.get_url(relative=False)+'">commented</a> on your document '+self.article.title]
+            event.save()  
+            
+        if self.user_page and self.user_page.username != self.author.username:
+            event = Event()
+            event.type = 'Comment'
+            event.object = self
+            event.user = self.user_page
+            if self.author:
+                event.reasons = [self.author.get_url(html=True)+' <a href="'+self.get_url(relative=False)+'">commented</a> on your userpage']
+            else:
+                event.reasons = ['An anonymous user <a href="'+self.get_url(relative=False)+'">commented</a> on your userpage']
+            event.save()            
+                
+        self.setActionTally()
+        
+    def getAuthorName(self):
+        if self.author:
+            return self.author.username
+        else:
+            return 'anonymous'
+            
     def get_page_object(self):
         if self.above:
             return self.above.get_page_object()
         if self.article:
             return self.article
         if self.user_page:
-            return self.user_page
+            return self.user_page            
+    
+    def get_stripped(self, length=None):
+        self.stripped_content=strip_tags(self.content)
+        if length:
+            return self.stripped_content[:length]
+        else:
+            return self.stripped_content
         
-    def get_url(self):
+    def get_url(self, relative = True, html=False):
         object = self.get_page_object()
         url = object.get_url()
-        return url
+        if html:
+            return '<a href="'+hank['domainstring'][:-1]+url+'#'+str(self.key())+'">'+html+'</a>'
+        else:
+            if relative:
+                return url+'#'+str(self.key())
+            else: 
+                return hank['domainstring'][:-1]+url+'#'+str(self.key())
     
     def parse(self):
         acceptableElements = ['a','blockquote','br','span','em','i','h3',
@@ -885,7 +1034,38 @@ class Comment(db.Model):
                 continue # next round            
             break    
         self.put()   
-       
+
+    def remove(self, message=''):
+        
+        events = Event.all().filter('object =',self).fetch(1000)
+        for event in events:
+            event.delete()
+        
+        if self.author:
+            if not message:
+                message = 'A comment of yours was deleted because '+self.subject+' by '+self.author.username+' was deleted.'  
+            else:
+                streamMessage = StreamMessage()
+                streamMessage.recipient = self.author
+                streamMessage.content = message
+                streamMessage.put()
+            
+        ratings = self.ratings
+        for rating in ratings:
+            rating.delete()
+        
+        children = self.replies
+        for child in children:
+            child.remove(message)
+                    
+        self.delete()       
+
+    def setActionTally(self):
+        current = self
+        if current.above:
+            current.above.actionTally += 1
+            current.above.put()
+            current.above.setActionTally()
         
     def set_rating(self):
         votes = self.ratings
@@ -905,44 +1085,36 @@ class Comment(db.Model):
         #    self.put()
         #else: 
         #    raise Exception('comment rating would be outside -1 to 5')
-    
-    def remove(self, message=''):
-        
-        if self.author:
-            if not message:
-                message = 'A comment of yours was deleted because '+self.subject+' by '+self.author.username+' was deleted.'  
-            else:
-                streamMessage = StreamMessage()
-                streamMessage.recipient = self.author
-                streamMessage.content = message
-                streamMessage.put()
-            
-        ratings = self.ratings
-        for rating in ratings:
-            rating.delete()
-        
-        children = self.replies
-        for child in children:
-            child.remove(message)
-                    
-        self.delete()
-        
+         
     def subscribe(self, user):
         if not user.username in self.subscribers:
             self.subscribers.append(user.username)
+
     def unsubscribe(self,user):
         if user.username in self.subscribers:
             self.subscribers.remove(user.username) 
             
 class StreamMessage(db.Model):
     date = db.DateTimeProperty(auto_now_add=True)
+    emailed = db.BooleanProperty(default = False)
     object_type = db.StringProperty(default='StreamMessage')
     content = db.StringProperty()
     private = db.BooleanProperty(default=True)
     recipient = db.ReferenceProperty(User, collection_name='streamMessages')
+    streamCancelled = db.BooleanProperty(default = False)    
+    
+    def email(self):
+        self.emailed = True
+        if self.streamCancelled:
+            self.remove()
     
     def remove(self):
         self.delete()
+        
+    def streamCancel(self):
+        self.streamCancelled = True
+        if self.emailed:
+            self.remove()
         
 class ModPoint(db.Model):
     date = db.DateTimeProperty(auto_now_add=True)
@@ -1050,6 +1222,9 @@ class Tag(db.Model):
             child.exterminate()
         self.delete()
         
+    def getSubscribers(self):
+        return User.all().filter('subscriptions_tag =',self.title).fetch(1000)
+        
     def get_url(self):
         return '/tag/'+self.title+'/'
         
@@ -1057,17 +1232,38 @@ class Vote(db.Model):
     user = db.ReferenceProperty(User, collection_name='ratings')
     date = db.DateTimeProperty(auto_now_add=True)
     value = db.IntegerProperty()
-    current_rating = db.IntegerProperty()
-    
+    current_rating = db.IntegerProperty()        
     
 class VoteDocument(Vote):
     document = db.ReferenceProperty(Document, collection_name='ratings')
+    object_type = db.StringProperty(default = 'VoteDocument')
     type = db.StringProperty(default = 'document')
+    
+    def createMessage(self):
+        message = StreamMessage()
+        message.recipient = self.user
+        if self.value > 0:
+            sign = '+'
+        else:
+            sign = ''
+        message.content = self.document.get_url(html=self.document.title)+' ('+sign+str(self.value)+')'
     
 class VoteComment(Vote):
     comment = db.ReferenceProperty(Comment, collection_name='ratings')
     modifier = db.StringProperty(default=None)
-    type = db.StringProperty(default = 'comment')     
+    object_type = db.StringProperty(default = 'VoteComment')
+    type = db.StringProperty(default = 'comment')   
+
+    def createMessage(self):
+        message = StreamMessage()
+        message.recipient = self.user
+        if self.value > 0:
+            sign = '+'
+        else:
+            sign = ''
+        message.content = self.comment.get_url(html=self.comment.subject)+' ('+sign+str(self.value)+')'    
+
+    
     
 
  
@@ -1345,11 +1541,13 @@ class CommentHandler(CommentPage):
         content = self.request.get('content')
         scriptless = self.request.get('scriptless')
         subject = self.request.get('subject')
+        new = True
 
         if aboveKey:
             above = db.get(aboveKey)
         if selfKey:
             selfComment = db.get(selfKey)
+            new = False
             
         
         if delete == 'true':
@@ -1402,42 +1600,10 @@ class CommentHandler(CommentPage):
             
             comment.put()
             if self.validate(comment,scriptless):
-                self.email(selfKey, user, comment)
+                if new:
+                    comment.createEvents()
                 self.back(comment)
             
-    def email(self, selfKey, user, comment):
-            if user:
-                for subscriber in comment.author.subscribers_comment:
-                    sub = get_user(subscriber)
-                    mail.send_mail(
-                        'postmaster@essayhost.appspotmail.com',
-                        sub.google.email(),
-                        'New Comment by %s' % comment.author.username,
-                        messages.email_comment(comment),
-                        html = messages.email_comment_html(comment)
-                        )
-            if comment.above :
-                if comment.above.subscribers:
-                    for subscriber in comment.above.subscribers:
-                        sub = get_user(subscriber)
-                        mail.send_mail(
-                            'postmaster@essayhost.appspotmail.com',
-                            sub.google.email(),
-                            'New reply to %s' % comment.above.subject,
-                            messages.email_comment(comment),
-                            html = messages.email_comment_html(comment)
-                            )               
-            if is_document(comment.get_page_object()):
-                if comment.get_page_object().subscribers:
-                    for subscriber in comment.get_page_object().subscribers:
-                        sub = get_user(subscriber)
-                        mail.send_mail(
-                            'postmaster@essayhost.appspotmail.com',
-                            sub.google.email(),
-                            'New reply to %s' % comment.get_page_object().title,
-                            messages.email_comment(comment),
-                            html = messages.email_comment_html(comment)
-                        )  
     def back(self, comment):
         self.redirect(comment.get_page_object().get_url())
         
@@ -1518,7 +1684,6 @@ class Create_Document(baseHandler):
         existing_filename = self.request.get('existing_filename')
         filename = self.request.get('filename')
         filename = cleaner(filename)
-        subscribe = self.request.get('subscribe')
         description = self.request.get('description')
         description = cleaner(description,deletechars = '`~@#^*{[}]|/><)')
         username = self.request.get('username')
@@ -1536,11 +1701,6 @@ class Create_Document(baseHandler):
                 document = get_document(user.username,filename)
             else:
                 document = Document()
-        
-        if subscribe == 'subscribe':
-            document.set_subscriber(user.username)
-        else:
-            document.set_subscriber(user.username,False)
         
         #################################################
         # Handling Tags
@@ -1579,18 +1739,11 @@ class Create_Document(baseHandler):
             document.special = True
             document.filename = str(document.key())
             self.makeTicket(document,user)
+        if not document.draft and document.virgin:
+            document.virgin = False
+            document.createEvents()
         document.put()         
        
-        if new and not document.draft:
-            for subscriber in user.subscribers_document:
-                sub = get_user(subscriber)
-                mail.send_mail(
-                    'postmaster@essayhost.appspotmail.com',
-                    sub.google.email(),
-                    'New document by %s' % document.authorname,
-                    messages.email_document(document),
-                    html = messages.email_document_html(document)
-                )
         if scriptless == 'true' and documentType == 'document':
             self.redirect('/addtag/Root/'+document.filename+'/')
         else:
@@ -1740,9 +1893,9 @@ class Message(baseHandler):
     def myGet(self,request,key):
         user = get_user()
         message = db.get(key)
-        if request == 'remove':
+        if request == 'streamCancel':
             if message.recipient.username == user.username:               
-                message.remove() 
+                message.streamCancel() 
         self.redirect('../../../')
 
 class Meta(baseHandler):
@@ -2118,7 +2271,36 @@ class Tasks(webapp.RequestHandler):
     def get(self, request):
         if request == 'modPoints':
             self.modPoints()
+        if request == 'emails':
+            self.emails()
+        if request == 'eventExpiration':
+            self.eventExpiration()
             
+    def emails(self):
+
+        users = User.all().fetch(1000)
+        for user in users:
+            mailing = user.fetch_email()
+            if mailing:
+                mailings.append(mailing)
+                
+        for mailing in mailings:
+            mail.send_mail(
+                sender = 'postmaster@essayhost.appspotmail.com',
+                to = mailing['user'].google.email(),
+                subject = 'EssayHost Update',
+                body = 'plain text email' ,#messages.prepareTextMailing(mailing),
+                html = messages.prepareHTMLMailing(mailing)
+                )
+            
+    def eventExpiration(self):
+        weekAgo = datetime.datetime.now()-datetime.timedelta(weeks=1)
+        expired = Event.all().filter('date <=',weekAgo).fetch(10000)  
+        expired.extend(StreamMessage.all().filter('date <=',weekAgo).fetch(10000))
+        
+        for item in expired:
+            item.remove()
+                   
     def modPoints(self):
         period = datetime.datetime.now()-datetime.timedelta(hours=6)
         weekAgo = datetime.datetime.now()-datetime.timedelta(weeks=1)
@@ -2317,7 +2499,6 @@ class View_Document(baseHandler):
 
 application = webapp.WSGIApplication([
     ('/userinfo/',UserInfo),
-    ('/modpoints/(.*)/',Tasks),
     ('/tasks/(.*)/',Tasks),
     ('/ajax/(.*)/',AJAX),
     ('.*/rate/', Rating),

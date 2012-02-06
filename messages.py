@@ -12,230 +12,153 @@ main =Template(u'''
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-
-     <style type="text/css">
-     /* Client-specific Styles */
-     #outlook a{padding:0;} /* Force Outlook to provide a "view in browser" button. */
-     body{width:100% !important;} /* Force Hotmail to display emails at full width */
-     body{-webkit-text-size-adjust:none;} /* Prevent Webkit platforms from changing default text sizes. */
-     
-     /* Reset Styles */
-     body{margin:0; padding:0;}
-     img{border:none; font-size:14px; font-weight:bold; height:auto; line-height:100%; outline:none; text-decoration:none; text-transform:capitalize;}
-     #backgroundTable{height:100% !important; margin:0; padding:0; width:100% !important;}
-    
-     /* Template Styles */
-    
-    body{
-    max-width:600px;
-    }
-    
-     /***** MAIN *****/
-     
-    #frame{
-    border:solid 20px;
-    border-color: #d1d1d1;
-    border-right:100px;
-    border-bottom:100px;
-    }
-    
-    #mainhead{
-    font-family: 'palatino linotype' ‘Book Antiqua’, Palatino, serif;
-    color: #eee;
-    background: #242e2f
-    max-width: 30%;
-   } 
-
-    /***** DOCUMENTS *****/
-   
-    .document{
-    color:#000;
-    font-family: "Times New Roman",Times,serif;
-    border:solid 1px;
-    border-color: #aaa;
-    overflow:hidden;
-    padding:5px;
-    max-height:125px;
-    margin-bottom:5px;
-    }
-
-   
-    .description{
-    font-size:18px;
-    }
-   
-    .info{
-    font-size:10px;
-    }
-   
-    .title_link{
-    color:#111;
-    }
-   
-    .title{
-    font-size:24px;
-    font-variant: small-caps;
-    }
-
-    /**** COMMENTS ******/
-    
-    .comment{
-    font-family: 'palatino linotype' ‘Book Antiqua’, Palatino, serif;
-    color:#000;
-    border:solid 1px;
-    border-color: #aaa;
-    margin-bottom:5px;
-    }
- 
-    .subject{
-    color: #fff;
-    background: #242e2f;
-    }
-    
-    .info_comment{
-    background: #ddd;
-    }
-    
-    .comment_content{
-    background-color:#eee;
-    }
-   
-    </style>
-    
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />    
     </head>
     <html>
     <body>
-    <div id="frame">
-        <h1 id="mainhead"><a href="http://essayhost.appspot.com/">Essay.com</a></h1>
-        ${content}
-    </div>
+
+        <h1><a href="http://essayhost.appspot.com/">EssayHost.com</a></h1>
+        <table style="border:solid 5px #ddd;background:#eee;padding:5px;">
+
+
+            ${documents}
+            
+
+            
+            ${comments}
+
+
+                        
+            ${streamMessages} 
+            
+        </table>   
+
     </body>
     </html>
     ''')
-    
-########################################################
-#               EMAIL DOCUMENT INFO
-#
 
-def email_document(document):
+def prepareTextMailing(mailing):
+    pass
+def prepareHTMLMailing(mailing):
+    
+    tempDocuments = '''
+            <tr>
+            <td>
+                <h2>New Documents</h2>
+            </td>
+            </tr>    
+    '''
+    for documentEvent in mailing['documents']:
+        tempDocuments = tempDocuments + templateDocumentHTML(documentEvent) 
+        
+    tempComments = '''
+            <tr>
+            <td>
+                <h2>New Comments</h2>
+            </td>
+            </tr>
+    '''
+    for commentEvent in mailing['comments']:
+        tempComments = tempComments + templateCommentHTML(commentEvent)
+        
+    tempStreamMessages = '''
+            <tr>
+            <td>
+                <h2>Recent Events</h2>
+            </td>
+            </tr>
+    '''
+    for message in mailing['messages']:
+        tempStreamMessages =tempStreamMessages+'<tr><td>'+message.content+'</td></tr>'
+    
+    finalMessage = main.substitute(
+                                   documents = tempDocuments,
+                                   comments= tempComments,
+                                   streamMessages= tempStreamMessages,                                   
+                                   )
+    logging.info('email message = '+finalMessage)
+    return finalMessage
+
+def templateDocumentHTML(documentEvent):
     email_document = Template(u"""
-    At ${date} ${author} published:
-    Title: ${title} Link:${url}
-    Description: ${description}
+    ${reasons}
+    <tr><td>
+    <table style="border:solid 1px #bbb;background:#fff;width:600px;padding:5px;">
+        <tr>
+            <td style="font-weight:bold;font-size:20px;font-family:serif;font-variant:small-caps;">
+                ${title}
+            </td>
+        </tr>
+        <tr>
+            <td style="font-size:10px;"> 
+                ${date}- by <span style="font-variant:small-caps;">${author}</span>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top:solid 2px;margin-top:5px;padding:5px;">
+                ${description}
+            </td>
+        </tr>
+    </table>
+    </td></tr>
     """)
+      
     return email_document.substitute(
-                                     date=str(document.date),
-                                     author=document.author.username,
-                                     url=document.get_url(),
-                                     title=document.title,
-                                     description = document.get_description()
-                                     )
-
-def email_document_html(document):
-    email_document = Template(u"""
-    <div class="document">
-    <span class="info">At ${date} ${author} published:</span><br/><hr/>
-    <a href="${domain}/${author}/document/${filename}/" target="_blank"><h1 class="title">${title}</h1></a>
-    <p class="description">${description}</p>
-    </div>
-    """)
-    htmlcontent =  email_document.substitute(
-                                     date=str(document.date),
-                                     author=document.author.username,
-                                     url=document.get_url(),
-                                     title=document.title,
-                                     description = document.get_description()
-                                     )
-    return main.substitute(content=htmlcontent)
-   
-##########################################################
-#             EMAIL COMMENT INFO
-#  
-  
-def email_comment(comment):
+                                     reasons = templateReasonsHTML(documentEvent.reasons),
+                                     title = documentEvent.object.title,
+                                     date=documentEvent.object.date.date(),
+                                     author=documentEvent.object.author.username,
+                                     description = documentEvent.object.get_description()
+                                     )    
+    
+def templateCommentHTML(commentEvent):
     email_comment = Template(u"""
-    ${author} commented on ${pageobject}: Link:${urllink}
-    
-    Subject: ${subject} 
-    At ${date} ${author} wrote: 
-    
-    Comment: ${body}
-    """)
-    
-    url = comment.get_page_object().get_url()
-    
-    try: 
-        comment.get_page_object().subtitle
-        regarding = comment.get_page_object().title
-    except: 
-        regarding = comment.get_page_object().username
-    
-    try:
-        authorurlfetch=comment.author.get_url()
-        authorfetch=comment.author.username
-    except:
-        authorurlfetch = ''
-        authorfetch='anonymous'
-        
-    if len(comment.stripped_content)>300:
-        content = comment.stripped_content[:300]+'... follow link to read the rest of '+comment.author.username+'\'s comment.'
-    else:
-        content = comment.stripped_content
-        
+    ${reasons}
+    <tr><td>
+    <table style="border:solid 1px #bbb;background:#fff;width:600px;padding:5px;">
+        <tr>
+            <td style="font-weight:bold;">
+                Subject: ${subject}
+            </td>
+        </tr>
+        <tr>
+            <td style="font-size:10px;color:#888;"> 
+                ${date} ${authorName} wrote:
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top:solid 2px;padding:5px;">
+                ${body}
+            </td>
+        </tr>
+    </table>
+    <td></tr>
 
+    """)
     
     return email_comment.substitute(
-                                     date=str(comment.date),
-                                     author=authorfetch,
-                                     urllink=url,
-                                     subject=comment.subject,
-                                     pageobject=regarding,
-                                     body = content
-                                     )
+                                           reasons = templateReasonsHTML(commentEvent.reasons),
+                                           subject=commentEvent.object.subject,
+                                           date=commentEvent.object.date.ctime(), 
+                                           authorName = commentEvent.object.getAuthorName(),
+                                           body = commentEvent.object.get_stripped(300)                                          
+                                           )
+
+      
+    
+def templateReasonsHTML(reasonsList):
+    email_reason = Template(u"""
+    <tr>
+        <td>
+            ${thisReason}
+        </td>
+    </tr>
+    """)  
+    tempReasons = ''
+    for reason in reasonsList:
+        tempReasons = tempReasons + email_reason.substitute(thisReason = reason)
+    return tempReasons
 
     
 
-def email_comment_html(comment):
-    email_comment = Template(u"""
-    <div class="comment">
-    <a href="authorurl" target="_blank">${author}</a> 
-    <a href="${urllink}" target="_blank">responded</a> to 
-    <a href="${urllink}" target="_blank">${page}</a>
-    <div class="subject">${subject}</div>
-    <div class="info_comment">At ${date} ${author} wrote:</div>
-    <p class="comment_content">${body}</p>
-    </div>
-    """)
-    
-    url = comment.get_page_object().get_url()
-    
-    try: 
-        comment.get_page_object().subtitle
-        regarding = comment.get_page_object().title
-    except: 
-        regarding = comment.get_page_object().username
-        
-    try:
-        authorurlfetch=comment.author.get_url()
-        authorfetch=comment.author.username
-    except:
-        authorurlfetch = ''
-        authorfetch='anonymous'
 
-    if len(comment.stripped_content)>300:
-        content = comment.stripped_content[:300]+'... follow link to read the rest of '+comment.author.username+'\'s comment.'
-    else:
-        content = comment.stripped_content
-    
-    htmlcontent = email_comment.substitute(
-                                     page = regarding,
-                                     date=str(comment.date),
-                                     author=authorfetch,
-                                     authorurl=authorurlfetch,
-                                     urllink=url,
-                                     subject=comment.subject,
-                                     body = content
-                                     )
-    return main.substitute(content=htmlcontent)
-                                     

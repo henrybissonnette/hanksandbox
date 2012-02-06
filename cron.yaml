@@ -2,3 +2,12 @@ cron:
 - description: assign mod points
   url: /tasks/modPoints/
   schedule: every 6 hours
+  
+- description: send emails
+  url: /tasks/email/
+  schedule: every 24 hours
+  
+- description: event expiration
+  url: /tasks/eventExpiration/
+  schedule: every 6 hours
+  

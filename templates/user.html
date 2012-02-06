@@ -88,7 +88,7 @@
 					{% endif %}
 					{% if user.username == page_user.username %}
 						{% autoescape off %}{{doc.content}}{% endautoescape %}
-						<a href="message/remove/{{doc.key}}/" title="Delete message." class="subtle"> x</a>
+						<a href="message/streamCancel/{{doc.key}}/" title="Delete message." class="subtle"> x</a>
 						</br>
 					{% endif %}					
 				{% endif %}
@@ -227,7 +227,7 @@
 				<h2 class="notab">Circle</h2>
 				Writer's Circle members have the ability to view and comment on your drafts. Writer's Circle membership is 
 				asymmetrical. That is, if you invite a user to join your Circle they will gain the ability to view your
-				drafts, but unless they specifically invite you, you will not be able to view theirs. </br>
+				drafts, but unless they specifically invite you, you will not be able to view theirs. </br></br>
 				
 				{% comment %}
 				---------------------------------------------------------
@@ -379,24 +379,18 @@
 					<tr>
 						<td >Event</td>
 						<td  title="recieve notifications in your subscription stream">Subscribe</td>
-						<td  title="recieve notifications by email">Email</td>
 					</tr>
 					<tr>
 						<td  title="when user publishes new documents">Document</td>
 						<td><input type="checkbox" name="subscriptions" value="subscribe_publish"
 							{% if page_user.username in user.subscriptions_document %}checked{%endif%}/></td>
-						<td><input type="checkbox" name="subscriptions" value="email_publish" 
-							{% if user.username in page_user.subscribers_document %}checked{%endif%}/></td>
 					</tr>
 					<tr>
 						<td  title="when user leaves new comments">Comment</td>
 						<td><input type="checkbox" name="subscriptions" value="subscribe_comment"
 							{% if page_user.username in user.subscriptions_comment %}checked{%endif%}/></td>
-						<td><input type="checkbox" name="subscriptions" value="email_comment"
-							{% if user.username in page_user.subscribers_comment %}checked{%endif%}/></td>
 					</tr>
 					<tr>
-						<td></td>
 						<td></td>
 						<td><input type="submit" value="Save" /></td>
 					</tr>

@@ -285,11 +285,8 @@
 	    <textarea name="document_content" class="tinymce" rows=100 cols=100>{{document.content}}</textarea>
 	    <br>
 	    {% if not document.special %}
-	    <input type="checkbox" name="draft" value="True" {% if document.draft or not document %}checked{% endif %} /> Mark as Draft |
+	    <input type="checkbox" name="draft" value="True" {% if document.draft or not document %}checked{% endif %} /> Mark as Draft
 	    {% endif %} 
-	    <input type=checkbox name="subscribe" value="subscribe" {% if user.username in document.subscribers or not edit %}checked{%endif%}>
-	    	<span>Recieve email notifications if someone replies to this Document.</span>
-	    </input>
 	    <br/>
 	    <input type=submit value="Save"/>
 	
