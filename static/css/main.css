@@ -797,6 +797,10 @@ div.stream_item:hover{
 
 /********************Document Browser (by tag)***************************/
 
+.document_browser{
+	max-width: 600px;
+}
+
 .tag_browser{
 
 }

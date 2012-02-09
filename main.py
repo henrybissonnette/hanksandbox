@@ -120,7 +120,7 @@ def resolve(obj, path):
         obj = getattr(obj, name, None)
         if obj is None:
             break
-    return None
+    return obj
 
 
 
@@ -727,7 +727,8 @@ class Document(db.Model):
             event.reasons = [self.author.get_url(html=True)+' created a new <a href="'+self.get_url(relative=False)+'">document</a>']
             event.save()
             
-        if self.parentDocument and self.parentDocument.author.username != self.author.username:
+        parentAuthor = resolve(self,'parentDocument.author.username')    
+        if parentAuthor and parentAuthor != self.author.username:
             event = Event()
             event.type = 'Document'
             event.object = self

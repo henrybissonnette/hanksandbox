@@ -17624,3 +17624,16 @@ java.lang.Exception: Unable to resolve file
 java.lang.Exception: Unable to resolve file
 	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
 	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY org.eclipse.core.jobs 4 2 2012-02-09 09:19:24.357
+!MESSAGE An internal error occurred during: "Firing pull and push event".
+!STACK 0
+java.lang.IllegalStateException
+	at org.eclipse.core.internal.jobs.InternalJob.setSystem(InternalJob.java:562)
+	at org.eclipse.core.runtime.jobs.Job.setSystem(Job.java:559)
+	at com.aptana.explorer.internal.ui.GitProjectView.refreshUI(GitProjectView.java:575)
+	at com.aptana.explorer.internal.ui.GitProjectView.handleBranchEvent(GitProjectView.java:608)
+	at com.aptana.explorer.internal.ui.GitProjectView.pushed(GitProjectView.java:521)
+	at com.aptana.git.core.model.GitRepository.firePushEvent(GitRepository.java:1441)
+	at com.aptana.git.core.model.GitRepository$4$2.run(GitRepository.java:425)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
