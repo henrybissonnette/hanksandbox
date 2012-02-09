@@ -76,7 +76,6 @@ def prepareHTMLMailing(mailing):
                                    comments= tempComments,
                                    streamMessages= tempStreamMessages,                                   
                                    )
-    logging.info('email message = '+finalMessage)
     return finalMessage
 
 def templateDocumentHTML(documentEvent):

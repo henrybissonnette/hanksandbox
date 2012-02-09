@@ -151,10 +151,25 @@ indexes:
   - name: date
     direction: desc
 
+- kind: Event
+  properties:
+  - name: type
+  - name: user
+  - name: emailed
+  - name: date
+    direction: desc
+
 - kind: ModPoint
   properties:
   - name: user
   - name: date
+
+- kind: StreamMessage
+  properties:
+  - name: emailed
+  - name: recipient
+  - name: date
+    direction: desc
 
 - kind: StreamMessage
   properties:

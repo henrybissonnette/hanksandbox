@@ -100,7 +100,6 @@ $(document).ready(function(){
 	})		
 
 	$('form[action="delete/"] input[type="submit"]').click(function(){
-		console.log('fuck you')
 		if(confirmSubmit('Do you want to permanently delete this document?')){
 			window.location = document.URL + 'edit/delete/'			
 		}

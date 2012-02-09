@@ -112,6 +112,18 @@ def remove_duplicates(seq, idfun=None):
         seen[marker] = 1
         result.append(item)
     return result
+
+def resolve(obj, path):
+    """Resolves an attribute path on an object, returning `None` 
+       if any attribute is not found"""
+    for name in path.split("."):
+        obj = getattr(obj, name, None)
+        if obj is None:
+            break
+    return None
+
+
+
     
 class CommentaryObj:
     """
@@ -275,7 +287,6 @@ class User(db.Model):
         self.put()
     
     def addModPoint(self):
-        logging.info('selected user = '+self.username)
         newPoint = ModPoint()
         newPoint.user = self
         newPoint.put()
@@ -601,7 +612,6 @@ class Event(db.Model):
  
     def save(self):
         events = self.user.events
-        logging.info('events = '+str(events))
         events.filter('object ==',self.object)
         preexisting = events.fetch(1)
         if preexisting:
@@ -929,6 +939,9 @@ class Comment(db.Model):
     subscribers = db.StringListProperty(default=[])
     
     def createEvents(self):
+        aboveAuthor = resolve(self,'above.author.username')
+        selfAuthor = resolve(self, 'author.username')
+        
         if self.author:
             for subscriberName in self.author.subscribers_comment:
                 subscriber = get_user(subscriberName) 
@@ -939,18 +952,19 @@ class Comment(db.Model):
                 event.reasons = [self.author.get_url(html=True)+' left a new <a href="'+self.get_url(relative=False)+'">comment</a>']
                 event.save()
             
-        if self.above and self.above.author and self.above.author.username != self.author.username:
+        if aboveAuthor and selfAuthor != aboveAuthor:
             event = Event()
             event.type = 'Comment'
             event.object = self
             event.user = self.above.author
             if self.author:
                 event.reasons = [self.author.get_url(html=True)+' <a href="'+self.get_url(relative=False)+'">replied</a> to your comment '+self.above.subject]
-            else:
+            else: 
                 event.reasons = ['An anonymous user <a href="'+self.get_url(relative=False)+'">replied</a> to your comment '+self.above.subject]
-            event.save()
-            
-        if self.article and self.article.author.username != self.author.username:
+            event.save()                  
+
+        articleAuthor = resolve(self,'article.author.username')   
+        if articleAuthor and articleAuthor != selfAuthor:
             event = Event()
             event.type = 'Comment'
             event.object = self
@@ -961,7 +975,8 @@ class Comment(db.Model):
                 event.reasons = ['An anonymous user <a href="'+self.get_url(relative=False)+'">commented</a> on your document '+self.article.title]
             event.save()  
             
-        if self.user_page and self.user_page.username != self.author.username:
+        pageUser = resolve(self,'user_page.username')
+        if pageUser and pageUser!=selfAuthor:
             event = Event()
             event.type = 'Comment'
             event.object = self
@@ -970,7 +985,7 @@ class Comment(db.Model):
                 event.reasons = [self.author.get_url(html=True)+' <a href="'+self.get_url(relative=False)+'">commented</a> on your userpage']
             else:
                 event.reasons = ['An anonymous user <a href="'+self.get_url(relative=False)+'">commented</a> on your userpage']
-            event.save()            
+            event.save()                            
                 
         self.setActionTally()
         
@@ -1362,7 +1377,6 @@ class AJAX(webapp.RequestHandler):
             isSubscribed = 'true'
         else: 
             isSubscribed = 'false'
-        logging.info('subscribed? '+isSubscribed)
         self.response.out.write(isSubscribed)
         
         
@@ -1447,7 +1461,6 @@ class Admin(baseHandler):
         user = get_user()
         if self.admincheck():
             accounts = User.all().fetch(1000)
-            logging.info('accounts = '+str(accounts))
             context = {
                        'accounts':  accounts,
                        'user':      user,
@@ -2211,7 +2224,6 @@ class TagManager(baseHandler):
         if request == 'expand':
     
             browse_type = self.request.get('browse_type')
-            logging.info('browse_type = '+browse_type)
             expand_title = self.request.get('title')
             parent = Tag.get_by_key_name(expand_title)
             tags = parent.children.order('title')
@@ -2286,20 +2298,25 @@ class Tasks(webapp.RequestHandler):
             self.eventExpiration()
             
     def emails(self):
-
+        logging.info('emailing now')
         users = User.all().fetch(1000)
+        logging.info('users = '+str(users))
+        mailings = []
         for user in users:
             mailing = user.fetch_email()
             if mailing:
                 mailings.append(mailing)
-                
+               
         for mailing in mailings:
+            logging.info('email sent to: '+ mailing['user'].username +' at '+mailing['user'].google.email()) 
+            content  = messages.prepareHTMLMailing(mailing)
+            logging.info(content) 
             mail.send_mail(
                 sender = 'postmaster@essayhost.appspotmail.com',
                 to = mailing['user'].google.email(),
                 subject = 'EssayHost Update',
                 body = 'plain text email' ,#messages.prepareTextMailing(mailing),
-                html = messages.prepareHTMLMailing(mailing)
+                html = content
                 )
             
     def eventExpiration(self):
@@ -2333,7 +2350,6 @@ class Tasks(webapp.RequestHandler):
         i=0
         #build reputation function
         while(i<len(users)):
-            logging.info('i = '+ str(i))
             allocationFunction.append(users[i].reputation + allocationFunction[i])
             i+=1
         #assign mod points to users
@@ -2382,7 +2398,6 @@ class Update_Model(baseHandler):
         if attrValue is None:
             # First request, just get the first name out of the datastore.
             obj = eval(modelClass+".gql('ORDER BY "+attr+" DESC').get()")
-            logging.info('obj = '+str(obj))
             attrValue = eval("obj."+attr)
         
         q = eval(modelClass+".gql('WHERE "+attr+" <= :1 ORDER BY "+attr+" DESC', '"+attrValue+"')") 
