@@ -4,14 +4,14 @@
 
 
 div.bodywrap{
-    margin-left: 120px;	
-    margin-right: 100px;
+    margin-left: 150px;	
+    margin-right: 150px;
 }
 
 div.bodycontent{
 	border:solid 2px #333;
 	padding:50px;
-	min-width:800px;
+	min-width:600px;
 	overflow: auto;  
 }
 
@@ -457,7 +457,7 @@ h3.menu_head{
 .l_outer{
 	float:left;
 	margin-left:-40px;
-	max-width:140px;
+	max-width:160px;
 	padding: 5px;
 	overflow:hidden;
 }
@@ -716,14 +716,14 @@ div.commentary{
 /***********tabular page division*****************/
 
 div.right_half{
-	margin-left:55%;
+	margin-left:63%;
 	border-left:solid;
 	padding-left:10px;
 }
 
 div.left_half{
 	float:left;
-	width:50%;
+	width:60%;
 }
 /***********subscription stream************/
 

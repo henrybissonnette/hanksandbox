@@ -17637,3 +17637,10 @@ java.lang.IllegalStateException
 	at com.aptana.git.core.model.GitRepository.firePushEvent(GitRepository.java:1441)
 	at com.aptana.git.core.model.GitRepository$4$2.run(GitRepository.java:425)
 	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.aptana.editor.html 4 0 2012-02-09 13:59:23.863
+!MESSAGE Unable to resolve file
+!STACK 0
+java.lang.Exception: Unable to resolve file
+	at com.aptana.editor.html.outline.HTMLOutlineContentProvider$2.run(HTMLOutlineContentProvider.java:273)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)

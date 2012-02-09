@@ -605,6 +605,7 @@ class Event(db.Model):
     emailed = db.BooleanProperty(default = False)
     object = db.ReferenceProperty()
     object_type = db.StringProperty(default = 'Event')
+    plainTextReasons = db.StringListProperty()
     reasons = db.StringListProperty()
     streamCancelled = db.BooleanProperty(default = False)
     type = db.StringProperty()
@@ -616,6 +617,7 @@ class Event(db.Model):
         preexisting = events.fetch(1)
         if preexisting:
             preexisting[0].reasons.extend(self.reasons)
+            preexisting[0].plainTextReasons.extend(self.plainTextReasons)
             preexisting[0].put()
         else:
             self.put()        
@@ -725,6 +727,7 @@ class Document(db.Model):
             event.object = self
             event.user = subscriber
             event.reasons = [self.author.get_url(html=True)+' created a new <a href="'+self.get_url(relative=False)+'">document</a>']
+            event.plainTextReasons = [self.author.username+'('+self.author.get_url(relative=False)+') created a new document ('+self.get_url(relative=False)+')']
             event.save()
             
         parentAuthor = resolve(self,'parentDocument.author.username')    
@@ -734,6 +737,9 @@ class Document(db.Model):
             event.object = self
             event.user = self.parentDocument.author
             event.reasons = [self.author.get_url(html=True)+' created a new <a href="'+self.get_url(relative=False)+'">reply</a> to '+self.parentDocument.title]
+            event.plainTextReasons = [self.author.username+'('+self.author.get_url(relative=False)+
+                                      ') created a new reply ('+self.get_url(relative=False) +') to '+self.parentDocument.title+
+                                      '('+self.parentDocument.get_url(relative=False)+')']
             event.save()     
             
         for tagName in self.tags:
@@ -745,6 +751,8 @@ class Document(db.Model):
                     event.object = self
                     event.user = user
                     event.reasons = [self.author.get_url(html=True)+' created a new '+tag.title+' related <a href="'+self.get_url(relative=False)+'">document</a>']
+                    event.plainTextReasons = [self.author.username+'('+self.author.get_url(relative=False)+') created a new '+tag.title+
+                                              ' related document ('+self.get_url(relative=False)+'")']
                     event.save()   
                     
         self.setActionTally()                   
@@ -950,7 +958,8 @@ class Comment(db.Model):
                 event.type = 'Comment'
                 event.object = self
                 event.user = subscriber
-                event.reasons = [self.author.get_url(html=True)+' left a new <a href="'+self.get_url(relative=False)+'">comment</a>']
+                event.reasons = [self.author.get_url(relative=False)+' left a new <a href="'+self.get_url(relative=False)+'">comment</a>']
+                event.plainTextReasons = [selfAuthor+'('+self.author.get_url(relative=False)+')'+' left a new comment ('+self.get_url(relative=False)+')']
                 event.save()
             
         if aboveAuthor and selfAuthor != aboveAuthor:
@@ -960,8 +969,10 @@ class Comment(db.Model):
             event.user = self.above.author
             if self.author:
                 event.reasons = [self.author.get_url(html=True)+' <a href="'+self.get_url(relative=False)+'">replied</a> to your comment '+self.above.subject]
+                event.plainTextReasons = [selfAuthor+'('+self.author.get_url(relative=False)+') replied to your comment '+self.above.subject+'('+self.get_url(relative=False)+')']
             else: 
                 event.reasons = ['An anonymous user <a href="'+self.get_url(relative=False)+'">replied</a> to your comment '+self.above.subject]
+                event.plainTextReasons = ['An anonymous user replied to your comment '+self.above.subject+'('+self.get_url(relative=False)+')']
             event.save()                  
 
         articleAuthor = resolve(self,'article.author.username')   
@@ -972,8 +983,10 @@ class Comment(db.Model):
             event.user = self.article.author
             if self.author:
                 event.reasons = [self.author.get_url(html=True)+' <a href="'+self.get_url(relative=False)+'">commented</a> on your document '+self.article.title]
+                event.plainTextReasons = [selfAuthor+'('+self.author.get_url(relative=False)+') commented on your document '+self.article.title+'('+self.get_url(relative=False)+')']
             else:
                 event.reasons = ['An anonymous user <a href="'+self.get_url(relative=False)+'">commented</a> on your document '+self.article.title]
+                event.plainTextReasons = ['An anonymous user commented on your document '+self.article.title+'('+self.get_url(relative=False)+')']
             event.save()  
             
         pageUser = resolve(self,'user_page.username')
@@ -984,8 +997,10 @@ class Comment(db.Model):
             event.user = self.user_page
             if self.author:
                 event.reasons = [self.author.get_url(html=True)+' <a href="'+self.get_url(relative=False)+'">commented</a> on your userpage']
+                event.plainTextReasons = [selfAuthor+'('+self.author.get_url(relative=False)+') commented on your userpage ('+self.get_url(relative=False)+')']
             else:
                 event.reasons = ['An anonymous user <a href="'+self.get_url(relative=False)+'">commented</a> on your userpage']
+                event.plainTextReasons = ['An anonymous user commented on your userpage ('+self.get_url(relative=False)+')']
             event.save()                            
                 
         self.setActionTally()
@@ -2310,14 +2325,15 @@ class Tasks(webapp.RequestHandler):
                
         for mailing in mailings:
             logging.info('email sent to: '+ mailing['user'].username +' at '+mailing['user'].google.email()) 
-            content  = messages.prepareHTMLMailing(mailing)
+            htmlContent  = messages.prepareHTMLMailing(mailing)
+            plainContent = messages.prepareTextMailing(mailing)
             logging.info(content) 
             mail.send_mail(
                 sender = 'postmaster@essayhost.appspotmail.com',
                 to = mailing['user'].google.email(),
                 subject = 'EssayHost Update',
-                body = 'plain text email' ,#messages.prepareTextMailing(mailing),
-                html = content
+                body = plainContent ,#messages.prepareTextMailing(mailing),
+                html = htmlContent
                 )
             
     def eventExpiration(self):
