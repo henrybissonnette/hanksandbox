@@ -124,6 +124,7 @@ a.username:hover{
 }
 
 .exit{
+	text-decoration:none;
 	margin-top:-10px;
 	color: #bbb;
 	font-size: 25px;
@@ -726,6 +727,10 @@ div.left_half{
 	width:60%;
 }
 /***********subscription stream************/
+
+.closeItem{
+	float:right;
+}
 
 .stream_header{
 	border-bottom:solid 2px;

@@ -64,19 +64,27 @@
 			<h2 class="notab">Stream</h2>
 			
 			{% for doc in page_user.fetch_stream %}
-				{% if doc.object_type == 'Document' %}
-					{% if not doc.draft or user.username in doc.author.circle %}	
-						{% include 'streamDocument.html'%}
+			<div class="streamItem" id="doc.key">
+				<a class="closeItem exit" href="message/streamCancel/{{doc.key}}/">x</a>
+				{% if doc.object.object_type == 'Document' %}
+					{% if not doc.object.draft or user.username in doc.object.author.circle %}	
+						{% with doc.object as doc %}
+							{% include 'streamDocument.html'%}
+						{% endwith %}
 					{% endif %}		
 				{% endif %}
 				
-				{% if doc.object_type == 'Comment' %}
-					{% if doc.draft %}
-						{% if user.username in doc.page_object.author.circle %}
-							{% include 'streamComment.html' %}
+				{% if doc.object.object_type == 'Comment' %}
+					{% if doc.object.draft %}
+						{% if user.username in doc.object.page_object.author.circle %}
+							{% with doc.object as doc %}
+								{% include 'streamComment.html' %}
+							{% endwith %}
 						{% endif %}
 					{% else %}
-						{% include 'streamComment.html' %}
+						{% with doc.object as doc %}
+							{% include 'streamComment.html' %}
+						{% endwith %}
 					{% endif %}
 				{% endif %}
 				
@@ -88,10 +96,10 @@
 					{% endif %}
 					{% if user.username == page_user.username %}
 						{% autoescape off %}{{doc.content}}{% endautoescape %}
-						<a href="message/streamCancel/{{doc.key}}/" title="Delete message." class="subtle"> x</a>
 						</br>
 					{% endif %}					
 				{% endif %}
+			</div>
 			{% endfor %}
 			
 		{% comment %}

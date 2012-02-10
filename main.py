@@ -331,15 +331,8 @@ class User(db.Model):
         
         streamItems = []
         
-        commentEvents = self.events.filter('type =','Comment').filter('streamCancelled =',False).fetch(1000)
-        documentEvents = self.events.filter('type =','Document').filter('streamCancelled =',False).fetch(1000)
-        for set in [commentEvents,documentEvents]:
-            for item in set:
-                try:
-                    streamItems.append(item.object)
-                except:
-                    #this insures against errors from the associated object being deleted before the event is
-                    item.remove
+        streamItems.extend(self.events.filter('type =','Comment').filter('streamCancelled =',False).fetch(1000))
+        streamItems.extend(self.events.filter('type =','Document').filter('streamCancelled =',False).fetch(1000))
         streamItems.extend(self.streamMessages.filter('streamCancelled =',False).fetch(1000))
             
         orderedItems = sorted(streamItems, key=lambda streamItem: streamItem.date, reverse=True)
@@ -1975,8 +1968,12 @@ class Message(baseHandler):
         user = get_user()
         message = db.get(key)
         if request == 'streamCancel':
-            if message.recipient.username == user.username:               
-                message.streamCancel() 
+            if message.object_type == 'StreamMessage':
+                if message.recipient.username == user.username:               
+                    message.streamCancel()
+            else: 
+                if message.user.username == user.username:               
+                    message.streamCancel()
         self.redirect('../../../')
 
 class Meta(baseHandler):
