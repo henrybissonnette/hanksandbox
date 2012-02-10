@@ -283,7 +283,13 @@ class User(db.Model):
         if not document.key() in self.favorites:
             self.favorites.append(document.key())
         if not self.username in document.favorites:
-            document.favorites.append(self.username)
+            document.favorites.append(self.username) 
+        # stream message             
+        message = StreamMessage()
+        message.recipient = document.author
+        message.content = self.get_url(html=True, relative=False)+' has favorited '+document.get_url(html=document.title, relative=False)+'.'
+        message.plainTextContent = self.username +' ('+self.get_url(relative=False)+') has favorited '+document.title+' ('+document.get_url(relative=False)+').'
+        message.put()                 
         document.put()
         self.put()
     
@@ -493,6 +499,11 @@ class User(db.Model):
             self.favorites.remove(document.key())
         if self.username in document.favorites:
             document.favorites.remove(self.username)
+        message = StreamMessage()
+        message.recipient = document.author
+        message.content = self.get_url(html=True, relative=False)+' has unfavorited '+document.get_url(html=document.title, relative=False)+'.'
+        message.plainTextContent = self.username +' ('+self.get_url(relative=False)+') has unfavorited '+document.title+' ('+document.get_url(relative=False)+').'
+        message.put()  
         document.put()
         self.put()
     
@@ -543,44 +554,68 @@ class User(db.Model):
         """ SUBSCRIPTIONS is a list of values (0,1) one each for email and stream 
         subscription on either comments or documents. Subscribee should be a 
         username string. """
-        flag = None
+        subscribed = False
+        unsubscribed = False
+        
         subscribee = get_user(subscribee)
         #overall subscribers and subscribees       
         if not subscriptions:
             if self.username in subscribee.subscribers:
+                    unsubscribed = True
                     subscribee.subscribers.remove(self.username)
 
             if subscribee.username in self.subscriptions_user:
+                    unsubscribed = True
                     self.subscriptions_user.remove(subscribee.username)  
         else:
             if self.username not in subscribee.subscribers:
-                    subscribee.subscribers.append(self.username)
+                subscribed = True
+                subscribee.subscribers.append(self.username)
 
             if subscribee.username not in self.subscriptions_user:
                     self.subscriptions_user.append(subscribee.username)
         #document subscriptions specifically              
         if 'subscribe_publish' in subscriptions:
             if not subscribee.username in self.subscriptions_document:
+                subscribed = True
                 self.subscriptions_document.append(subscribee.username)
             if not self.username in subscribee.subscribers_document:
+                subscribed = True
                 subscribee.subscribers_document.append(self.username)
         else:
             if subscribee.username in self.subscriptions_document:
+                unsubscribed = True
                 self.subscriptions_document.remove(subscribee.username)
             if self.username in subscribee.subscribers_document:
+                unsubscribed = True
                 subscribee.subscribers_document.remove(self.username)
         #comment subscriptions specifically      
         if 'subscribe_comment' in subscriptions:
             if not subscribee.username in self.subscriptions_comment:
+                subscribed = True
                 self.subscriptions_comment.append(subscribee.username)
             if not self.username in subscribee.subscribers_comment:
+                subscribed = True
                 subscribee.subscribers_comment.append(self.username)
         else:
             if subscribee.username in self.subscriptions_comment:
+                unsubscribed = True
                 self.subscriptions_comment.remove(subscribee.username)
             if self.username in subscribee.subscribers_comment:
+                unsubscribed = True
                 subscribee.subscribers_comment.remove(self.username)
-                
+        
+        if subscribed != unsubscribed:
+            message = StreamMessage()
+            message.recipient = subscribee
+            if subscribed:
+                message.content = self.get_url(html=True, relative=False)+' has subscribed to you.'
+                message.plainTextContent = self.username+' ('+self.get_url(relative=False)+') has subscribed to you.'
+            if unsubscribed:
+                message.content = self.get_url(html=True, relative=False)+' has unsubscribed from you.'
+                message.plainTextContent = self.username+' ('+self.get_url(relative=False)+') has unsubscribed from you.'  
+            message.put()              
+            
         subscribee.put()
         self.put()
 
@@ -2513,6 +2548,7 @@ class View_Document(baseHandler):
         
         user = get_user()
         document = get_document(name, filename)
+        ticket =document.ticket.fetch(1)
         
         if document.draft and not user:
             self.boot()
@@ -2523,6 +2559,7 @@ class View_Document(baseHandler):
                 document.set_view()        
         
                 context = {
+                    'ticket': ticket,
                     'commentType': 'document',
                     'rating_threshold': 1,
                     'commentary': document.get_commentary(),

@@ -128,33 +128,6 @@
 	{% endcomment %}
 	
 	<div id="document_info" >
-		
-		{% comment %}
-		---------------------------------------------------------
-		(((		FAVORITE
-		---------------------------------------------------------
-		{% endcomment %}
-	
-		{% if user and user.username != document.author.username and not document.key in user.favorites %}
-			<div id="favorite_div" class="docinfoitem">
-			<button id="favorite" >Favorite</button>
-			<a href="{{document.get_url}}favorite/add/" class="aButton">Add to Favorites</a>
-			</div>
-			{% endif %}
-			{% if user and user.username != document.author.username and document.key in user.favorites %}
-			<div class="docinfoitem" id="favorite_div">
-			This document is one of your favorites. <a href="{{document.get_url}}favorite/remove/" class="aButton">Remove</a>
-			</div>
-		{% endif %}
-		<span class="docinfoitem">Favorites: {{document.favCount}}</span></br>
-		{% comment %}
-		---------------------------------------------------------
-				FAVORITE								      )))
-		---------------------------------------------------------
-		{% endcomment %}
-		
-		{% if not document.draft %}
-		
 		{% comment %}
 		---------------------------------------------------------
 		(((		VIEWS
@@ -167,7 +140,36 @@
 		---------------------------------------------------------
 				VIEWS									      )))
 		---------------------------------------------------------
+		{% endcomment %}		
+
+		{% if not document.draft %}
+		
+		{% comment %}
+		---------------------------------------------------------
+		(((		FAVORITE
+		---------------------------------------------------------
 		{% endcomment %}
+		
+		{% if not ticket %}
+		
+		{% if user and user.username != document.author.username and not document.key in user.favorites%}
+			<div id="favorite_div" class="docinfoitem">
+			<a href="{{document.get_url}}favorite/add/" class="aButton">Add to Favorites</a>
+			</div>
+			{% endif %}
+			{% if user and user.username != document.author.username and document.key in user.favorites %}
+			<div class="docinfoitem" id="favorite_div">
+			This document is one of your favorites. <a href="{{document.get_url}}favorite/remove/" class="aButton">Remove</a>
+			</div>
+		{% endif %}
+		<span class="docinfoitem">Favorites: {{document.favCount}}</span></br>
+		{% endif %}
+		{% comment %}
+		---------------------------------------------------------
+				FAVORITE								      )))
+		---------------------------------------------------------
+		{% endcomment %}
+
 			
 		{% comment %}
 		---------------------------------------------------------
@@ -213,10 +215,11 @@
 		(((		FACEBOOK
 		---------------------------------------------------------
 		{% endcomment %}
-					
+			{% if not ticket %}
 			<iframe src="http://www.facebook.com/plugins/like.php?href=http://hanksandbox.appspot.com/{{document.author.username}}/document/{{document.filename}}/"
 	        scrolling="no" frameborder="0"
 	        class="facebook docinfoitem"></iframe>
+	        {% endif %}
 	        
 		{% comment %}
 		---------------------------------------------------------
