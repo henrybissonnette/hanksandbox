@@ -16,7 +16,7 @@ from BeautifulSoup import BeautifulSoup
 from django.utils import simplejson as json
 
 hank = {
-        'domainstring':'http://essayhost.appspot.com/',
+        'domainstring':'http://www.bliterati.com/',
         'adminlist':['henrydbissonnette@gmail.com','Joseph.A.Bissonnette@gmail.com'],
         'updatingModel':None,
         }
@@ -275,7 +275,8 @@ class User(db.Model):
         # stream message
         message = StreamMessage()
         message.recipient = inviter
-        message.content = self.get_url(html=True)+' has accepted your circle invitation.'
+        message.content = self.get_url(html=True, relative=False)+' has accepted your circle invitation.'
+        message.plainTextContent = self.username +' ('+self.get_url(relative=False)+') has accepted your circle invitation.'
         message.put()
         
     def add_favorite(self, document):
@@ -300,7 +301,7 @@ class User(db.Model):
         # steam message
         message = StreamMessage()
         message.recipient = inviter
-        message.content = self.get_url(html=True)+' has declined your circle invitation.'
+        message.content = self.get_url(html=True, relative=False)+' has declined your circle invitation.'
         message.put()
         
     def drafts(self):
@@ -354,7 +355,10 @@ class User(db.Model):
               
     def get_url(self, relative = True, html = False):
         if html:
-            return '<a href="'+hank['domainstring']+'user/'+self.username+'/" class="username">'+self.username+'</a>' 
+            if relative:
+                return '<a href="/user/'+self.username+'/" class="username">'+self.username+'</a>'
+            else:
+                return '<a href="'+hank['domainstring']+'user/'+self.username+'/" class="username">'+self.username+'</a>' 
         else:
             if relative:
                 return '/user/'+self.username+'/'
@@ -377,7 +381,8 @@ class User(db.Model):
             # stream message
             message = StreamMessage()
             message.recipient = invited
-            message.content = 'You\'ve been invited to join '+self.get_url(html=True)+'\'s Writer\'s Circle'
+            message.content = 'You\'ve been invited to join '+self.get_url(html=True, relative=False)+'\'s Writer\'s Circle.'
+            message.plainTextContent = 'You\'ve been invited to join '+self.username+'\'s ('+self.get_url(relative=False)+') Writer\'s Circle.'
             message.put()
             
     def leaveCircle(self, username):
@@ -389,7 +394,8 @@ class User(db.Model):
         # stream message
         message = StreamMessage()
         message.recipient = other
-        message.content = self.get_url(html=True)+' has left your Writer\'s Circle'
+        message.content = self.get_url(html=True, relative=False)+' has left your Writer\'s Circle.'
+        message.plainTextContent = self.username+' ('+self.get_url(relative=False)+') has left your Writer\'s Circle.'
         message.put()
         
     def modPointCount(self):
@@ -462,6 +468,7 @@ class User(db.Model):
             message = StreamMessage()
             message.recipient = user
             message.content = self.username+'\'s account has been deleted. RIP '+self.username
+            message.plainTextContent = self.username+'\'s account has been deleted. RIP '+self.username
             message.put()
             
         self.delete()
@@ -477,7 +484,8 @@ class User(db.Model):
         # stream message
         message = StreamMessage()
         message.recipient = other
-        message.content = 'You have been removed from '+self.get_url(html=True)+'\'s Writer\'s Circle'
+        message.content = 'You have been removed from '+self.get_url(html=True, relative=False)+'\'s Writer\'s Circle.'
+        message.plainTextContent = 'You have been removed from '+self.username+'\'s ('+self.get_url(relative=False)+' Writer\'s Circle.'
         message.put()
         
     def remove_favorite(self, document):
@@ -597,7 +605,8 @@ class User(db.Model):
         # stream message
         message = StreamMessage()
         message.recipient = other
-        message.content = self.get_url(html=True)+'\'s Writer\'s Circle invitation has been withdrawn.'
+        message.content = self.get_url(html=True, relative=False)+'\'s Writer\'s Circle invitation has been withdrawn.'
+        message.content = self.username+'\'s ('+self.get_url(relative=False)+') Writer\'s Circle invitation has been withdrawn.'
         message.put()    
         
 class Event(db.Model):
@@ -726,7 +735,7 @@ class Document(db.Model):
             event.type = 'Document'
             event.object = self
             event.user = subscriber
-            event.reasons = [self.author.get_url(html=True)+' created a new <a href="'+self.get_url(relative=False)+'">document</a>']
+            event.reasons = [self.author.get_url(html=True, relative=False)+' created a new <a href="'+self.get_url(relative=False)+'">document</a>']
             event.plainTextReasons = [self.author.username+'('+self.author.get_url(relative=False)+') created a new document ('+self.get_url(relative=False)+')']
             event.save()
             
@@ -736,7 +745,7 @@ class Document(db.Model):
             event.type = 'Document'
             event.object = self
             event.user = self.parentDocument.author
-            event.reasons = [self.author.get_url(html=True)+' created a new <a href="'+self.get_url(relative=False)+'">reply</a> to '+self.parentDocument.title]
+            event.reasons = [self.author.get_url(html=True, relative=False)+' created a new <a href="'+self.get_url(relative=False)+'">reply</a> to '+self.parentDocument.title]
             event.plainTextReasons = [self.author.username+'('+self.author.get_url(relative=False)+
                                       ') created a new reply ('+self.get_url(relative=False) +') to '+self.parentDocument.title+
                                       '('+self.parentDocument.get_url(relative=False)+')']
@@ -750,7 +759,7 @@ class Document(db.Model):
                     event.type = 'Document'
                     event.object = self
                     event.user = user
-                    event.reasons = [self.author.get_url(html=True)+' created a new '+tag.title+' related <a href="'+self.get_url(relative=False)+'">document</a>']
+                    event.reasons = [self.author.get_url(html=True, relative=False)+' created a new '+tag.title+' related <a href="'+self.get_url(relative=False)+'">document</a>']
                     event.plainTextReasons = [self.author.username+'('+self.author.get_url(relative=False)+') created a new '+tag.title+
                                               ' related document ('+self.get_url(relative=False)+'")']
                     event.save()   
@@ -762,7 +771,10 @@ class Document(db.Model):
     
     def get_url(self,relative=True, html = False):
         if html:
-            return '<a href="'+hank['domainstring']+self.author.username+'/document/'+self.filename+'/">'+html+'</a>'
+            if relative:
+                return '<a href="/'+self.author.username+'/document/'+self.filename+'/">'+html+'</a>'
+            else:
+                return '<a href="'+hank['domainstring']+self.author.username+'/document/'+self.filename+'/">'+html+'</a>'
         else:
             if relative:
                 return '/'+self.author.username+'/document/'+self.filename+'/'
@@ -968,7 +980,7 @@ class Comment(db.Model):
             event.object = self
             event.user = self.above.author
             if self.author:
-                event.reasons = [self.author.get_url(html=True)+' <a href="'+self.get_url(relative=False)+'">replied</a> to your comment '+self.above.subject]
+                event.reasons = [self.author.get_url(html=True, relative=False)+' <a href="'+self.get_url(relative=False)+'">replied</a> to your comment '+self.above.subject]
                 event.plainTextReasons = [selfAuthor+'('+self.author.get_url(relative=False)+') replied to your comment '+self.above.subject+'('+self.get_url(relative=False)+')']
             else: 
                 event.reasons = ['An anonymous user <a href="'+self.get_url(relative=False)+'">replied</a> to your comment '+self.above.subject]
@@ -982,7 +994,7 @@ class Comment(db.Model):
             event.object = self
             event.user = self.article.author
             if self.author:
-                event.reasons = [self.author.get_url(html=True)+' <a href="'+self.get_url(relative=False)+'">commented</a> on your document '+self.article.title]
+                event.reasons = [self.author.get_url(html=True, relative=False)+' <a href="'+self.get_url(relative=False)+'">commented</a> on your document '+self.article.title]
                 event.plainTextReasons = [selfAuthor+'('+self.author.get_url(relative=False)+') commented on your document '+self.article.title+'('+self.get_url(relative=False)+')']
             else:
                 event.reasons = ['An anonymous user <a href="'+self.get_url(relative=False)+'">commented</a> on your document '+self.article.title]
@@ -996,7 +1008,7 @@ class Comment(db.Model):
             event.object = self
             event.user = self.user_page
             if self.author:
-                event.reasons = [self.author.get_url(html=True)+' <a href="'+self.get_url(relative=False)+'">commented</a> on your userpage']
+                event.reasons = [self.author.get_url(html=True, relative=False)+' <a href="'+self.get_url(relative=False)+'">commented</a> on your userpage']
                 event.plainTextReasons = [selfAuthor+'('+self.author.get_url(relative=False)+') commented on your userpage ('+self.get_url(relative=False)+')']
             else:
                 event.reasons = ['An anonymous user <a href="'+self.get_url(relative=False)+'">commented</a> on your userpage']
@@ -1082,11 +1094,11 @@ class Comment(db.Model):
         if self.author:
             if not message:
                 message = 'A comment of yours was deleted because '+self.subject+' by '+self.author.username+' was deleted.'  
-            else:
-                streamMessage = StreamMessage()
-                streamMessage.recipient = self.author
-                streamMessage.content = message
-                streamMessage.put()
+            streamMessage = StreamMessage()
+            streamMessage.recipient = self.author
+            streamMessage.content = message
+            streamMessage.plainTextContent = message
+            streamMessage.put()
             
         ratings = self.ratings
         for rating in ratings:
@@ -1137,6 +1149,7 @@ class StreamMessage(db.Model):
     emailed = db.BooleanProperty(default = False)
     object_type = db.StringProperty(default='StreamMessage')
     content = db.StringProperty()
+    plainTextContent = db.StringProperty()
     private = db.BooleanProperty(default=True)
     recipient = db.ReferenceProperty(User, collection_name='streamMessages')
     streamCancelled = db.BooleanProperty(default = False)    
@@ -1159,16 +1172,6 @@ class StreamMessage(db.Model):
 class ModPoint(db.Model):
     date = db.DateTimeProperty(auto_now_add=True)
     user = db.ReferenceProperty(User, collection_name='modPoints')
-        
-
-class Mypage(db.Model):
-    creator = db.ReferenceProperty(User)
-    date = db.DateTimeProperty(auto_now_add=True)
-    header = db.StringProperty()
-    subtitle = db.StringProperty()
-    blurb = db.TextProperty()
-    def get_url(self):
-        return hank['domainstring']+'user/'+self.username+'/'
     
 class Tag(db.Model):
     """ Tags should be instantiated with their title as a key_name """
@@ -1187,8 +1190,7 @@ class Tag(db.Model):
             return descendants
         else:
             self.descendants = descendants
-            self.put()
-        
+            self.put()     
     
     def get_ancestors(self):
         return [Tag.get_by_key_name(title) for title in self.ancestors]
@@ -1280,13 +1282,16 @@ class VoteDocument(Vote):
     type = db.StringProperty(default = 'document')
     
     def createMessage(self):
-        message = StreamMessage()
-        message.recipient = self.user
-        if self.value > 0:
-            sign = '+'
-        else:
-            sign = ''
-        message.content = self.document.get_url(html=self.document.title)+' ('+sign+str(self.value)+')'
+        if self.user:
+            message = StreamMessage()
+            message.recipient = self.user
+            if self.value > 0:
+                sign = '+'
+            else:
+                sign = ''
+            message.content = self.document.get_url(html=self.document.title)+' ('+sign+str(self.value)+')'
+            message.plainTextContent = self.document.title+' ('+self.document.get_url(relative=False)+') ('+sign+str(self.value)+')'
+            message.put()
     
 class VoteComment(Vote):
     comment = db.ReferenceProperty(Comment, collection_name='ratings')
@@ -1295,13 +1300,16 @@ class VoteComment(Vote):
     type = db.StringProperty(default = 'comment')   
 
     def createMessage(self):
-        message = StreamMessage()
-        message.recipient = self.user
-        if self.value > 0:
-            sign = '+'
-        else:
-            sign = ''
-        message.content = self.comment.get_url(html=self.comment.subject)+' ('+sign+str(self.value)+')'    
+        if self.user:
+            message = StreamMessage()
+            message.recipient = self.user
+            if self.value > 0:
+                sign = '+'
+            else:
+                sign = ''
+            message.content = self.comment.get_url(html=self.comment.subject)+' ('+sign+str(self.value)+')'    
+            message.plainTextContent = self.comment.subject+' ('+self.comment.get_url(relative=False)+') ('+sign+str(self.value)+')'    
+            message.put()
 
     
     
@@ -1378,6 +1386,7 @@ class AJAX(webapp.RequestHandler):
                     
                 object.raters.append(user.username)
                 vote.current_rating = object.rating
+                vote.createMessage()
                 vote.put()
                 object.set_rating()
                 object.author.set_reputation()
@@ -1399,6 +1408,8 @@ class AJAX(webapp.RequestHandler):
 class baseHandler(webapp.RequestHandler):
     
     def get(self,*args):
+        logging.info('url: '+self.request.url)
+        logging.info('uri: '+self.request.uri)
         if self.usernameCheck():
             self.myGet(*args)
     
@@ -1884,9 +1895,6 @@ class Home(baseHandler):
         if self.request.path != '/home':
             self.redirect('/home')
         user = get_user()
-        #if users.get_current_user():
-        #    if not user or not user.username:
-        #        self.redirect('/register')
         main_documents = get_documents(type='not_meta')
         meta_documents = get_documents(type='meta')
         root = Tag.get_by_key_name('Root')
@@ -1896,7 +1904,7 @@ class Home(baseHandler):
                    'meta_documents': meta_documents,
                    'main_documents': main_documents,
                     'user':      user,
-                   'login':     users.create_login_url(self.request.uri),
+                   'login':     users.create_login_url('/'),
                    'logout':    users.create_logout_url(self.request.uri)                       
                    }     
         tmpl = path.join(path.dirname(__file__), 'templates/home.html')
@@ -1992,6 +2000,7 @@ class Rating(baseHandler):
                     
                 object.raters.append(user.username)
                 vote.current_rating = object.rating
+                vote.createMessage()
                 vote.put()
                 object.set_rating()
                 object.author.set_reputation()
@@ -2379,15 +2388,6 @@ class Tasks(webapp.RequestHandler):
                         users[index-1].addModPoint()
                         newModPoints -= 1
                     break
-                    
-
-                    
-            
-        #for user in users:
-        #   user.set_reputation()
-        
-        #for user in users:
-        #    user.set_modpoints()
         
     
 class Update_Model(baseHandler):

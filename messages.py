@@ -2,7 +2,7 @@
 from string import Template
 import logging
 
-domainstring='http://essayhost.appspot.com/'
+domainstring='http://www.bliterati.com/'
 
 ##################################################
 ##            HTML Email                        ##
@@ -17,7 +17,7 @@ mainHTML =Template(u'''
     <html>
     <body>
 
-        <h1><a href="http://essayhost.appspot.com/">EssayHost.com</a></h1>
+        <h1><a href="http://www.bliterati.com/">www.bliterati.com</a></h1>
         <table style="border:solid 5px #ddd;background:#eee;padding:5px;">
 
 

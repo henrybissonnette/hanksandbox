@@ -4,14 +4,14 @@
 
 
 div.bodywrap{
-    margin-left: 150px;	
-    margin-right: 150px;
+    margin-left: 200px;	
+    margin-right: 200px;
 }
 
 div.bodycontent{
 	border:solid 2px #333;
 	padding:50px;
-	min-width:600px;
+	min-width:900px;
 	overflow: auto;  
 }
 
@@ -457,7 +457,7 @@ h3.menu_head{
 .l_outer{
 	float:left;
 	margin-left:-40px;
-	max-width:160px;
+	max-width:200px;
 	padding: 5px;
 	overflow:hidden;
 }
