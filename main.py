@@ -726,13 +726,10 @@ class Document(db.Model):
         
         self.leaftags = []
         self.tags = []
-        skip=False
-        for tag in taglist:
-            
-            tagObject= Tag.get_by_key_name(tag)
-            
+        real=False
+        for tag in taglist:            
             try:              
-                Tag.get_by_key_name(tag)
+                tagObject= Tag.get_by_key_name(tag)
                 real=True
             except:
                 pass
@@ -1287,10 +1284,12 @@ class Tag(db.Model):
         references = Document.all().filter('tags =', self.title).fetch(1000)
         for reference in references:
             #next two line ensure no duplicate version of tag will remain
-            purge = remove_duplicates(reference.tags)
-            reference.tags = purge
-            reference.tags.remove(self.title)
-            reference.put()
+            purge = remove_duplicates(reference.leaftags)
+            purge.remove(self.title)
+            reference.add_tags(purge)
+        for subscriber in self.getSubscribers():
+            subscriber.subscriptions_tag.remove(self.title)
+            subscriber.put()
         children = self.children
         for child in children:
             child.exterminate()
@@ -1798,6 +1797,10 @@ class Create_Document(baseHandler):
             else:
                 document = Document()
         
+        #set content immediately to minimize loss due to error        
+        document.content = self.request.get('document_content')
+        document.put()
+        
         #################################################
         # Handling Tags
         
@@ -1818,14 +1821,15 @@ class Create_Document(baseHandler):
             parentDocument = db.get(parentKey)
             document.parentDocument = parentDocument
             
-        document.content = self.request.get('document_content')
+        
         title = escape(self.request.get('title'))
         document.title = title
         document.subtitle = escape(self.request.get('subtitle'))
         if filename:
             document.filename = filename
         document.set_description(description)
-        document.type.append(documentType)
+        if document.type:
+            document.type.append(documentType)
         if draft == 'True':
             document.draft = True
         else:

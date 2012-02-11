@@ -17,10 +17,10 @@ div.bodycontent{
 
 
 div.pageframe{
+	width:1200;
 	text-align:left;
 	margin: auto;
 	padding-bottom:60px;
-	width:1200;
 }
 
 body {
@@ -103,6 +103,7 @@ h1.interface{
 	text-align:center;
 	color:#fff;
 	background:#242e2f;
+	margin-bottom: 40px;
 }
 
 h2.interface{
