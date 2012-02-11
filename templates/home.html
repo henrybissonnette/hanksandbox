@@ -9,17 +9,15 @@
 {% endblock %}
 
 {% block leftside %}
-	<div class="l_outer">
-		
-		<ul>		
-			<li>
-			{% for child in root_tags %}
-				<a href="/tag/{{child.title}}/" class="margin" title='{{child.title}}'>{{child.title}}</a><br/>
-			{% endfor %}
-			</li>
-		</ul>
 	
-	</div>
+	<ul>	
+		{% for child in root_tags %}	
+		<li>		
+			<a href="/tag/{{child.title}}/" class="margin" title='{{child.title}}'>{{child.title}}</a>	
+		</li>
+		{% endfor %}
+	</ul>
+
 {% endblock %}
 
 {% block content %}
@@ -32,7 +30,7 @@
 	{% endcomment %}	
 	<div class="tabs left_half">
 		<div class="tab {name:'Recent Documents'}">
-			<h1>Recent Documents</h1>
+			<h1 class="interface">Recent Documents</h1>
 		
 			{% for doc in main_documents %}
 			{% if not doc.draft %}
@@ -41,7 +39,7 @@
 			{% endfor %}
 		</div>
 		<div class="tab {name:'Browse by Tag',initial:'true'}">
-			<h1>Browse by Tag</h1>
+			<h1 class="interface">Browse by Tag</h1>
 			<div id="tag_browser" class="tag_browser">
 				A tag browser is available for javascript enabled user agents. You may use the links on the left side to browse articles by tag.
 					

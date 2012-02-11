@@ -87,6 +87,41 @@
 			SCRIPTLESS EDIT							      )))
 	---------------------------------------------------------
 	{% endcomment %}	
+
+	{% comment %}
+	---------------------------------------------------------
+	(((		REPLY DOCUMENT
+	---------------------------------------------------------
+	{% endcomment %}
+	{% if user and not ticket%}
+	<div id="documentReplies">
+		{% if document.parentDocument %}
+		This document is a reply to:
+		{% with document.parentDocument as doc %}
+			{% include 'streamDocument.html' %}
+		{% endwith %}
+		{% endif %}
+		
+		You can reply to {{document.author.username}}'s essay with an essay of your own.
+		<form action="/create/reply/" method="post">
+			<input type="hidden" name="aboveKey" value="{{document.key}}" />
+			<input type="submit" value="Reply" title="Start a new essay in reply to {{document.title}}" />
+		</form>
+
+		{% if document.get_document_replies %}
+		<h2 class="interface">Replies</h2>
+			{% for doc in document.get_document_replies %}
+				{% include 'streamDocument.html' %}
+			{% endfor %}
+		{% endif %}
+	</div>
+	{% endif %}
+	
+	{% comment %}
+	---------------------------------------------------------
+			REPLY DOCUMENT								  )))
+	---------------------------------------------------------
+	{% endcomment %}
 	
 	{% comment %}
 	---------------------------------------------------------
@@ -128,6 +163,9 @@
 	{% endcomment %}
 	
 	<div id="document_info" >
+		
+
+		
 		{% comment %}
 		---------------------------------------------------------
 		(((		VIEWS
@@ -151,7 +189,6 @@
 		{% endcomment %}
 		
 		{% if not ticket %}
-		
 		{% if user and user.username != document.author.username and not document.key in user.favorites%}
 			<div id="favorite_div" class="docinfoitem">
 			<a href="{{document.get_url}}favorite/add/" class="aButton">Add to Favorites</a>

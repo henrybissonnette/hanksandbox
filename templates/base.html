@@ -60,17 +60,20 @@
 		</div>
 
 		<div class="bodywrap">
-		{% block tabs %}
-		{% endblock %}
-		<div class="bodycontent">
-		    {% block content %}
-		    {% endblock %}
+			{% block tabs %}
+			{% endblock %}
+			<div class="bodycontent">
+			    {% block content %}
+			    {% endblock %}
+		    </div>
 	    </div>
-	   </div>
   		{% block postBody %}
   		{% endblock %}
-    	<br/>
-    <div class="push"></div>	
+    	
+    	<div id="right">
+    	</div>
+    	
+    	<div class="push"></div>	
     
 	</div>
 	<div class="bottomlinks dark round">

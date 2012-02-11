@@ -350,7 +350,7 @@ $(document).ready(function(){
 		$('div.pagetop').corner('40px')
 		$('div.bodycontent').corner('40px')
 		$('.round').corner('30px')
-		$('.aButton').corner('40px')
+		$('.aButton, .interface').corner('40px')
 		$('.roundtop').corner('40px top')
 	}
 })

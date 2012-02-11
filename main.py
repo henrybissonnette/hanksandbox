@@ -681,7 +681,8 @@ class Document(db.Model):
     Document accesses the collections:
     
     comments (top level)
-    replies (document replies)
+    replies (comment replies)
+    documentReplies (documents in reply)
     """    
     actionTally = db.IntegerProperty(default=0)
     author = db.ReferenceProperty(User, collection_name = 'works')
@@ -695,7 +696,7 @@ class Document(db.Model):
     filename = db.StringProperty()
     leaftags = db.StringListProperty(default=[])
     object_type = db.StringProperty(default = 'Document')
-    parentDocument = db.SelfReferenceProperty()
+    parentDocument = db.SelfReferenceProperty(collection_name = 'documentReplies')
     raters = db.StringListProperty()
     rating = db.IntegerProperty(default=0)
     subscribers = db.StringListProperty(default=[])
@@ -827,6 +828,9 @@ class Document(db.Model):
     
     def get_leaftags(self):
         return [Tag.get_by_key_name(title) for title in self.leaftags]
+    
+    def get_document_replies(self):
+        return self.documentReplies.fetch(1000)
     
     def parse(self):
         acceptableElements = ['a','blockquote','br','em','span','i','h3',
@@ -1436,8 +1440,6 @@ class AJAX(webapp.RequestHandler):
 class baseHandler(webapp.RequestHandler):
     
     def get(self,*args):
-        logging.info('url: '+self.request.url)
-        logging.info('uri: '+self.request.uri)
         if self.usernameCheck():
             self.myGet(*args)
     
@@ -1714,21 +1716,17 @@ class CommentHandler(CommentPage):
 
 class Create_Document(baseHandler):
     """handles new documents and edits"""
+             
     def myGet(self,request):
         user = get_user()
-        if user:
-            self.getMain(request, user)
-        else:
-            self.boot()
-            
-    def getMain(self,request, user):
         self.nonUserBoot()
-        user = get_user()
+        
         userdocuments = user.works
         
-        if request == "document":
+        if request == 'document':
         
             context = {
+                       ''
                        'documentType':request,
                        'userdocuments':userdocuments,
                        'user':      user,
@@ -1738,7 +1736,7 @@ class Create_Document(baseHandler):
             tmpl = path.join(path.dirname(__file__), 'templates/create.html')
             self.response.out.write(template.render(tmpl, context))   
             
-        else:
+        if request == 'ticket':
             context = {
                        'documentType':request,
                        'userdocuments':userdocuments,
@@ -1747,15 +1745,35 @@ class Create_Document(baseHandler):
                        'logout':    users.create_logout_url(self.request.uri)
                        }     
             tmpl = path.join(path.dirname(__file__), 'templates/ticket.html')
-            self.response.out.write(template.render(tmpl, context))               
+            self.response.out.write(template.render(tmpl, context))    
+                   
         
     def myPost(self,request):
         user = get_user()
         if user:
-            self.postDocument(request,user)
+            if request == 'reply':
+                self.genReplyForm(request)
+            else:
+                self.postDocument(request,user)
         else:
             self.boot()
-            
+    
+    def genReplyForm(self,request):
+        user = get_user()
+        self.nonUserBoot()
+        userdocuments = user.works
+        parentDocument = db.get(self.request.get('aboveKey'))
+        context = {
+                   'parentDocument':parentDocument,
+                   'documentType':request,
+                   'userdocuments':userdocuments,
+                   'user':      user,
+                   'login':     users.create_login_url(self.request.uri),
+                   'logout':    users.create_logout_url(self.request.uri)
+                   }     
+        tmpl = path.join(path.dirname(__file__), 'templates/create.html')
+        self.response.out.write(template.render(tmpl, context))   
+                        
     def postDocument(self, request, user):
         new = False
         existing_filename = self.request.get('existing_filename')
@@ -1765,6 +1783,7 @@ class Create_Document(baseHandler):
         description = cleaner(description,deletechars = '`~@#^*{[}]|/><)')
         username = self.request.get('username')
         draft = self.request.get('draft')
+        parentKey = self.request.get('parentKey')
         scriptless = self.request.get('scriptless')
         documentType = self.request.get('documentType')
         
@@ -1794,6 +1813,10 @@ class Create_Document(baseHandler):
                 document.authorname = user.username 
             else:
                 error = 'Must Be Logged In to Create Documents'
+        
+        if parentKey:
+            parentDocument = db.get(parentKey)
+            document.parentDocument = parentDocument
             
         document.content = self.request.get('document_content')
         title = escape(self.request.get('title'))

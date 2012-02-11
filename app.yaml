@@ -14,7 +14,10 @@ handlers:
 - url: /static/tinymce/jscripts/tiny_mce
   static_dir: static/tinymce/jscripts/tiny_mce
 - url: /.* 
-  script: main.py
+  script: main.py 
+- url: /favicon\.ico
+  static_files: static/images/favicon.ico
+  upload: static/images/favicon\.ico
   
 builtins:
 - remote_api: on

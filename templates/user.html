@@ -15,7 +15,7 @@
 	<div class="tab {name:'Documents',initial:'true'}">	
 	{% endif %}
 	
-	<h1> Welcome to <span class="username">{{ page_user.username }}</span>'s Page </h1>
+	<h1 class="interface"> Welcome to <span class="username">{{ page_user.username }}</span>'s Page </h1>
 	{% comment %}
 	---------------------------------------------------------
 	(((		Documents
@@ -23,11 +23,11 @@
 	{% endcomment %}
 	<div class="left_half"> 	
 		
-		<h2> <span class="username">{{ page_user.username }}</span>'s Essays		
+		<h2 class="interface"> <span class="username">{{ page_user.username }}</span>'s Essays</h2>		
 		{% ifequal page_user.username user.username %}
 		<a href="/create/document/" class="aButton" title="Begin writing a new essay.">Create</a>
 		{% endifequal %}
-		 </h2>
+		 <br/><br/>
 		
 		{% for doc in page_user.works %}
 		{% if not doc.draft and not doc.special%}
@@ -37,7 +37,7 @@
 		
 		
 		{% if user.username in page_user.circle or page_user.username == user.username %}
-			<h2> <span class="username">{{ page_user.username }}</span>'s Drafts </h2>	
+			<h2 class="interface"> <span class="username">{{ page_user.username }}</span>'s Drafts </h2>	
 		
 			{% for doc in page_user.works %}
 			{% if doc.draft %}
@@ -61,11 +61,14 @@
 		---------------------------------------------------------
 		{% endcomment %}						
 		<div class="tab {name:'Stream',initial:'true'}">
-			<h2 class="notab">Stream</h2>
+			<h2 class="interface notab">Stream</h2>
 			
 			{% for doc in page_user.fetch_stream %}
 			<div class="streamItem" id="doc.key">
+				{% if user.username == page_user.username %}
 				<a class="closeItem exit" href="message/streamCancel/{{doc.key}}/">x</a>
+				{% endif %}
+				
 				{% if doc.object.object_type == 'Document' %}
 					{% if not doc.object.draft or user.username in doc.object.author.circle %}	
 						{% with doc.object as doc %}
@@ -91,12 +94,11 @@
 				{% if doc.object_type == 'StreamMessage' %}
 					{% if user.username != page_user.username %}
 						{% if not doc.private %}
-						{% autoescape off %}{{doc.content}}{% endautoescape %}
+							<div class="streamMessage">{% autoescape off %}{{doc.content}}{% endautoescape %}</div>
 						{% endif %}						
 					{% endif %}
 					{% if user.username == page_user.username %}
-						{% autoescape off %}{{doc.content}}{% endautoescape %}
-						</br>
+						<div class="streamMessage">{% autoescape off %}{{doc.content}}{% endautoescape %}</div>
 					{% endif %}					
 				{% endif %}
 			</div>
@@ -110,7 +112,7 @@
 		</div>		
 		
 		<div class="tab {name:'Favorites'}">
-			<h2 class="notab">Favorites</h2>
+			<h2 class="interface notab">Favorites</h2>
 			{% for doc in page_user.fetch_favorites %}
 				{% include 'streamDocument.html'%}		
 			{% endfor %}	
@@ -136,7 +138,7 @@
 			---------------------------------------------------------
 			{% endcomment %}
 				<div class="tab {name:'Personal Info',initial:'true'}">
-					<h2 class="notab">Personal Info</h2>
+					<h2 class="interface notab">Personal Info</h2>
 					First Name: {{page_user.firstname}}</br>
 					Last Name: {{page_user.lastname}}</br>
 					{% if user.username == page_user.username or user.is_admin%}
@@ -166,7 +168,7 @@
 			{% endcomment %}
 			{% if user.username == page_user.username or user.is_admin%}
 				<div class="tab {name:'Edit'}">
-					<h2 class="notab">Edit</h2>					
+					<h2 class="notab interface">Edit</h2>					
 					<form action="/userinfo/" method="post">
 						First Name: <input type="text" name="firstname" value="{{page_user.firstname}}"  />
 						<br/>
@@ -196,7 +198,7 @@
 				
 			</div>
 			{% else %}
-			<h2><span class="username">{{page_user.username}}'s Information</span></h2>
+			<h2 class="interface"><span class="username">{{page_user.username}}'s Information</span></h2>
 			{% endif %}
 		{% comment %}
 		---------------------------------------------------------
@@ -209,7 +211,7 @@
 		(((		SPECIAL DOCUMENTS
 		---------------------------------------------------------
 		{% endcomment %}	
-		<h2>Meta Tickets</h2>
+		<h2 class="interface">Meta Tickets</h2>
 		
 		{% for doc in page_user.works %}
 		{% if doc.special %}
@@ -232,7 +234,7 @@
 			{% endcomment %}
 			
 			<div class="tab {name:'Circle', initial:'true'}">
-				<h2 class="notab">Circle</h2>
+				<h2 class="interface notab">Circle</h2>
 				Writer's Circle members have the ability to view and comment on your drafts. Writer's Circle membership is 
 				asymmetrical. That is, if you invite a user to join your Circle they will gain the ability to view your
 				drafts, but unless they specifically invite you, you will not be able to view theirs. </br></br>
@@ -275,7 +277,7 @@
 				{% endcomment %}
 								
 				{% if page_user.username == user.username%}
-					<h3 title="Users who belong to your Circle.">Members</h3>
+					<h3 class="interface" title="Users who belong to your Circle.">Members</h3>
 					{% if user.circle %}
 						{% for member in user.circle %}
 						<a href="/user/{{ member }}/" class="username">{{member}}</a>
@@ -285,7 +287,7 @@
 					{% endif %}
 				{% else %}
 					{% if  user.username in page_user.circle %}
-						<h3 title="Users who belong to {{page_user.username}}'s Circle.">Members</h3>
+						<h3 class="interface" title="Users who belong to {{page_user.username}}'s Circle.">Members</h3>
 						{% if user.circle %}
 							{% for member in user.circle %}
 							<a href="/user/{{ member }}/" class="username">{{member}}</a>
@@ -307,7 +309,7 @@
 				{% endcomment %}
 								
 				{% if user.username == page_user.username %}
-					<h3 title="Users whose Circle's you belong to.">Memberships</h3>
+					<h3 class="interface" title="Users whose Circle's you belong to.">Memberships</h3>
 					{% if user.circlepermissions %}
 						{% for member in user.circlepermissions %}
 						<a href="/user/{{ member }}/" class="username">{{member}}</a>
@@ -330,7 +332,7 @@
 				{% endcomment %}
 								
 				{% if user.username == page_user.username and user.invitations %}
-					<h3 title="Users who have invited you to join their circle.">Invites</h3>
+					<h3 class="interface" title="Users who have invited you to join their circle.">Invites</h3>
 					{% for username in user.invitations %}
 						<a href="circle/accept/{{username}}/">accept</a>
 						<a href="/user/{{ username }}/" class="username">{{username}}</a>
@@ -352,7 +354,7 @@
 				{% endcomment %}
 								
 				{% if user.username == page_user.username and user.invitees %}
-					<h3 title="Users you have invited to join your Circle.">Standing Invitations</h3>
+					<h3 class="interface" title="Users you have invited to join your Circle.">Standing Invitations</h3>
 					{% for username in user.invitees %}
 						<a href="/user/{{ username }}/" class="username">{{username}}</a>
 					{% endfor %}
@@ -379,9 +381,9 @@
 			{% endcomment %}	
 					
 			<div class="tab {name:'Subscriptions'}">
-				<h2 class="notab">Subscriptions</h2>
+				<h2 class="interface notab">Subscriptions</h2>
 				{% if user.username != page_user.username %}
-				<h3>Subscribe<h3/>
+				<h3 class="interface">Subscribe<h3/>
 				<form action="subscribe/{{page_user.username}}/" method="post">
 				<table>
 					<tr>
@@ -406,9 +408,9 @@
 				</form>
 				{% endif %}
 				{% if user.username != page_user.username %} 
-				<h3>{{page_user.username}}'s Subscriptions</h3>
+				<h3 class="interface">{{page_user.username}}'s Subscriptions</h3>
 				{% else %}
-				<h3>Your Subscriptions</h3>
+				<h3 class="interface">Your Subscriptions</h3>
 				{% endif %}
 				{% if page_user.subscriptions_user %}
 					{% for subscription in page_user.subscriptions_user %}
@@ -419,9 +421,9 @@
 				{% endif %}
 				
 				{% if user.username != page_user.username %} 
-				<h3>{{page_user.username}}'s Subscribers</h3>
+				<h3 class="interface">{{page_user.username}}'s Subscribers</h3>
 				{% else %}
-				<h3>Your Subscribers</h3>
+				<h3 class="interface">Your Subscribers</h3>
 				{% endif %}
 				{% if page_user.subscribers %}
 					{% for subscriber in page_user.subscribers %}

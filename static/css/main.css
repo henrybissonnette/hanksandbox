@@ -11,18 +11,20 @@ div.bodywrap{
 div.bodycontent{
 	border:solid 2px #333;
 	padding:50px;
-	min-width:900px;
+	width:900px;
 	overflow: auto;  
 }
 
 
 div.pageframe{
-	margin-left: 20px;
+	text-align:left;
+	margin: auto;
 	padding-bottom:60px;
-	width:100%;
+	width:1200;
 }
 
 body {
+	text-align:center;
 	margin:0;
 	padding:0;
 	height: 100%;
@@ -38,6 +40,7 @@ div.bottomlinks{
 /***************Main Header*****************/
 
 div.pagetop {
+	text-align:center;
 	margin-top:0px;
 	margin-bottom:100px;
 	margin-right:0px;
@@ -46,7 +49,7 @@ div.pagetop {
     height:110px;
     overflow:hidden;
     border:solid 2px white;
-    min-width: 900px;
+    min-width: 1400px;
 }
 
 a.home{
@@ -94,6 +97,26 @@ a.subtle,a.subtle:hover{
 	margin-top: 30px;
 	margin-bottom: 30px;
 	min-height: 500px;
+}
+
+h1.interface{
+	text-align:center;
+	color:#fff;
+	background:#242e2f;
+}
+
+h2.interface{
+	border:solid 1px #777;
+	text-align:center;
+	color:#fff;
+	background:#999;
+}
+
+h3.interface{
+	border:solid 1px #777;
+	text-align:center;
+	color:#fff;
+	background:#999;	
 }
 
 .hidden{
@@ -159,6 +182,7 @@ a.margin:hover{
 }
 
 .aButton{
+	margin:3px;
 	font-size: 15px;
 	text-decoration: none;
 	background-color:#242e2f;
@@ -455,33 +479,29 @@ h3.menu_head{
 }
 /************************************************/
 /******************left outer column**********************/
-.l_outer{
+#left_outer{
 	float:left;
-	margin-left:-40px;
-	max-width:200px;
 	padding: 5px;
-	overflow:hidden;
 }
 
-.l_outer a{
-	color = #aaa;
+#left_outer a{
+	color = #000;
 }
 
-.l_outer a:hover{
+#left_outer a:hover{
 	color = #ccc;	
 }
 
-.l_outer a:visited{
+#left_outer a:visited{
 	color = #444;	
 }
 
-.l_outer a:active{
+#left_outer a:active{
 	color = #000;	
 }
 
-.l_outer ul{
+#left_outer ul{
 	list-style-type: none;
-	margin-left = -30px;
 }
 
 
@@ -517,10 +537,16 @@ div#document{
 }
 
 #document_info{
-	max-width:600px;
+	max-width:400px;
 	border: dotted 1px #aaa;
 	padding:10px;
 	margin-top: 20px;
+}
+
+#documentReplies{
+	padding:5px;
+	float:right;
+	max-width: 50%;
 }
 
 .docinfoitem{
@@ -717,14 +743,14 @@ div.commentary{
 /***********tabular page division*****************/
 
 div.right_half{
-	margin-left:63%;
+	margin-left:53%;
 	border-left:solid;
 	padding-left:10px;
 }
 
 div.left_half{
 	float:left;
-	width:60%;
+	width:50%;
 }
 /***********subscription stream************/
 
@@ -785,7 +811,6 @@ h2 .aButton{
 }
 
 div.stream_item{
-	/*box-shadow: -1px 1px 3px #000;*/
 	border:solid 1px;
 	border-color: #aaa;
 	overflow:hidden;
@@ -793,8 +818,17 @@ div.stream_item{
 	max-height:125px;
 	max-width:600px;
 	margin-bottom:5px;
-	/*border-bottom:dotted;*/
 }
+
+div.streamMessage{
+	overflow:hidden;
+	padding:5px;
+	max-height:125px;
+	max-width:600px;
+	margin-bottom:5px;
+}
+
+
 
 div.stream_item:hover{
 	border-color: #000;
@@ -842,6 +876,7 @@ div.stream_item:hover{
 }
 
 .browser_children{
+	text-align:center;
 	padding: 10px;
 	margin-top: 5px;
 }
@@ -851,6 +886,7 @@ div.stream_item:hover{
 }
 
 .browser_path{
+	text-align:center;
 	padding-bottom:10px;
 	border-bottom: solid 1px;
 }
