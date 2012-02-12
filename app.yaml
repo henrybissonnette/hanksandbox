@@ -8,6 +8,9 @@ handlers:
 - url: /favicon.ico
   static_files: /static/images/favicon.ico
   upload: /static/images/favicon.ico
+- url: /tasks/ 
+  script: main.py  
+  login: admin
 - url: /static/css
   static_dir: static/css
 - url: /static/js

@@ -25,8 +25,16 @@
 
 	<div class="pagetop">
 		<div id="pagetop_content">
-			<img style="position:absolute;left:160px;top:0px;" src="/static/images/quill-basic-white.png" alt="Large Quill Icon" width="130" height="80"/> 
-			<b>
+			{% if user %}
+			<ul id="notifications">
+				<li>Your reputation is: {{user.reputation}}</li>
+				{% if user.modPointCount > 0 %}
+				<li>You have {{user.modPointCount}} modpoints.</li>
+				{% endif %}
+			</ul>
+			{% endif %}
+			<img style="position:relative;left:-680px;top:-20px;" src="/static/images/quill-basic-white.png" alt="Large Quill Icon" width="130" height="80"/> 
+			<b id="headerText">
 				<a href="/home" class="home headeritem">bliterati.</a>
 					
 				{% if user %}
@@ -44,14 +52,6 @@
 
 			</b>
 		</div>
-		{% if user %}
-		<ul id="notifications">
-			<li>Your reputation is: {{user.reputation}}</li>
-			{% if user.modPointCount > 0 %}
-			<li>You have {{user.modPointCount}} modpoints.</li>
-			{% endif %}
-		</ul>
-		{% endif %}
 	</div>
 	
 	<div class="pageframe">

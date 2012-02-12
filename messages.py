@@ -199,9 +199,10 @@ def prepareTextMailing(mailing):
     if mailing['messages']:   
         tempStreamMessages = 'RECENT EVENTS\r\n\r\n'
         for message in mailing['messages']:
-            tempStreamMessages =tempStreamMessages+message.plainTextContent+'\r\n'
+            if message.plainTextContent:
+                tempStreamMessages =tempStreamMessages+message.plainTextContent+'\r\n'
     
-    finalMessage = main.substitute(
+    finalMessage = mainText.substitute(
                                    documents = tempDocuments,
                                    comments= tempComments,
                                    streamMessages= tempStreamMessages,                                   

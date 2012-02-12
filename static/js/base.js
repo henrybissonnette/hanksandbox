@@ -352,6 +352,7 @@ $(document).ready(function(){
 		$('.round').corner('30px')
 		$('.aButton, .interface').corner('40px')
 		$('.roundtop').corner('40px top')
+		$('.tagList').corner('40px')
 	}
 })
 

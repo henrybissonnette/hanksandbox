@@ -3,9 +3,25 @@
 /***********EVERY PAGE****************/
 
 
-div.bodywrap{
-    margin-left: 200px;	
-    margin-right: 200px;
+body {
+	text-align:center;
+	margin:0;
+	padding:0;
+	height: 100%;
+}
+
+.right {
+  float: right;
+  padding: 0px 10px 0px 10px;
+  width: 200px;
+}
+
+
+.bodywrap {
+	text-align:left;
+	margin-left:200px;
+	top: 10px;
+	width:1000px;
 }
 
 div.bodycontent{
@@ -15,25 +31,18 @@ div.bodycontent{
 	overflow: auto;  
 }
 
-
 div.pageframe{
-	width:1200;
-	text-align:left;
+	width:1400px;
+	text-align:center;
 	margin: auto;
 	padding-bottom:60px;
-}
-
-body {
-	text-align:center;
-	margin:0;
-	padding:0;
-	height: 100%;
 }
 
 div.bottomlinks{
 	text-align: center;
     border:solid 2px white;
     min-height: 100px;
+    min-width:1400px;
     padding:10px;
 }
 
@@ -45,7 +54,6 @@ div.pagetop {
 	margin-bottom:100px;
 	margin-right:0px;
 	margin-left:0px;
-    padding: 0 5em;
     height:110px;
     overflow:hidden;
     border:solid 2px white;
@@ -57,10 +65,15 @@ a.home{
 	text-decoration: none;
 }
 
-#pagetop_content{
+#headerText{
 	float:left;
+}
+
+#pagetop_content{
+	margin:auto;
 	margin-top:20px;
-	margin-left: 180px;
+	width:1000px;
+
 }
 
 .headeritem{
@@ -69,6 +82,7 @@ a.home{
 }
 
 #notifications{
+	margin-top:-10px;
 	float:right;
 	list-style-type: none;
 	font-weight: bold;
@@ -88,6 +102,16 @@ a.subtle,a.subtle:hover{
 	font-family:'Arial',Sans-serif;
 }
 
+a{
+	text-decoration: none;
+}
+h1 a, h2 a, h3 a{
+	color:white;
+	text-decoration: underline;
+}
+a:hover{
+	text-decoration: underline;
+}
 
 .clickable{
 	cursor:pointer;	
@@ -174,7 +198,6 @@ a.username:hover{
 }
 
 a.margin{
-	color: black;
 	text-decoration: none;
 }
 
@@ -213,7 +236,7 @@ a.margin:hover{
 }
 
 body{
-    font-family: 'palatino linotype' ‘Book Antiqua’, Palatino, serif;
+    font-family: 'palatino linotype Book Antiqua’, Palatino, serif;
 }
 
 /* Elements that Represent Passages of Text are Seriffed*/
@@ -304,63 +327,6 @@ h1.creator{
 div.div_hover{
 	background-color:#ddd;
 }
-
-/***************** SHAPES ***********************
-
-
-#sidebar,div.bodycontent,div.pagetop{
-	
--moz-border-radius: 10px;
--webkit-border-radius: 10px;
-box-shadow: -1px 1px 6px #000;
-
-}
-
-
-div.pagetop{
--moz-border-radius: 10px;
--webkit-border-radius: 10px;
-box-shadow: 0px 4px 50px #000;
-
-}
-
-
-
-div.stream_item{
-	
--moz-border-radius: 10px;
--webkit-border-radius: 10px;
-
-}
-
-div.commentHeaderMin,.commentHeaderMax,div.stream_item,.commentBox{
-	
--moz-border-radius: 5px;
--webkit-border-radius: 5px;
-
-}
-
-
-.tab,.inner_tabs{
-	
--moz-border-radius-topleft: 10px;
--webkit-border-top-left-radius: 10px;
-
--moz-border-radius-topright: 10px;
--webkit-border-top-right-radius: 10px;
-}
-
-
-div.comment{
-	
--moz-border-radius-bottomleft: 10px;
--webkit-border-bottom-left-radius: 10px;
-
--moz-border-radius-bottomright: 10px;
--webkit-border-bottom-right-radius: 10px;
-}
-*/
-/*******************TABS************************/
 
 div.bodytabs{
 
@@ -480,32 +446,27 @@ h3.menu_head{
 }
 /************************************************/
 /******************left outer column**********************/
+
 #left_outer{
 	float:left;
-	padding: 5px;
+	text-align: right;
 }
 
-#left_outer a{
-	color = #000;
+#left_outer .tagList{
+	text-align:left;
+	background:#999;
+	padding: 10px;
+	border:solid white;
 }
 
-#left_outer a:hover{
-	color = #ccc;	
+#left_outer .tagList a{
+	color:white;	
 }
 
-#left_outer a:visited{
-	color = #444;	
-}
-
-#left_outer a:active{
-	color = #000;	
-}
-
-#left_outer ul{
+#left_outer .tagList ul{
 	list-style-type: none;
+	margin-left: -30px;
 }
-
-
 
 /****************Document***************************/
 
@@ -528,8 +489,7 @@ h2.document{
 
 div#document{
 	font-size:18px;
-	max-width:900px;
-	min-width:600px;
+	max-width:700px;
 	margin-right:auto;
 	margin-left:auto;
 	text-align: left;
@@ -551,7 +511,7 @@ div#document{
 }
 
 .docinfoitem{
-	margin-top:5px
+	margin-top:5px;
 	margin-left:30px;
 	margin-bottom:5px;
 }
@@ -899,6 +859,12 @@ ul.test{
 
 /********************One Off: should probably be done in some more general way ***************************/
 
+
+.focus{
+	border:solid 3px #ee1;
+	padding:5px;
+	max-width:610px;
+}
 
 .note{
 	border:solid;

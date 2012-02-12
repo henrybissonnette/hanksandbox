@@ -146,6 +146,14 @@ indexes:
 
 - kind: Event
   properties:
+  - name: emailed
+  - name: type
+  - name: user
+  - name: date
+    direction: desc
+
+- kind: Event
+  properties:
   - name: type
   - name: user
   - name: date

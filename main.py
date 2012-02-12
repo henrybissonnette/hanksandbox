@@ -723,9 +723,9 @@ class Document(db.Model):
             return 'A document may only have three leaf tags.'
 
     def add_tags(self, taglist):
-        
         self.leaftags = []
         self.tags = []
+        self.put()
         real=False
         for tag in taglist:            
             try:              
@@ -806,6 +806,10 @@ class Document(db.Model):
                 return '/'+self.author.username+'/document/'+self.filename+'/'
             else: 
                 return hank['domainstring']+self.author.username+'/document/'+self.filename+'/'
+            
+    def get_html_url(self):
+        """ For templates to access."""
+        return self.get_url(html=self.title)
     
     def get_stripped(self):
         
@@ -828,6 +832,12 @@ class Document(db.Model):
     
     def get_document_replies(self):
         return self.documentReplies.fetch(1000)
+    
+    def get_origin(self):
+        if self.parentDocument:
+            return self.parentDocument.get_origin()
+        else:
+            return self
     
     def parse(self):
         acceptableElements = ['a','blockquote','br','em','span','i','h3',
@@ -1901,6 +1911,20 @@ class Delete_Document(baseHandler):
         document = get_document(name,filename)
         document.remove()
         self.redirect('/user/' + name + '/')
+        
+class DocumentContext(baseHandler):
+    def myGet(self,username,filename):
+        user = get_user()
+        document = get_document(username,filename)
+        context = {
+                   'document':  document,
+                   'user':      user,
+                   'login':     users.create_login_url(self.request.uri),
+                   'logout':    users.create_logout_url(self.request.uri)
+                   }     
+        tmpl = path.join(path.dirname(__file__), 'templates/contextBase.html')
+        self.response.out.write(template.render(tmpl, context))        
+        
               
 class Edit_Document(baseHandler):
     def myGet(self,name,filename):
@@ -2629,6 +2653,7 @@ application = webapp.WSGIApplication([
     (r'/(.*)/document/(.*)/edit/delete/', Delete_Document),
     (r'/(.*)/document/(.*)/edit/', Edit_Document),
     (r'/(.*)/document/(.*)/reply/(.+)', View_Document),  
+    (r'/(.*)/document/(.*)/context/', DocumentContext),  
     (r'/(.*)/document/(.*)/*(.*)/', View_Document),
     (r'/.*', Home),
     ], debug=True)

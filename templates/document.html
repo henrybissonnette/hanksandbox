@@ -21,7 +21,8 @@
 (((		TAG LINKS
 ---------------------------------------------------------
 {% endcomment %}
-	<div class="l_outer">
+	{% if document.get_leaftags %}
+	<div class="tagList">
 		<ul>									
 			{% for tag in document.get_leaftags %}
 			<li>
@@ -31,6 +32,7 @@
 			
 		</ul>
 	</div>
+	{% endif %}
 {% comment %}
 ---------------------------------------------------------
 		TAG LINKS								      )))
@@ -93,27 +95,36 @@
 	(((		REPLY DOCUMENT
 	---------------------------------------------------------
 	{% endcomment %}
-	{% if user and not ticket%}
+	{% if not ticket%}
+	
 	<div id="documentReplies">
+		
 		{% if document.parentDocument %}
-		This document is a reply to:
-		{% with document.parentDocument as doc %}
-			{% include 'streamDocument.html' %}
-		{% endwith %}
+			This document is a reply to:
+			{% with document.parentDocument as doc %}
+				{% include 'streamDocument.html' %}
+			{% endwith %}
 		{% endif %}
 		
-		You can reply to {{document.author.username}}'s essay with an essay of your own.
-		<form action="/create/reply/" method="post">
-			<input type="hidden" name="aboveKey" value="{{document.key}}" />
-			<input type="submit" value="Reply" title="Start a new essay in reply to {{document.title}}" />
-		</form>
-
 		{% if document.get_document_replies %}
 		<h2 class="interface">Replies</h2>
 			{% for doc in document.get_document_replies %}
 				{% include 'streamDocument.html' %}
 			{% endfor %}
 		{% endif %}
+		
+		{% if document.parentDocument or document.get_document_replies %}
+		<a href="context/">view this document's entire context</a><br/><br/>
+		{% endif %}
+		
+		{% if user %}
+			You can reply to <span class="username">{{document.author.username}}</span>'s essay with an essay of your own.
+			<form action="/create/reply/" method="post">
+				<input type="hidden" name="aboveKey" value="{{document.key}}" />
+				<input type="submit" value="Reply" title="Start a new essay in reply to {{document.title}}" />
+			</form>
+		{% endif %}
+		
 	</div>
 	{% endif %}
 	
