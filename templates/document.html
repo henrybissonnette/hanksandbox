@@ -100,14 +100,14 @@
 	<div id="documentReplies">
 		
 		{% if document.parentDocument %}
-			This document is a reply to:
+			This document is a response to:
 			{% with document.parentDocument as doc %}
 				{% include 'streamDocument.html' %}
 			{% endwith %}
 		{% endif %}
 		
 		{% if document.get_document_replies %}
-		<h2 class="interface">Replies</h2>
+		<h2 class="interface">Responses</h2>
 			{% for doc in document.get_document_replies %}
 				{% include 'streamDocument.html' %}
 			{% endfor %}
@@ -118,10 +118,10 @@
 		{% endif %}
 		
 		{% if user %}
-			You can reply to <span class="username">{{document.author.username}}</span>'s essay with an essay of your own.
+			You can respond to <span class="username">{{document.author.username}}</span>'s essay with an essay of your own.
 			<form action="/create/reply/" method="post">
 				<input type="hidden" name="aboveKey" value="{{document.key}}" />
-				<input type="submit" value="Reply" title="Start a new essay in reply to {{document.title}}" />
+				<input type="submit" value="Respond" title="Start a new essay in reply to {{document.title}}" />
 			</form>
 		{% endif %}
 		
@@ -202,12 +202,12 @@
 		{% if not ticket %}
 		{% if user and user.username != document.author.username and not document.key in user.favorites%}
 			<div id="favorite_div" class="docinfoitem">
-			<a href="{{document.get_url}}favorite/add/" class="aButton">Add to Favorites</a>
+			<a title="add to favorites" href="{{document.get_url}}favorite/add/" ><img src="/static/images/star_bw_48px.png" height="36" width="36" /></a>
 			</div>
 			{% endif %}
 			{% if user and user.username != document.author.username and document.key in user.favorites %}
 			<div class="docinfoitem" id="favorite_div">
-			This document is one of your favorites. <a href="{{document.get_url}}favorite/remove/" class="aButton">Remove</a>
+			<a title="remove from favorites" href="{{document.get_url}}favorite/remove/" ><img src="/static/images/star_48px.png" height="36" width="36" /></a>
 			</div>
 		{% endif %}
 		<span class="docinfoitem">Favorites: {{document.favCount}}</span></br>

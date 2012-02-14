@@ -21,7 +21,9 @@
  *   Element: date - string 
  *   Element: key - string
  *   Element: filename - string
- *   
+ *   Element: rating - int
+ *   Element: favorites - int
+ *   Element: comments - int
  *******************************************************/
 
 function tag_browser(location, data){
@@ -164,6 +166,9 @@ function tag_button(name,browser_div, type) {
  *  ELEMENT: author - string
  *  ELEMENT: key - string
  *  ELEMENT: filename - string
+ *  ELEMENT: rating - int
+ *  ELEMENT: favorites - int
+ *  ELEMENT: comments - int
  *******************************************************/
 
 function streamDoc(doc){
@@ -176,19 +181,46 @@ function streamDoc(doc){
 		container.className = 'browser_streamDoc stream_item clickable'
 		container.onclick = direct
 		
+		var statlist = document.createElement('ul')
+		var ratingLi = document.createElement('li')
+		if(doc['rating']>=0){
+			ratingLi.innerHTML = '+'+doc['rating']
+		}
+		else{
+			ratingLi.innerHTML = doc['rating']
+		}	
+		statlist.appendChild(ratingLi)
+			
+		if(doc['favorites']!=0){
+			var favLi = document.createElement('li')
+			favLi.innerHTML='|'
+			var imgStar = document.createElement('img')
+			imgStar.src = "/static/images/star_48px.png"
+			imgStar.height = "16"
+			imgStar.width = "16"
+			var favs = document.createTextNode(doc['favorites'])
+			favLi.appendChild(imgStar)
+			favLi.appendChild(favs)
+			statlist.appendChild(favLi)
+		}
+		
+		var commentsLi = document.createElement('li')	
+		commentsLi.innerHTML ='|'+'comments: '+doc['comments']
+		statlist.appendChild(commentsLi)	
 
 		var title = document.createElement('div')
-		title.className = 'stream_title'
+		title.className = 'title'
 		title.innerHTML = doc['title']
 		
 		var header = document.createElement('div')
-		header.className='stream_header'
+		header.className='header'
 		header.innerHTML = doc['date']+'- <a href="/user/'+doc['author']+'/" class="username">'+doc['author']+'</a> '
 
 		var content = document.createElement('div')
 		content.className = 'stream_description'
 		content.innerHTML = doc['description']
 		
+		container.appendChild(statlist)
 		container.appendChild(title)
 		container.appendChild(header)
 		container.appendChild(content)

@@ -304,9 +304,6 @@ function hank(){
 		$('.streamDocument').each(function(){
 			$(this).addClass('clickable')
 			var url = $('.title a',this).attr('href')
-			/*$('.title a',this).hide()   OLD WAY -- New and improved now
-			title = $('.title a',this).html()
-			$('.title',this).append(title)*/
 			title = $('.title a',this).html()
 			$('.title a',this).replaceWith(title)
 			$(this).click(function(){				

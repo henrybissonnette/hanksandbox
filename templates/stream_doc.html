@@ -12,7 +12,29 @@
 			
 	<div class="stream_item" id="{{doc.filename}}">
 		
-		<div class="stream_title">{{doc.title}}</div>
+		<div class="stream_title">
+			<ul class="docStats">
+				<li>
+					{% if doc.rating > 0 %}
+						+
+					{% endif %}
+					{{doc.rating}}
+				</li>
+				
+				{% if doc.favCount %}
+					|<li>
+						<img src="/static/images/star_48px.png" height="16" width="16" />{{doc.favCount}}
+					</li>
+				{% endif %}
+				
+				{% if doc.comments %}
+					|<li>
+						comments: {{doc.commentCount}}
+					</li>
+				{% endif %}
+			</ul>
+			{{doc.title}}
+		</div>
 		
 		<div class="stream_header">
 			{{doc.date}}- <a href="/user/{{doc.author.username}}/">{{doc.author.username}}</a> 

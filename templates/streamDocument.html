@@ -3,7 +3,28 @@
 
 			
 	<div class="stream_item streamDocument">
-		
+
+		<ul>
+			<li>
+				{% if doc.rating >= 0 %}
+					+
+				{% endif %}
+				{{doc.rating}}
+			</li>
+				
+			{% if doc.favCount %}
+				|<li>
+					<img src="/static/images/star_48px.png" height="16" width="16" />{{doc.favCount}}
+				</li>
+			{% endif %}
+			
+			{% if doc.comments %}
+				|<li>
+					comments: {{doc.commentCount}}
+				</li>
+			{% endif %}
+		</ul>
+
 		<div class="title">
 			{% if 'feature' in doc.type %}Feature Request: {% endif %}
 			{% if 'bug' in doc.type %}Bug Report: {% endif %}

@@ -10,9 +10,8 @@ body {
 	height: 100%;
 }
 
-.right {
+#right {
   float: right;
-  padding: 0px 10px 0px 10px;
   width: 200px;
 }
 
@@ -28,6 +27,7 @@ div.bodycontent{
 	border:solid 2px #333;
 	padding:50px;
 	width:900px;
+	min-height:600px;
 	overflow: auto;  
 }
 
@@ -39,6 +39,7 @@ div.pageframe{
 }
 
 div.bottomlinks{
+	clear:both;
 	text-align: center;
     border:solid 2px white;
     min-height: 100px;
@@ -51,7 +52,7 @@ div.bottomlinks{
 div.pagetop {
 	text-align:center;
 	margin-top:0px;
-	margin-bottom:100px;
+	margin-bottom:20px;
 	margin-right:0px;
 	margin-left:0px;
     height:110px;
@@ -62,6 +63,9 @@ div.pagetop {
 
 a.home{
 	font-size:50px;
+	text-decoration: none;
+}
+a.home:hover{
 	text-decoration: none;
 }
 
@@ -328,6 +332,11 @@ div.div_hover{
 	background-color:#ddd;
 }
 
+/********************************
+ * 
+ * TABS
+ */
+
 div.bodytabs{
 
 	border-bottom:solid 2px #343e3f;
@@ -364,7 +373,7 @@ div.tab{
 	border-bottom:solid 1px #fff;*/
 	border:solid 2px #343e3f;
 	border-bottom:solid 2px #fff;;
-	color#000;
+	color:#000;
 	background:#fff;	
 }
 
@@ -449,7 +458,10 @@ h3.menu_head{
 
 #left_outer{
 	float:left;
+	width:190px;
 	text-align: right;
+	padding-top:30px;
+	padding-right:10px;
 }
 
 #left_outer .tagList{
@@ -471,8 +483,7 @@ h3.menu_head{
 /****************Document***************************/
 
 h1.document, h2.document{
-	max-width:900px;
-	min-width:600px;
+	max-width:600px;
 	margin-left:auto;
 	margin-right:auto;
 	text-align: center;
@@ -489,7 +500,7 @@ h2.document{
 
 div#document{
 	font-size:18px;
-	max-width:700px;
+	max-width:600px;
 	margin-right:auto;
 	margin-left:auto;
 	text-align: left;
@@ -715,6 +726,15 @@ div.left_half{
 }
 /***********subscription stream************/
 
+.stream_item ul{
+	float:right;
+	list-style-type: none;
+}
+
+.stream_item li{
+	display: inline;
+}
+
 .closeItem{
 	float:right;
 }
@@ -742,14 +762,14 @@ div.left_half{
 .stream_item .title{
 	color:#322;
 	font-weight:bold;
-	font-size:24px;
+	font-size:20px;
 	font-variant: small-caps;
 }
 
 .stream_item .title a{
 	color:#322;
 	font-weight:bold;
-	font-size:24px;
+	font-size:20px;
 	font-variant: small-caps;
 	text-decoration: none;	
 }
@@ -859,6 +879,35 @@ ul.test{
 
 /********************One Off: should probably be done in some more general way ***************************/
 
+#leftSkyscraper{
+	width:160px;
+	height:600px;
+	margin-left:15px;
+	margin-top:100px;
+	border:solid;
+}
+
+#leader{
+	width:728px;
+	height:90px;
+	margin:auto;
+	margin-bottom:30px;
+}
+
+#smallTextLeft{
+	width:180px;
+	height:150px;
+	margin:auto;
+	margin-top:100px;
+}
+
+
+#upperSkyscraper{
+	width:160px;
+	height:600px;
+	margin-left:40px;
+	margin-top:40px;
+}
 
 .focus{
 	border:solid 3px #ee1;

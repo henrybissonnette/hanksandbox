@@ -753,6 +753,12 @@ class Document(db.Model):
                                 pass
                             self.type.append('meta')                    
         self.put()
+
+    def commentCount(self):
+        count = 0
+        for reply in self.comments:
+            count += reply.threadCount()
+        return count
         
     def createEvents(self):
         for subscriberName in self.author.subscribers_document:
@@ -790,7 +796,7 @@ class Document(db.Model):
                                               ' related document ('+self.get_url(relative=False)+'")']
                     event.save()   
                     
-        self.setActionTally()                   
+        self.setActionTally()                                
         
     def favCount(self):
         return len(self.favorites)
@@ -1178,6 +1184,14 @@ class Comment(db.Model):
     def subscribe(self, user):
         if not user.username in self.subscribers:
             self.subscribers.append(user.username)
+            
+    def threadCount(self):
+        """Sums the comments that respond to this comment"""
+        count = 1
+        for comment in self.replies:
+            count += comment.threadCount()
+        return count
+        
 
     def unsubscribe(self,user):
         if user.username in self.subscribers:
@@ -2259,6 +2273,9 @@ class Tag_Browser(webapp.RequestHandler):
             newDoc['date']=months[doc.date.month-1]+' '+str(doc.date.day)+', '+str(doc.date.year)
             newDoc['filename']=doc.filename
             newDoc['key']=str(doc.key())
+            newDoc['comments']=str(doc.commentCount())
+            newDoc['rating']=str(doc.rating)
+            newDoc['favorites']=str(doc.favCount())
             documents.append(newDoc)
         obj['documents']=documents
         jsonObj = json.dumps(obj)
@@ -2419,7 +2436,7 @@ class Tasks(webapp.RequestHandler):
             logging.info('email sent to: '+ mailing['user'].username +' at '+mailing['user'].google.email()) 
             htmlContent  = messages.prepareHTMLMailing(mailing)
             plainContent = messages.prepareTextMailing(mailing)
-            logging.info(content) 
+            logging.info(htmlContent) 
             mail.send_mail(
                 sender = 'postmaster@essayhost.appspotmail.com',
                 to = mailing['user'].google.email(),
