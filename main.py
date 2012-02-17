@@ -514,7 +514,7 @@ class User(db.Model):
                     rep += 1 #so you still get 1/4 point free for each comment you leave
                     counter = 0
         for work in works:
-            if not work.ticket: #no rep for meta tickets
+            if not work.ticket.fetch(1): #no rep for meta tickets
                 rep += work.rating             
         self.reputation = rep  
         self.put()
@@ -821,45 +821,6 @@ class Document(db.Model):
             return self.parentDocument.get_origin()
         else:
             return self
-    
-    def parse(self):
-        acceptableElements = ['a','blockquote','br','em','span','i','h3',
-                              'ol','ul','li','p','b','strong']
-        acceptableAttributes = ['href', 'target','style']
-        acceptableStyles = ["text-decoration: line-through;","text-decoration: underline;"]
-        counter = 0
-        contentTemp = self.content  
-        while True:
-            counter += 1
-            soup = BeautifulSoup(contentTemp)
-            removed = False        
-            for tag in soup.findAll(True): # find all tags
-                if tag.name not in acceptableElements:
-                    if tag.contents:
-                        tag.replaceWith(tag.contents[0])
-                    else:
-                        tag.extract()
-                    removed = True
-                else: # it might have bad attributes               
-                    for attr in tag._getAttrMap().keys():
-                        if attr not in acceptableAttributes:
-                            del(tag[attr])
-                            removed = True
-                        else:
-                            if attr == 'style' and not tag[attr] in acceptableStyles:
-                                del(tag[attr])   
-                                removed = True                  
-    
-            # turn it back to html
-            fragment = unicode(soup)
-            if removed:
-                # tricks can exploit a single pass
-                # we need to reparse the html until it stops changing
-                contentTemp = fragment
-                continue # next round           
-            break   
-        self.content = contentTemp
-        self.put()
         
     def set_rating(self):
         votes = self.ratings 
@@ -937,6 +898,17 @@ class Document(db.Model):
             current.parentDocument.actionTally += 1
             current.parentDocument.put()
             current.parentDocument.setActionTally()
+            
+    def set_content(self, text):
+        text = functions.parse(
+                               text,
+                               elements = ['a','blockquote','br','em','span','i','h3',
+                                           'ol','ul','li','p','b','strong'],
+                               attributes = ['href', 'target','style'],
+                               styles = ["text-decoration: line-through;","text-decoration: underline;"],
+                               )  
+        self.content = text
+        self.put()  
            
     def get_tag_number(self):
         return len(self.tags)
@@ -1069,43 +1041,7 @@ class Comment(db.Model):
             if relative:
                 return url+'#'+str(self.key())
             else: 
-                return hank['domainstring'][:-1]+url+'#'+str(self.key())
-    
-    def parse(self):
-        acceptableElements = ['a','blockquote','br','span','em','i','h3',
-                              'ol','ul','li','p','b','strong']
-        acceptableAttributes = ['href', 'target','style']
-        acceptableStyles = ["text-decoration: line-through;","text-decoration: underline;"]
-        while True:
-            soup = BeautifulSoup(self.content)
-            removed = False        
-            for tag in soup.findAll(True): # find all tags
-                if tag.name not in acceptableElements:
-                    if tag.contents:
-                        tag.replaceWith(tag.contents[0])
-                    else:
-                        tag.extract()
-                    removed = True
-                else: # it might have bad attributes
-                    for attr in tag._getAttrMap().keys():
-                        if attr not in acceptableAttributes:
-                            del(tag[attr])
-                            removed = True
-                        else:
-                            if attr == 'style' and not tag[attr] in acceptableStyles:
-                                del(tag[attr])   
-                                removed = True 
-    
-            # turn it back to html
-            fragment = unicode(soup)
-    
-            if removed:
-                # we removed tags and tricky can could exploit that!
-                # we need to reparse the html until it stops changing
-                self.content = fragment 
-                continue # next round            
-            break    
-        self.put()   
+                return hank['domainstring'][:-1]+url+'#'+str(self.key()) 
 
     def remove(self, message=''):
         
@@ -1138,6 +1074,17 @@ class Comment(db.Model):
             current.above.actionTally += 1
             current.above.put()
             current.above.setActionTally()
+            
+    def set_content(self, text):
+        text = functions.parse(
+                               text,
+                               elements = ['a','blockquote','br','em','span','i','h3',
+                                           'ol','ul','li','p','b','strong'],
+                               attributes = ['href', 'target','style'],
+                               styles = ["text-decoration: line-through;","text-decoration: underline;"],
+                               )  
+        self.content = text
+        self.put()      
         
     def set_rating(self):
         votes = self.ratings
@@ -1711,12 +1658,9 @@ class CommentHandler(CommentPage):
             else:
                 commenter = 'anonymous'
                 
-            comment.content = content
+            comment.set_content(content)
             comment.subject = subject
             comment.get_stripped()
-            comment.parse()
-            #if scriptless == 'true':
-            #    comment.content = comment.stripped_content
             
             try:
                 if comment.get_page_object().draft:
@@ -1737,8 +1681,6 @@ class CommentHandler(CommentPage):
         commentCondensed = cleaner(comment.content,string.whitespace)
         pageObject = comment.get_page_object()
         messages = []
-        if scriptless:
-            comment.parse()
         if not commentCondensed:
             messages.append('A comment must include some content. Please type something.')
         if not comment.subject:
@@ -1846,8 +1788,7 @@ class Create_Document(baseHandler):
                 document = Document()
         
         #set content immediately to minimize loss due to error        
-        document.content = self.request.get('document_content')
-        document.put()
+        document.set_content(self.request.get('document_content'))
         
         #################################################
         # Handling Tags
@@ -1884,9 +1825,6 @@ class Create_Document(baseHandler):
             if document.draft == True:
                 new = True
             document.draft = False
-        document.parse()
-        #if scriptless:
-        #    self.validate(document)
         if documentType == 'feature' or documentType == 'bug':
             document.special = True
             document.filename = str(document.key())
@@ -1906,9 +1844,6 @@ class Create_Document(baseHandler):
         ticket.user = user
         ticket.report = document
         ticket.put()
-            
-    def validate(self, document):
-        document.parse()
 
 class DeleteAccount(baseHandler):
     
