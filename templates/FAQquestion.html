@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% if question %}
+	Edit Question
+{% else %}
+	New Question
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+	<script type="text/javascript" src="/static/js/FAQ.js"></script>
+{% endblock %}
+
+{% block content %}
+<form action="/FAQadmin/question/{% if question %}{{question.stringKey}}{% else %}none{% endif %}/" method="post">
+	Question:<input type="text" name="query" value="{{question.question}}"/><br/>
+	Answer:<br/>
+	<textarea name="answer" rows="8" cols="40">{{question.answer}}</textarea><br/>
+	<input type="hidden" value="{{topic.stringKey}}" name="topic" />
+	<input type="submit" value="submit" />		
+</form><br/><br/>
+<a class="aButton" href="/FAQadmin/delete/{{question.stringKey}}/">Delete</a>
+{% endblock %}
