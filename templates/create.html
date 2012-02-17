@@ -29,7 +29,7 @@
 	<div class="tab {name:'Write',initial:'true'}">
 	<div class="left_half">			
 		<a href="{%if document%}{{document.get_url}}{%else%}{{user.get_url}}{%endif%}" title="Return to previous page.">Cancel</a>
-		<h1 class="embed">{% if document %}Edit{% else %}Create{% endif %}{% if parentDocument %} response to "{{ parentDocument.title }}"{% endif %}</h1>
+		<h1 class="interface">{% if document %}Edit{% else %}Create{% endif %}{% if parentDocument %} response to "{{ parentDocument.title }}"{% endif %}</h1>
 		<form action="/create/document/"  method=post>
 			<table>
 				<tr>

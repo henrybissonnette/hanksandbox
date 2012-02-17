@@ -38,14 +38,7 @@ div.pageframe{
 	padding-bottom:60px;
 }
 
-div.bottomlinks{
-	clear:both;
-	text-align: center;
-    border:solid 2px white;
-    min-height: 100px;
-    min-width:1400px;
-    padding:10px;
-}
+
 
 /***************Main Header*****************/
 
@@ -92,6 +85,23 @@ a.home:hover{
 	font-weight: bold;
 }
 
+/*****************************
+ * FOOTER
+ * *******/
+
+#bottomlinks ul{	
+	list-style-type: none;
+}
+
+div#bottomlinks{
+	clear:both;
+	text-align: center;
+    border:solid 2px white;
+    min-height: 100px;
+    min-width:1400px;
+    padding:10px;
+}
+
 
 /************************************************/
 /**************WIDELY USED***********************/
@@ -109,6 +119,12 @@ a.subtle,a.subtle:hover{
 a{
 	text-decoration: none;
 }
+
+a:visited{
+	color:blue;
+}
+
+
 h1 a, h2 a, h3 a{
 	color:white;
 	text-decoration: underline;
@@ -126,6 +142,39 @@ a:hover{
 	margin-bottom: 30px;
 	min-height: 500px;
 }
+
+.button{
+	margin-left:10px;
+	font-size: 15px;
+	background-color:#242e2f;
+	color:#fff;
+	cursor: pointer;
+}
+
+.button:hover{
+	background-color:#555;
+}
+
+.aButton{
+	margin:3px;
+	font-size: 15px;
+	text-decoration: none;
+	background-color:#242e2f;
+	color:#fff;
+	padding-right: 4px;
+	padding-left: 4px;
+	cursor: pointer;
+}
+
+.aButton:hover{
+	background-color:#555;
+	text-decoration: none;
+}
+
+.aButton:visited{
+	color:white;
+}
+
 
 h1.interface{
 	text-align:center;
@@ -146,6 +195,10 @@ h3.interface{
 	text-align:center;
 	color:#fff;
 	background:#999;	
+}
+
+.interface a:visited{
+	color:white;
 }
 
 .hidden{
@@ -209,19 +262,7 @@ a.margin:hover{
 	text-decoration: underline;
 }
 
-.aButton{
-	margin:3px;
-	font-size: 15px;
-	text-decoration: none;
-	background-color:#242e2f;
-	color:#fff;
-	padding: 3px;
-	cursor: pointer;
-}
 
-.aButton:hover{
-	background-color:#555;
-}
 
 .scriptOnly{
 	display:none;
@@ -625,6 +666,7 @@ a.reply:hover,a.reply:active
 div.nested{
 
 	margin-right:20px;
+	margin-top: 2px;
 	margin-bottom:1px;
 	position:relative;
 	left:20px;
@@ -728,6 +770,7 @@ div.left_half{
 
 .stream_item ul{
 	float:right;
+	margin-top: -4px;
 	list-style-type: none;
 }
 
@@ -888,7 +931,7 @@ ul.test{
 }
 
 #leader{
-	width:728px;
+	min-width:1400px;
 	height:90px;
 	margin:auto;
 	margin-bottom:30px;
@@ -930,4 +973,7 @@ div.marginalNote{
 	background-color: #eee;
 }
 
-
+#FAQ .A{
+	font-weight:bold;
+	font-size: 20px;
+}

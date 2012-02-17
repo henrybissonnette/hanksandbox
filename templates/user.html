@@ -38,7 +38,8 @@
 		
 		{% if user.username in page_user.circle or page_user.username == user.username %}
 			<h2 class="interface"> <span class="username">{{ page_user.username }}</span>'s Drafts </h2>	
-		
+			You can share your drafts with other users by going to their pages and inviting them to join your readers circle 
+			(under the connect tab).
 			{% for doc in page_user.works %}
 			{% if doc.draft %}
 			{% include 'streamDocument.html'%}

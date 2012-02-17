@@ -6,7 +6,7 @@
 
 {% block content %}
 <div>
-	<h1>Welcome to the Meta Page</h1>
+	<h1 class="interface">Welcome to the Meta Page</h1>
 	<p>This page is dedicated to discussion of this site. <b>Meta Documents</b> are ordinary documents 
 		that are given the meta tag as an indicator that this site is a part of the document's
 		subject matter. <b>Bug Reports</b> are special documents that users can submit in order to point
@@ -18,7 +18,7 @@
 	
 </div>
 <div class="left_half">
-	<h2>Meta Docs</h2>
+	<h2 class="interface">Meta Docs</h2>
 	{% for doc in metaDocs %}
 		{% if not doc.draft %}
 		{% include 'streamDocument.html'%}
@@ -28,20 +28,20 @@
 
 <div class="right_half">
 	
-	<h2>Feature Requests
+	<h2 class="interface">Feature Requests</h2>
 	{% if user %}
 	<a class="aButton" href="/create/feature/">New</a>
+	<br/><br/>
 	{% endif %}
-	</h2>
 	{% for doc in featureRequests %}
 		{% include 'streamDocument.html'%}
 	{% endfor %}	
 	
-	<h2>Bug Reports
+	<h2 class="interface">Bug Reports</h2>
 	{% if user %}
 	<a class="aButton" href="/create/bug/">New</a>
-	{% endif %}
-	</h2>	
+	<br/><br/>
+	{% endif %}	
 	{% for doc in bugReports %}
 		{% include 'streamDocument.html'%}
 	{% endfor %}	

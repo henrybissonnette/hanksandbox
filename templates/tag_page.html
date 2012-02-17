@@ -44,22 +44,24 @@
 
 {% block content %}
 
-	<h1>
+	<h1 class="interface">
 		{{ maintag.title }} 
-		{% if user %}
-			{% if not maintag.title in user.subscriptions_tag %}
-			<a href="subscribe-tag/scriptless_add/{{maintag.title}}/" class="subscribe_tag aButton {tag:'{{maintag.title}}'}"  
-			title="New documents with this tag will automatically appear in your stream.">
-				Subscribe
-			</a>			
-			{% else %}
-			<a href="subscribe-tag/scriptless_remove/{{maintag.title}}/" class="subscribe_tag aButton {tag:'{{maintag.title}}'}"
-			title="Remove this tag from your subscriptions.">
-				Unsubscribe
-			</a>			
-			{% endif %}
-		{% endif %}
 	</h1>
+	{% if user %}
+		{% if not maintag.title in user.subscriptions_tag %}
+		<a href="subscribe-tag/scriptless_add/{{maintag.title}}/" class="subscribe_tag aButton {tag:'{{maintag.title}}'}"  
+		title="New documents with this tag will automatically appear in your stream.">
+			Subscribe
+		</a>			
+		{% else %}
+		<a href="subscribe-tag/scriptless_remove/{{maintag.title}}/" class="subscribe_tag aButton {tag:'{{maintag.title}}'}"
+		title="Remove this tag from your subscriptions.">
+			Unsubscribe
+		</a>			
+		{% endif %}
+		<br/></br>
+	{% endif %}
+	
 	{% for doc in maintag.get_documents%}
 	{% if not doc.draft %}
 		{% include 'streamDocument.html' %}

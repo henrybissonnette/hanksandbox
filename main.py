@@ -11,7 +11,7 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from cgi import escape
 from django.utils.html import strip_tags
 import os, re, logging, sys,datetime,math,urllib
-import messages, string, random
+import messages, string, random, functions
 from BeautifulSoup import BeautifulSoup
 from django.utils import simplejson as json
 
@@ -757,7 +757,8 @@ class Document(db.Model):
     def commentCount(self):
         count = 0
         for reply in self.comments:
-            count += reply.threadCount()
+            if self.draft == reply.draft:
+                count += reply.threadCount()
         return count
         
     def createEvents(self):
@@ -1324,6 +1325,51 @@ class Tag(db.Model):
         
     def get_url(self):
         return '/tag/'+self.title+'/'
+
+class FAQTopic(db.Model):
+    date = db.DateTimeProperty(auto_now_add=True)
+    title = db.StringProperty()
+    
+    def remove(self):
+        for question in self.questions:
+            question.remove()
+        self.delete()
+    
+    def set_title(self, text):
+        text = functions.parse(text)
+        self.title = text
+        self.put()
+        
+    def stringKey(self):
+        return str(self.key())
+    
+class FAQQuestion(db.Model):
+    answer = db.TextProperty()
+    date = db.DateTimeProperty(auto_now_add=True)
+    question = db.StringProperty()
+    topic = db.ReferenceProperty(FAQTopic, collection_name='questions')
+    
+    def remove(self):
+        self.delete()
+    
+    def set_answer(self, text):
+        text = functions.parse(
+                               text,
+                               elements = ['a','blockquote','br','em','span','i','h3',
+                                           'ol','ul','li','p','b','strong'],
+                               attributes = ['href', 'target','style'],
+                               styles = ["text-decoration: line-through;","text-decoration: underline;"],
+                               )
+        self.answer = text
+        self.put()
+    
+    def set_question(self, text):
+        text = functions.parse(text)
+        self.question = text
+        self.put()  
+        
+    def stringKey(self):
+        return str(self.key())  
         
 class Vote(db.Model):
     user = db.ReferenceProperty(User, collection_name='ratings')
@@ -1961,7 +2007,116 @@ class Edit_Document(baseHandler):
                    }     
         tmpl = path.join(path.dirname(__file__), 'templates/create.html')
         self.response.out.write(template.render(tmpl, context))
+   
+class FAQ(baseHandler):
+    
+    def myGet(self):
+        user = get_user()
+        FAQTopics = FAQTopic.all()
+        context = {
+                   'FAQTopics': FAQTopics,
+                   'user':      user,
+                   'login':     users.create_login_url(self.request.uri),
+                   'logout':    users.create_logout_url(self.request.uri)
+                   }     
+        tmpl = path.join(path.dirname(__file__), 'templates/FAQ/FAQ.html')
+        self.response.out.write(template.render(tmpl, context))
         
+class FAQadmin(baseHandler):
+    """ Handler adds, edits, and deletes topic and question objects for the
+    FAQ page, also serves the page itself."""
+    def myGet(self, request, stringKey):
+        if self.admincheck():
+            if request == 'topic':
+                self.topic(stringKey)
+            if request == 'addQuestion' or request == 'editQuestion':
+                self.question(request, stringKey)
+            if request == 'delete':
+                self.delete(stringKey)
+    
+    def topic(self, stringKey):
+        user = get_user()
+        try:
+            topic = db.get(stringKey)
+        except: 
+            topic = None
+        
+        context = {
+                   'topic': topic,
+                   'user':      user,
+                   'login':     users.create_login_url(self.request.uri),
+                   'logout':    users.create_logout_url(self.request.uri)
+                   }     
+        tmpl = path.join(path.dirname(__file__), 'templates/FAQ/FAQtopic.html')
+        self.response.out.write(template.render(tmpl, context))
+        
+    def question(self, request, stringKey):
+        user = get_user()
+        
+        if request == 'editQuestion':
+            question = db.get(stringKey)
+        else:
+            question = None
+        
+        if request == 'addQuestion':
+            topic = db.get(stringKey)
+        else:
+            topic = question.topic
+            
+        context = {
+                   'topic':     topic,
+                   'question':  question,
+                   'user':      user,
+                   'login':     users.create_login_url(self.request.uri),
+                   'logout':    users.create_logout_url(self.request.uri)
+                   }     
+        tmpl = path.join(path.dirname(__file__), 'templates/FAQ/FAQquestion.html')
+        self.response.out.write(template.render(tmpl, context))
+            
+    def delete(self, stringKey):
+        object = db.get(stringKey)
+        object.remove()
+            
+        self.redirect('/FAQ/')
+        
+    def myPost(self, request, stringKey):
+        if self.admincheck():
+            if request == 'question':
+                self.postQuestion(stringKey)
+            if request == 'topic':
+                self.postTopic(stringKey)
+                
+    def postQuestion(self,stringKey):
+        try:
+            question = db.get(stringKey)
+        except:
+            question = FAQQuestion()
+            
+        query = self.request.get('query')
+        answer = self.request.get('answer')
+        topic = db.get(self.request.get('topic'))
+            
+        question.set_question(query)
+        question.set_answer(answer)
+        question.topic = topic
+        question.put()
+            
+        self.redirect('/FAQ/')
+        
+    def postTopic(self, stringKey):
+        try:
+            topic = db.get(stringKey)
+        except:
+            topic = FAQTopic()
+            
+        title = self.request.get('title')
+        
+        topic.set_title(title)
+        topic.put()
+        
+        self.redirect('/FAQ/')
+        
+                
 class Favorite(baseHandler):
     
     def myGet(self,user,filename,action):
@@ -2644,6 +2799,8 @@ application = webapp.WSGIApplication([
     ('/userinfo/',UserInfo),
     ('/tasks/(.*)/',Tasks),
     ('/ajax/(.*)/',AJAX),
+    ('/FAQ/',FAQ),
+    ('/FAQadmin/(.*)/(.*)/',FAQadmin),
     ('.*/rate/', Rating),
     ('/tag_browser/',Tag_Browser),
     ('.*/tag_(.*)/', TagManager),
