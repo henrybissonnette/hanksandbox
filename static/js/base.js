@@ -350,6 +350,7 @@ $(document).ready(function(){
 		$('.aButton, .interface').corner('40px')
 		$('.roundtop').corner('40px top')
 		$('.tagList').corner('40px')
+		
 	}
 })
 

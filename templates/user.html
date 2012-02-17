@@ -4,6 +4,11 @@
 {{ page_user.username }}'s Page
 {% endblock title%}
 
+{% block scripts %}
+<script type="text/javascript" src="/static/js/user.js"></script>
+<script type="text/javascript" src="/static/js/comment_system.js"></script>
+{% endblock %}
+
 {% block tabs %}
 {% if user  %}
 <div class="tabs {main:'true'}">
@@ -65,9 +70,9 @@
 			<h2 class="interface notab">Stream</h2>
 			
 			{% for doc in page_user.fetch_stream %}
-			<div class="streamItem" id="doc.key">
+			<div class="streamItem" id="{{doc.key}}">
 				{% if user.username == page_user.username %}
-				<a class="closeItem exit" href="message/streamCancel/{{doc.key}}/">x</a>
+				<a class="closeItem exit" href="/message/streamCancel/{{doc.key}}/">x</a>
 				{% endif %}
 				
 				{% if doc.object.object_type == 'Document' %}

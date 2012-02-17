@@ -7,28 +7,28 @@
 /*MINIMIZE/MAXIMIZE*/
 
 $(document).ready(function(){  
-$('.commentBox').corner('bottom');
-$('.comment .header').css('cursor','pointer').corner('top');
-$('.comment .content').corner("round bottom 8px").parent().corner("round bottom 10px")
-	
-$(".comment .header").toggleClass("commentHeaderMax");
-$(".comment .header").click(function () { 
-	if($(this).hasClass("commentHeaderMax")){
-			comment = $(this).next().children('.comment .content')
-			$(this).append('<span class="stub">:     '+comment.text()+'</span>');
-			$(this).siblings('form, button').hide(function(x){$(x).corner();}(this));
-			$(this).next().slideUp('fast'); 			
+	$('.commentBox').corner('bottom');
+	$('.comment .header').css('cursor','pointer').corner('top');
+	$('.comment .content').corner("round bottom 8px").parent().corner("round bottom 10px")
+		
+	$(".comment .header").toggleClass("commentHeaderMax");
+	$(".comment .header").click(function () { 
+		if($(this).hasClass("commentHeaderMax")){
+				comment = $(this).next().children('.comment .content')
+				$(this).append('<span class="stub">:     '+comment.text()+'</span>');
+				$(this).siblings('form, button').hide(function(x){$(x).corner();}(this));
+				$(this).next().slideUp('fast'); 			
+			}
+		else{
+				$(this).children('span.stub').remove()
+				$(this).next().slideDown(); 
+				$(this).siblings('form, button').slideDown();
+				$(this).uncorner().corner('top');
 		}
-	else{
-			$(this).children('span.stub').remove()
-			$(this).next().slideDown(); 
-			$(this).siblings('form, button').slideDown();
-			$(this).uncorner().corner('top');
-	}
 		$(this).toggleClass('commentHeaderMax');
 		$(this).toggleClass('commentHeaderMin');
-		
-	});
+			
+		});
 })
 
 /*COMMENT BOXES*/

@@ -2108,6 +2108,18 @@ class Message(baseHandler):
                 if message.user.username == user.username:               
                     message.streamCancel()
         self.redirect('../../../')
+    
+    def myPost(self,request,key):
+        user = get_user()
+        ajaxKey = self.request.get('key')
+        message = db.get(ajaxKey)        
+        if request == 'streamCancel':
+            if message.object_type == 'StreamMessage':
+                if message.recipient.username == user.username:               
+                    message.streamCancel()
+            else: 
+                if message.user.username == user.username:               
+                    message.streamCancel()
 
 class Meta(baseHandler):
     def myGet(self):
@@ -2704,7 +2716,7 @@ application = webapp.WSGIApplication([
     ('/update-model/', Update_Model),  
     ('/meta/',Meta),                                    
     ('/admin/', Admin),
-    ('.*/message/(.*)/(.*)/',Message),
+    ('/message/(.*)/(.*)/',Message),
     ('/user/(.*)/', UserPage),
     ('/register', Register),
     ('/create/(.*)/', Create_Document),
