@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}
+FAQ
+{% endblock %}
+
+{% block scripts %}
+	<script type="text/javascript" src="/static/js/FAQ.js"></script>
+{% endblock %}
+
+{% block content %}
+<h1 class="interface">Frequently Asked Questions</h1>
+<div id="FAQ">
+	{% if user.is_admin %}
+	<a href="/FAQadmin/topic/none/" class="aButton">Add Topic</a>
+	{% endif %}
+	<div id="index">
+		{% for topic in FAQTopics %}
+			<h2 class="interface"><a href="/FAQ/#{{topic.stringKey}}">{{topic.title}}</a></h2></br>
+		{% endfor %}
+		<hr/>
+	</div>
+	{% for topic in FAQTopics %}
+		<h2 class="interface" id="{{topic.stringKey}}">{{topic.title}}</h2>
+		{% if user.is_admin %}
+		<a href="/FAQadmin/topic/{{topic.stringKey}}/" class="aButton">Edit Topic</a>
+		<a href="/FAQadmin/addQuestion/{{topic.stringKey}}/" class="aButton">Add Question</a>
+		{% endif %}
+		<div class="nested">
+		{% for question in topic.questions %}
+			<h3 class="question"><span class="A">Q:</span> {{question.question}}
+			{% if user.is_admin %}
+			<a href="/FAQadmin/editQuestion/{{question.stringKey}}/" class="aButton">Edit Question</a></br>
+			{% endif %}	
+			</h3>	
+			<div class="answer">	
+			<span class="A">A:</span>
+			{% autoescape off %}
+				{{question.answer}}
+			{% endautoescape %}
+			</div>
+		{% endfor %}
+		</div>
+	{% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block leftside %}
+	{% if document.leaf_tags %}
+	<div class="tagList">
+	<ul>	
+		{% for tag in document.leaf_tags %}	
+		<li>		
+			<a href="/tag/{{tag.title}}/" class="margin" title='{{tag.title}}'>{{tag.title}}</a>	
+		</li>
+		{% endfor %}
+	</ul>
+	</div>
+	{% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+<h1 class="interface">Context for <a href="{{document.get_url}}">{{document.title}}</a></h1>
+
+{% with document.get_origin as origin %}
+	{% include 'documentContext.html' %}
+{% endwith %}
+
+
+
+{% endblock %}

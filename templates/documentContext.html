@@ -1,0 +1,22 @@
+
+{% with origin as doc %}
+	{% if doc.username == document.username and doc.filename == document.filename %}
+		<div class="focus">
+	{% endif %}
+	
+		{% include 'streamDocument.html' %}
+		
+	{% if doc.username == document.username and doc.filename == document.filename %}
+		</div>
+	{% endif %}
+	
+{% endwith %}
+{% if origin.get_document_replies %}
+<div class="nested">
+	{% for doc in origin.get_document_replies  %}
+		{% with doc as origin %}
+			{% include 'documentContext.html' %}
+		{% endwith %}
+	{% endfor %}
+</div>
+{% endif %}
