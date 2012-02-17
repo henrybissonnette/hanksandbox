@@ -502,44 +502,20 @@ class User(db.Model):
     
     def set_reputation(self):
         
-        #reputation=1
-        #myworks = self.works.fetch(1000)
-        #mycomments = self.mycomments
-        #total_views = 0
-            
-        #for document in myworks:
-        #    reputation = reputation + 4*document.rating
-        #    total_views = total_views + document.views
-        
-        #for comment in mycomments: 
-        #    reputation = reputation + comment.rating
-            
-        #if self.get_age() < 100:
-        #    reputation = reputation*math.sqrt(self.get_age())/10
-            
-        #if reputation < 0:
-        #    reputation = -(math.sqrt(math.fabs(reputation))/100)*97
-        #else:
-        #    reputation = (math.sqrt(reputation)/100)*97
-            
-        #prolificity = len(myworks)
-        #if prolificity >= 1:
-        #    reputation = reputation + 1           
-        #    if prolificity >= 10:
-        #        reputation = reputation + 1
-        #        if total_views/prolificity <= 20:
-        #            reputation = reputation - 2
-        #        if prolificity >= 30:
-        #            reputation = reputation + 1 
-        #            if total_views/prolificity <= 30:
-        #                reputation = reputation - 2
         comments = self.mycomments  
         works = self.works
         rep = 0
+        counter = 0
         for comment in comments:
-            rep += comment.rating
+            if not comment.draft: # draft votes don't cost mod points
+                rep += comment.rating-1 #-1 for the free point on a new comment
+                counter += 1
+                if counter == 4:
+                    rep += 1 #so you still get 1/4 point free for each comment you leave
+                    counter = 0
         for work in works:
-            rep += work.rating             
+            if not work.ticket: #no rep for meta tickets
+                rep += work.rating             
         self.reputation = rep  
         self.put()
         
@@ -1375,8 +1351,31 @@ class Vote(db.Model):
     user = db.ReferenceProperty(User, collection_name='ratings')
     date = db.DateTimeProperty(auto_now_add=True)
     value = db.IntegerProperty()
-    current_rating = db.IntegerProperty()        
+    current_rating = db.IntegerProperty()   
     
+    def set_vote(self, user, object, rating):     
+        if not (user.username in object.raters or user == object.author or not user) or user.is_admin():
+            self.user = user
+            if rating == "up":
+                if object.object_type == 'Comment' and object.rating >= 5:
+                    self.value = 0
+                else:
+                    self.value = 1
+            else:
+                if object.object_type == 'Comment' and object.rating <= -1:
+                    self.value = 0
+                else:
+                    self.value = -1
+                
+            object.raters.append(user.username)
+            self.current_rating = object.rating
+            self.createMessage()
+            self.put()
+            object.set_rating()
+            object.author.set_reputation()
+            object.author.put()
+            object.put() 
+                   
 class VoteDocument(Vote):
     document = db.ReferenceProperty(Document, collection_name='ratings')
     object_type = db.StringProperty(default = 'VoteDocument')
@@ -1453,46 +1452,25 @@ class AJAX(webapp.RequestHandler):
         self.response.out.write(jsonObj)
                   
     def rate(self):
-        """ This code also occurs in Rating. Changes here must be duplicated there.
-        Should be unified somehow."""
+        """ This code also occurs in Rating. Changes 
+        here must be duplicated there."""
         
         user = get_user()
         rating = self.request.get('rating')
         key = self.request.get('key')
-
-        object = db.get(db.Key(key))
+        object = db.get(key)
+        
         if object.object_type == 'Comment':
             vote = VoteComment()
             vote.comment = object
-            if not user.is_admin():
+            if not user.is_admin() and not object.draft:
                 user.useModPoint()
         if object.object_type == 'Document':
             vote = VoteDocument()
             vote.document = object
 
-        if not user.username in object.raters or user.is_admin():
-            vote.user = user
+        vote.set_vote(user,object,rating)
             
-            if not (user.username in object.raters or user == object.author or not user) or user.is_admin():   
-                if rating == "up":
-                    if object.object_type == 'Comment' and object.rating >= 5:
-                        vote.value = 0
-                    else:
-                        vote.value = 1
-                else:
-                    if object.object_type == 'Comment' and object.rating <= -1:
-                        vote.value = 0
-                    else:
-                        vote.value = -1
-                    
-                object.raters.append(user.username)
-                vote.current_rating = object.rating
-                vote.createMessage()
-                vote.put()
-                object.set_rating()
-                object.author.set_reputation()
-                object.author.put()
-                object.put()
         self.response.out.write(object.rating)
     
     def subscribeQuery(self):
@@ -2019,7 +1997,7 @@ class FAQ(baseHandler):
                    'login':     users.create_login_url(self.request.uri),
                    'logout':    users.create_logout_url(self.request.uri)
                    }     
-        tmpl = path.join(path.dirname(__file__), 'templates/FAQ/FAQ.html')
+        tmpl = path.join(path.dirname(__file__), 'templates/FAQ.html')
         self.response.out.write(template.render(tmpl, context))
         
 class FAQadmin(baseHandler):
@@ -2047,7 +2025,7 @@ class FAQadmin(baseHandler):
                    'login':     users.create_login_url(self.request.uri),
                    'logout':    users.create_logout_url(self.request.uri)
                    }     
-        tmpl = path.join(path.dirname(__file__), 'templates/FAQ/FAQtopic.html')
+        tmpl = path.join(path.dirname(__file__), 'templates/FAQtopic.html')
         self.response.out.write(template.render(tmpl, context))
         
     def question(self, request, stringKey):
@@ -2070,7 +2048,7 @@ class FAQadmin(baseHandler):
                    'login':     users.create_login_url(self.request.uri),
                    'logout':    users.create_logout_url(self.request.uri)
                    }     
-        tmpl = path.join(path.dirname(__file__), 'templates/FAQ/FAQquestion.html')
+        tmpl = path.join(path.dirname(__file__), 'templates/FAQquestion.html')
         self.response.out.write(template.render(tmpl, context))
             
     def delete(self, stringKey):
@@ -2218,59 +2196,28 @@ class PostComment(CommentPage):
         self.showForm()        
         
 class Rating(baseHandler):
-    """ This code also occurs in AJAX/rate. Changes here must be duplicated there.
-    Should be unified somehow."""    
+    """Equivalent code also occurs in AJAX rate. Changes
+    here should also be made there."""
     def myPost(self):
         
         user = get_user()
         rating = self.request.get('rating')
         key = self.request.get('key')
-        scriptless = self.request.get('scriptless')
         object = db.get(key)
+        
         if object.object_type == 'Comment':
             vote = VoteComment()
             vote.comment = object
-            if not user.is_admin():
+            if not user.is_admin() and not object.draft:
                 user.useModPoint()
         if object.object_type == 'Document':
             vote = VoteDocument()
             vote.document = object
-        if not user.username in object.raters or user.is_admin():
-            vote.user = user
             
-            if not (user.username in object.raters or user == object.author or not user) or user.is_admin():
-                if rating == "up":
-                    if object.object_type == 'Comment' and object.rating >= 5:
-                        vote.value = 0
-                    else:
-                        vote.value = 1
-                else:
-                    if object.object_type == 'Comment' and object.rating <= -1:
-                        vote.value = 0
-                    else:
-                        vote.value = -1
-                    
-                object.raters.append(user.username)
-                vote.current_rating = object.rating
-                vote.createMessage()
-                vote.put()
-                object.set_rating()
-                object.author.set_reputation()
-                object.author.put()
-                object.put()
-        if scriptless == 'true':
-            self.redirect(object.get_url())
+        vote.set_vote(user,object,rating)
+        
+        self.redirect(object.get_url())
 
-        else:     
-            rate_level = object.rating
-            context = {
-                'rating':    rate_level,
-                'user':      user,
-                'login':     users.create_login_url(self.request.uri),
-                'logout':    users.create_logout_url(self.request.uri)
-               }  
-            tmpl = path.join(path.dirname(__file__), 'templates/rated.html')
-            self.response.out.write(template.render(tmpl, context))  
         
 class ReplyBase(baseHandler):
     def myPost(self):
@@ -2615,7 +2562,9 @@ class Tasks(webapp.RequestHandler):
         newDocs = get_documents(since=period)
         newComments = Comment.all().filter('date >=',period).fetch(1000)       
                 
-        users = User.all().fetch(1000)
+        users = User.all().fetch(10000)
+        for user in users:
+            user.set_reputation()
         
         # remove unused modpoints and add to allocation pool
         recycledPoints = 0

@@ -67,14 +67,13 @@
 						</b>
 						wrote:<br>
 		
-						{% if user and user.modPoints or user.is_admin %}
+						{% if user and user.modPoints or user.is_admin or document.draft %}
 							{% if not comment.author.username == user.username or user.is_admin%}
 								{% if user.username not in comment.raters or user.is_admin %}
 									{% if comment.rating < 5 %}					
 									<form action="/rate/" method="post" class="rate">
 										<input type="hidden" name="key" value="{{key}}" />
 										<input type="hidden" name="rating" value="up" />
-										<input type="hidden" name="scriptless" value="true" />
 										<input  type="submit" value="rate up" />
 									</form>
 									{% endif %}
@@ -82,7 +81,6 @@
 									<form action="/rate/" method="post" class="rate">
 										<input type="hidden" name="key" value="{{key}}" />
 										<input type="hidden" name="rating" value="down" />
-										<input type="hidden" name="scriptless" value="true" />
 										<input  type="submit" value="rate down" />
 									</form>
 									{% endif %}
