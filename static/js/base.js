@@ -2,7 +2,36 @@
 //include tiny mce in textareas when pages render
 //still needs to be independently loaded with ajaxed forms
 function basic_MCE()
-	{		
+	{	
+		
+		tinyMCE.init({
+				
+		        mode : "textareas",
+			    theme : "advanced",
+			    plugins: "lists,paste"/*,tinyautosave"*/,
+			    content_css : "/static/css/custom_content.css",
+			    
+            	paste_auto_cleanup_on_paste : true,
+            	paste_remove_styles: true,
+            	paste_remove_styles_if_webkit: true,
+            	paste_strip_class_attributes: true,
+			            
+			    theme_advanced_buttons1 : /*"tinyautosave,|,"*/"bold,italic,underline,strikethrough,|,link,unlink,|,bullist, numlist,|,blockquote,undo,|,formatselect,charmap", 
+			    theme_advanced_buttons2 : "", 
+			    theme_advanced_buttons3 : "" ,
+			    theme_advanced_statusbar_location : "bottom",
+			    theme_advanced_resizing : true,
+			    theme_advanced_resize_horizontal : false,
+			    theme_advanced_resizing_use_cookie : false,
+			    theme_advanced_blockformats : "h3",
+
+
+			    
+			    gecko_spellcheck : true,
+			    editor_selector : "mceBase"
+
+		});		
+			
 		tinyMCE.init({
 				
 		        mode : "textareas",
@@ -21,8 +50,40 @@ function basic_MCE()
 			    theme_advanced_statusbar_location : "bottom",
 			    theme_advanced_resizing : true,
 			    theme_advanced_blockformats : "h3",
+			    theme_advanced_resize_horizontal : false,
 			    
 			    gecko_spellcheck : true,
+			    editor_selector : "mceBaseVertical"
+
+		});	
+		
+		tinyMCE.init({
+				
+		        mode : "textareas",
+			    theme : "advanced",
+			    plugins: "lists,paste"/*,tinyautosave"*/,
+			    content_css : "/static/css/custom_content.css",
+			    
+            	paste_auto_cleanup_on_paste : true,
+            	paste_remove_styles: true,
+            	paste_remove_styles_if_webkit: true,
+            	paste_strip_class_attributes: true,
+			            
+			    theme_advanced_buttons1 : /*"tinyautosave,|,"*/"bold,italic,underline,strikethrough,|,link,unlink,|,bullist, numlist,|,blockquote,undo,|,formatselect,charmap", 
+			    theme_advanced_buttons2 : "forecolor,backcolor", 
+			    theme_advanced_buttons3 : "" ,
+			    theme_advanced_statusbar_location : "bottom",
+			    theme_advanced_resizing : true,
+			    theme_advanced_blockformats : "h3",
+			    theme_advanced_text_colors : "FFFFFF,C0C0C0,FF6600,0000FF,000000",
+			    theme_advanced_background_colors : "FFFFFF,FFFF00,000000",
+			    theme_advanced_resizing_max_height : 700,
+			    theme_advanced_more_colors : false,
+			    theme_advanced_resize_horizontal : false,
+			    
+			    gecko_spellcheck : true,
+			    editor_selector : "mceRevise"
+
 		});			    
 	}
 	
@@ -169,7 +230,7 @@ function hank(){
 		subject.value = data['subjectValue']
 		var content = document.createElement('textarea')
 		content.setAttribute('name','content')
-		content.setAttribute('class','tinymce')
+		content.setAttribute('class','mceBaseVertical')
 		content.setAttribute('rows','5')
 		content.setAttribute('cols','67')
 		if(data['contentValue']!= undefined){

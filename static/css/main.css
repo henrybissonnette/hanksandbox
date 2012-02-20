@@ -262,14 +262,20 @@ a.margin:hover{
 	text-decoration: underline;
 }
 
-
-
 .scriptOnly{
 	display:none;
 }
 
+.right{
+	float:right;
+}
+
 .round{
 	padding:5px;
+}
+
+.mceBaseVertical{
+	margin-top:3px;
 }
 
 /***************many element presentation standards********************/
@@ -523,6 +529,19 @@ h3.menu_head{
 
 /****************Document***************************/
 
+#revise{
+	float:left;
+}
+
+#revisionMenu{
+	float:right;
+}
+
+.right_half #document{
+	max-height: 700px;
+	overflow: scroll;
+}
+
 h1.document, h2.document{
 	max-width:600px;
 	margin-left:auto;
@@ -615,7 +634,7 @@ user */
 
 h1.creator{
 	text-align:center;
-	width:600px;
+	max-width:600px;
 	font-size:60px;
 	margin-left:auto;
 	margin-right:auto;
@@ -976,4 +995,14 @@ div.marginalNote{
 #FAQ .A{
 	font-weight:bold;
 	font-size: 20px;
+}
+
+.mceRevise{
+	width:450px;
+	height:700px;
+}
+
+.mceBase{
+	width:620px;
+	height:600px;
 }

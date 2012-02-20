@@ -54,25 +54,51 @@
 ---------------------------------------------------------
 {% endcomment %}
 <div class="tab {name:'Document',initial:'true'}">
-	<h1 class="creator">
-		<a title="Visit {{document.author.username}}'s  Page" class="creator" href="/user/{{document.author.username}}/">
-			{{document.author.username}}
-			{% if document.draft %} : draft{% endif %}
-		</a>
-		<a title="More Meta Ticket's " class="creator" href="/meta/">
-		{% if 'feature' in document.type %} : Feature Request{% endif %}
-		{% if 'bug' in document.type %} : Bug Report{% endif %}
-		</a></h1>	
-	<h1 class="document {filename:'{{document.filename}}',author:'{{document.author.username}}'}" >{{document.title}}</h1>
 	
-	{% if document.subtitle %}
-		<h2 class="document">{{document.subtitle}}</h2>
+	
+	{% comment %}
+	---------------------------------------------------------
+	(((		REVISIONS
+	---------------------------------------------------------
+	{% endcomment %}
+	{% if document.revisions.0 and user.username == document.author.username or user.username in document.revisors %}
+	<form id="revisionMenu" method="post" action="revise/view/">
+		View a Revision of this Document:
+		<select name="revisionName">
+			{% for revision in document.revisions %}
+				{% if user.username == document.author.username or user.username == revision.revisor.username %}
+					<option value="{{revision.revisionName}}">{{revision.revisionName}}</option>
+				{% endif %}
+			{% endfor %}
+		</select>
+		<input type="submit" value="Go" />
+	</form>
 	{% endif %}
-	<div id="document">
-	{% autoescape off %}
-		{{document.content}}
-	{% endautoescape %}
+	{% comment %}
+	---------------------------------------------------------
+			REVISIONS								     	  )))
+	---------------------------------------------------------
+	{% endcomment %}
+	
+	{% comment %}
+	---------------------------------------------------------
+	(((		INTERACT BAR
+	---------------------------------------------------------
+	{% endcomment %}
+	<div id="interactBar">
+		{% if user.username in document.author.circle and not ticket%}
+		<a href="revise/new/">revise</a>
+		{% endif %}
 	</div>
+	{% comment %}
+	---------------------------------------------------------
+			INTERACT BAR							      )))
+	---------------------------------------------------------
+	{% endcomment %}	
+	
+	{% with document as doc %}
+		{% include 'documentDisplay.html' %}
+	{% endwith %}
 	<hr/>
 	
 	{% if document.author.username == user.username %}
@@ -287,15 +313,15 @@
 {% endcomment %}	
 </div>	
 
-	
-{% if user.username == document.author.username %}
-<div class="tab {name:'Edit'}">
-<div class="scriptOnly {% if not document.special %}tabs{% endif %}">
 {% comment %}
 ---------------------------------------------------------
 (((		EDIT
 ---------------------------------------------------------
 {% endcomment %}
+	
+{% if user.username == document.author.username %}
+<div class="tab {name:'Edit'}">	
+<div class="scriptOnly {% if not document.special %}tabs{% endif %}">
 	
 	{% comment %}
 	---------------------------------------------------------
@@ -304,45 +330,11 @@
 	{% endcomment %}
 	<div class="tab fullpage {name:'Write',initial:'true'}">
 	<h1 class="embed">Edit</h1>
-	<form action="/create/document/"  method=post>
-		<table>
-			{% if not document.special %}
-			<tr>
-				<td>File Name: </td><td><input type="text" id="filename" name="filename" size=40 value="{{document.filename}}" /></td>
-			</tr>
-			{% endif %}
-			<tr>
-				<td>Title: </td><td><input type="text" name="title" size=80 value="{{document.title}}" /></td>
-			</tr>
-			{% if not document.special %}
-			<tr>
-				<td>Subtitle (optional): </td><td><input id="create_input" type="text" name="subtitle" size=80 value="{{document.subtitle}}" /></td>
-			</tr>
-			{% endif %}
-			<tr>
-				<td>Description: </td><td><input type="text" name="description" size=80 value="{{document.get_description}}" 
-					title="Used in streams and search results. Use it to attract readers who will be interested in your content. Max 150 characters. No special characters or HTML tags allowed."/></td>
-			</tr>
-		</table>
-		{% for tag in document.get_leaftags %}
-		<div class="include_{{tag.title}}">
-		<input type="hidden" name="added_tag" class="include_{{tag.title}}" value="{{tag.title}}"/>
-		</div>
-		{% endfor%}
-		<input type="hidden" name="username" value="{{document.author.username}}"/>
-		<input type="hidden" name="existing_filename" value="{{document.filename}}"/>
-	    <textarea name="document_content" class="tinymce" rows=100 cols=100>{{document.content}}</textarea>
-	    <br>
-	    {% if not document.special %}
-	    <input type="checkbox" name="draft" value="True" {% if document.draft or not document %}checked{% endif %} /> Mark as Draft
-	    {% endif %} 
-	    <br/>
-	    <input type=submit value="Save"/>
-	
-	
-	</form>
+	{% with document as doc %}
+		{% include 'documentEdit.html' %}
+	{% endwith %}
 		
-	<button id="cancel_button" >Cancel</button>
+	<br/>
 	{% comment %}
 	---------------------------------------------------------
 			WRITE								     	  )))

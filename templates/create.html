@@ -56,7 +56,7 @@
 			<input type="hidden" name="parentKey" value="{{parentDocument.key}}" />
 			<input type="hidden" name="existing_filename" value="{{document.filename}}"/>
 			<input type="hidden" class="scriptless" name="scriptless" value="true"/>
-		    <textarea name=document_content rows=20 cols=75>{{document.content}}</textarea>
+		    <textarea name=document_content rows=20 class="mceBase" cols=75>{{document.content}}</textarea>
 		    <br>
 		    <input type="checkbox" name="draft" value="True" {% if document.draft or not document %}checked{% endif %} /> Mark as Draft 
 		    <br/>

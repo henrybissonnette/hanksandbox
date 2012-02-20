@@ -1,18 +1,32 @@
 {% extends "base.html" %}
 
+{% block title %}
+Context for {{document.title}}
+{% endblock %}
+
 {% block leftside %}
-	{% if document.leaf_tags %}
+{% comment %}
+---------------------------------------------------------
+(((		TAG LINKS
+---------------------------------------------------------
+{% endcomment %}
+	{% if document.get_leaftags %}
 	<div class="tagList">
-	<ul>	
-		{% for tag in document.leaf_tags %}	
-		<li>		
-			<a href="/tag/{{tag.title}}/" class="margin" title='{{tag.title}}'>{{tag.title}}</a>	
-		</li>
-		{% endfor %}
-	</ul>
+		<ul>									
+			{% for tag in document.get_leaftags %}
+			<li>
+			<a class="margin" href="/tag/{{tag.title}}/" title='{{tag.title}}'>{{tag.title}}</a>
+			</li>
+			{% endfor %}
+			
+		</ul>
 	</div>
 	{% endif %}
-
+{% comment %}
+---------------------------------------------------------
+		TAG LINKS								      )))
+---------------------------------------------------------
+{% endcomment %}
 {% endblock %}
 
 {% block content %}

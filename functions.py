@@ -1,5 +1,21 @@
 from BeautifulSoup import BeautifulSoup
 
+def get_document(name, filename, title=None):
+
+    user = get_user(name)
+    try:
+        if filename:
+            document = Document.all().filter('author ==',user).filter('filename ==',filename)[0]
+        else:
+            document = Document.all().filter('author ==',user).filter('title ==',title)[0]
+        #temporary fix for obsolete authornames
+        document.authorname = user.username
+        document.put()
+        return document
+
+    except:
+        return None
+
 def get_user(name=None):
     """If a name is supplied get user returns the user with that username otherwise
     it returns the current user."""
@@ -43,9 +59,10 @@ def parse(text, elements=[], attributes=[], styles=[]):
                         del(tag[attr])
                         removed = True
                     else:
-                        if attr == 'style' and not tag[attr] in styles:
-                            del(tag[attr])   
-                            removed = True                  
+                        if styles:
+                            if attr == 'style' and not tag[attr] in styles:
+                                del(tag[attr])   
+                                removed = True                  
     
         # turn it back to html
         fragment = unicode(soup)
@@ -56,3 +73,21 @@ def parse(text, elements=[], attributes=[], styles=[]):
             continue # next round           
         break   
     return contentTemp
+
+def resolve(obj, path):
+    """Resolves an attribute path on an object, returning `None` 
+       if any attribute is not found"""
+    for name in path.split("."):
+        obj = getattr(obj, name, None)
+        if obj is None:
+            break
+    return obj
+
+def cleaner(value, deleteChars = ' `~!@#$%^&*()+={[}]|\"\':;?/>.<,', replaceChars=[]):
+    value = parse(value)
+    for char, replacement in replaceChars:
+        value = value.replace(char,replacement)
+    for c in deleteChars:
+        value = value.replace(c,'')
+    return value;
+

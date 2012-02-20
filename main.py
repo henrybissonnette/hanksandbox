@@ -9,10 +9,8 @@ from google.appengine.ext import db
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
 from cgi import escape
-from django.utils.html import strip_tags
 import os, re, logging, sys,datetime,math,urllib
 import messages, string, random, functions
-from BeautifulSoup import BeautifulSoup
 from django.utils import simplejson as json
 
 hank = {
@@ -84,12 +82,6 @@ def get_user(name=None):
     
     return user
 
-def cleaner(value, deletechars = ' `~!@#$%^&*()+={[}]|\"\':;?/>.<,'):
-    value = strip_tags(value)
-    for c in deletechars:
-        value = value.replace(c,'')
-    return value;
-
 def is_document(object):
     try:
         test = object.filename
@@ -151,7 +143,7 @@ class Commentary:
     
         # temporary stripped content maker
         if not comment.stripped_content:
-            comment.stripped_content = strip_tags(comment.content)
+            comment.stripped_content = functions.parse(comment.content)
             comment.put()
         # end temporary
         tree = [(comment,depth)]
@@ -796,14 +788,14 @@ class Document(db.Model):
     
     def get_stripped(self):
         
-        stripped = strip_tags(self.content)
+        stripped = functions.parse(self.content)
         #for n in range(len(stripped)):
             #if stripped[n] =='&':
                 #stripped = stripped[:n]+stripped[n+5:]
         return stripped
     
     def set_description(self, words):
-        words = strip_tags(words)
+        words = functions.parse(words)
         words = words[:150]
         self._description=words
         
@@ -879,6 +871,12 @@ class Document(db.Model):
             current.remove(tagName)
         self.add_tags(current)
         return tagName+' was removed from tags.'
+    
+    def revisors(self):
+        revisors = []
+        for revision in self.revisions:
+            revisors.append(revision.revisor.username)      
+        return remove_duplicates(revisors)
         
     def set_view(self):
         if not self.draft:
@@ -1026,7 +1024,7 @@ class Comment(db.Model):
             return self.user_page            
     
     def get_stripped(self, length=None):
-        self.stripped_content=strip_tags(self.content)
+        self.stripped_content=functions.parse(self.content)
         if length:
             return self.stripped_content[:length]
         else:
@@ -1293,6 +1291,54 @@ class FAQQuestion(db.Model):
         
     def stringKey(self):
         return str(self.key())  
+    
+class Revision(db.Model):
+    content = db.TextProperty()
+    date=db.DateTimeProperty(auto_now_add=True)
+    document = db.ReferenceProperty(Document, collection_name='revisions')
+    revisor = db.ReferenceProperty(User, collection_name='revisions')
+    revisionName = db.StringProperty()
+    
+    def author(self):
+        return self.document.author
+    
+    def createEvents(self,type):
+        if self.revisor.username != self.document.author.username:
+            event = StreamMessage()
+            revisorURL = self.revisor.get_url(relative=False,html=True)
+            docURL = self.document.get_url(relative=False,html=self.document.title)
+            revisionName = self.revisionName
+            if type == 'new':                        
+                event.content = '%s has created a new revision of %s(%s)'%(revisorURL,docURL,revisionName)
+            if type == 'delete':
+                event.content = '%s has deleted a revision of %s(%s)'%(revisorURL,docURL,revisionName)
+            event.recipient = self.document.author  
+            event.put() 
+    
+    def set_content(self,text):
+        
+        text = functions.parse(
+                               text,
+                               elements = ['a','blockquote','br','em','span','i','h3',
+                                           'ol','ul','li','p','b','strong'],
+                               attributes = ['href', 'target','style'],
+                               )
+        self.content = text
+        self.put()
+    
+    def set_revisionName(self,text):
+        self.revisionName = parse(text)
+        self.put() 
+        
+    def remove(self):
+        self.delete()
+            
+    def subtitle(self):
+        return self.document.subtitle
+        
+    def title(self):
+        return self.document.title
+    
         
 class Vote(db.Model):
     user = db.ReferenceProperty(User, collection_name='ratings')
@@ -1447,6 +1493,7 @@ class baseHandler(webapp.RequestHandler):
     def nonUserBoot(self):
         user = get_user()
         if not user:
+            return True
             self.boot()
         
     def usernameCheck(self):
@@ -1678,7 +1725,7 @@ class CommentHandler(CommentPage):
         self.redirect(comment.get_page_object().get_url())
         
     def validate(self,comment,scriptless):
-        commentCondensed = cleaner(comment.content,string.whitespace)
+        commentCondensed = functions.cleaner(comment.content,deleteChars=string.whitespace)
         pageObject = comment.get_page_object()
         messages = []
         if not commentCondensed:
@@ -1767,9 +1814,9 @@ class Create_Document(baseHandler):
         new = False
         existing_filename = self.request.get('existing_filename')
         filename = self.request.get('filename')
-        filename = cleaner(filename)
+        filename = functions.cleaner(filename)
         description = self.request.get('description')
-        description = cleaner(description,deletechars = '`~@#^*{[}]|/><)')
+        description = functions.cleaner(description,deleteChars = '`~@#^*{[}]|/><)')
         username = self.request.get('username')
         draft = self.request.get('draft')
         parentKey = self.request.get('parentKey')
@@ -2232,7 +2279,7 @@ class Register(webapp.RequestHandler):
         
         #remove unacceptable characters
         name = self.request.get('username')
-        cleanedName = cleaner(name)
+        cleanedName = functions.cleaner(name)
         
         if cleanedName != name:
             messages = ['Some unacceptable characters were removed from your username.'] 
@@ -2269,6 +2316,104 @@ class Register(webapp.RequestHandler):
                 }     
         tmpl = path.join(path.dirname(__file__), 'templates/register.html')
         self.response.out.write(template.render(tmpl, context))
+        
+class Revise(baseHandler):
+    
+    def myGet(self, username,filename,request):
+        user = get_user()
+        document = get_document(username,filename)
+        userUsername = resolve(user,'username')
+        if userUsername in document.author.circle or userUsername == document.author.username:
+            if request == 'new':
+                self.new(user,document)
+        else:
+            self.boot() 
+            
+    def new(self,user,document):
+        
+        revisionName = user.username
+        check = True
+        i = 1
+        while check:
+            try:
+                if document.revisions.filter('revisionName ==',revisionName).fetch(1)[0]:
+                     revisionName = user.username+'('+str(i)+')'
+                     i+=1
+                else:
+                    check = False
+            except:
+                check = False
+                 
+        
+        context = {
+                'revisionName':      revisionName,
+                'originalDocument':  document,
+                'user':      user,
+                'login':     users.create_login_url(self.request.uri),
+                'logout':    users.create_logout_url(self.request.uri)                       
+                }     
+        tmpl = path.join(path.dirname(__file__), 'templates/revise.html')
+        self.response.out.write(template.render(tmpl, context))  
+        
+    def myPost(self,username,filename,request):
+        user = get_user()
+        document = get_document(username,filename)
+        userUsername = resolve(user,'username')
+        if user and (userUsername in document.author.circle or userUsername == document.author.username):
+            if request == 'save':
+                self.save(user,document)
+            if request == 'view':
+                self.view(user,document)
+            if request == 'delete':
+                self.delete(user,document)
+        else: 
+            self.boot()
+            
+    def delete(self,user,document):
+        revisionName = self.request.get('revisionName')
+        logging.info('document is '+document.title)
+        logging.info('revision name is '+revisionName)
+        revision = document.revisions.filter('revisionName ==',revisionName).fetch(1)[0]
+        if user.username == revision.author().username or user.username == revision.revisor.username:
+            revision.createEvents('delete')
+            revision.remove()
+            self.redirect(document.get_url())    
+        else:
+            self.boot()
+        
+    def save(self,user,document):
+        
+        content = self.request.get('content')
+        revisionName = self.request.get('existing')
+        try:
+            revision = document.revisions.filter('revisionName ==',revisionName).fetch(1)[0]
+        except:
+            revision = Revision()
+            revision.document=document
+            revision.revisor = user
+            revision.revisionName = revisionName
+            revision.createEvents('new')
+        
+        revision.set_content(content)
+        revision.put()
+        
+        self.redirect(document.get_url())    
+            
+    def view(self,user,document):
+        revisionName = self.request.get('revisionName')
+        revision = document.revisions.filter('revisionName ==',revisionName).fetch(1)[0]
+        logging.info('in view revision name is '+revisionName)                 
+        
+        context = {
+                'revisionName':     revisionName,
+                'revisedDocument':  revision,
+                'originalDocument': document,
+                'user':      user,
+                'login':     users.create_login_url(self.request.uri),
+                'logout':    users.create_logout_url(self.request.uri)                       
+                }     
+        tmpl = path.join(path.dirname(__file__), 'templates/revise.html')
+        self.response.out.write(template.render(tmpl, context))  
         
 class Subscription_Handler(baseHandler):
              
@@ -2337,7 +2482,7 @@ class TagManager(baseHandler):
         user = get_user()            
         if request == 'create':
             if self.admincheck():
-                create_title = cleaner(self.request.get('new_title').replace(' ','_'))
+                create_title = functions.cleaner(self.request.get('new_title'),replaceChars=[[' ','_']])
                 parent_title = self.request.get('parent_title')
                 tag = Tag(key_name=create_title)
                 tag.title = create_title
@@ -2633,7 +2778,7 @@ class Username_Check(webapp.RequestHandler):
         if username:
             if get_user(username.lower()):
                 self.response.out.write('00')
-            elif username != cleaner(username):
+            elif username != functions.cleaner(username,replaceChars=[[' ','_']]):
                 self.response.out.write('01')
             else:
                 self.response.out.write('1')
@@ -2720,6 +2865,7 @@ application = webapp.WSGIApplication([
     ('/user/(.*)/', UserPage),
     ('/register', Register),
     ('/create/(.*)/', Create_Document),
+    (r'/(.*)/document/(.*)/revise/(.*)/', Revise),    
     (r'/(.*)/document/(.*)/edit/delete/', Delete_Document),
     (r'/(.*)/document/(.*)/edit/', Edit_Document),
     (r'/(.*)/document/(.*)/reply/(.+)', View_Document),  
