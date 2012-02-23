@@ -116,13 +116,38 @@
 		---------------------------------------------------------
 		{% endcomment %}
 		</div>		
-		
+		{% comment %}
+		---------------------------------------------------------
+		(((		Favorites
+		---------------------------------------------------------
+		{% endcomment %}		
 		<div class="tab {name:'Favorites'}">
 			<h2 class="interface notab">Favorites</h2>
 			{% for doc in page_user.fetch_favorites %}
 				{% include 'streamDocument.html'%}		
 			{% endfor %}	
-		</div>			
+		</div>		
+		{% comment %}
+		---------------------------------------------------------
+				Favorites								      )))
+		---------------------------------------------------------
+		{% endcomment %}
+		{% comment %}
+		---------------------------------------------------------
+		(((		Favorites
+		---------------------------------------------------------
+		{% endcomment %}		
+		<div class="tab {name:'Latest Comments'}">
+			<h2 class="interface notab">Recent Comments</h2>
+			{% for doc in page_user.recentComments %}
+				{% include 'streamComment.html'%}		
+			{% endfor %}	
+		</div>		
+		{% comment %}
+		---------------------------------------------------------
+				Favorites								      )))
+		---------------------------------------------------------
+		{% endcomment %}		
 	</div>
 	{% if user %}
 	</div>

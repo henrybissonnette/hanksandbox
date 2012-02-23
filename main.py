@@ -220,7 +220,7 @@ class User(db.Model):
     USER accesses the collections:
     
     works (created documents)
-    mycomments (created comments)
+    comments (created comments)
     bugs (submitted bug reports)
     ratings (submitted votes)
     streamMessages (events not otherwise associated with an object)
@@ -407,6 +407,9 @@ class User(db.Model):
     def publications(self):
         self.works.filter('draft ==', False)
     
+    def recentComments(self):
+        return self.comments.order('-date').fetch(15)
+    
     def remove(self):
         affected = []
         
@@ -444,7 +447,12 @@ class User(db.Model):
             self.set_subscription([],username) 
             affected.append(other)      
             
-        for comment in self.mycomments:
+        for comment in self.comments:
+            try:
+                comment.remove()
+            except:
+                pass
+        for comment in self.mypagecomments:
             try:
                 comment.remove()
             except:
@@ -506,7 +514,7 @@ class User(db.Model):
     
     def set_reputation(self):
         
-        comments = self.mycomments  
+        comments = self.comments  
         works = self.works
         rep = 0
         counter = 0
@@ -948,7 +956,7 @@ class Comment(db.Model):
     """It might also be more elegant to 
     manage depth with a property here."""
     actionTally = db.IntegerProperty(default=0)
-    author = db.ReferenceProperty(User, collection_name = 'mycomments')
+    author = db.ReferenceProperty(User, collection_name = 'comments')
     raters = db.StringListProperty()
     commentType = db.TextProperty()
     content = db.TextProperty()
@@ -2145,15 +2153,20 @@ class Home(baseHandler):
         if self.request.path != '/home':
             self.redirect('/home')
         user = get_user()
+        #documents are for recent documents section
         main_documents = get_documents(type='not_meta')
         meta_documents = get_documents(type='meta')
+        #root tags are for the left side tag links
         root = Tag.get_by_key_name('Root')
         root_tags = Tag.all().filter('parent_tag ==',root).fetch(1000)
+        #recent comments section
+        comments = Comment.all().order('-date').fetch(10)
         context = {
+                   'comments': comments,
                    'root_tags': root_tags,
                    'meta_documents': meta_documents,
                    'main_documents': main_documents,
-                    'user':      user,
+                   'user':      user,
                    'login':     users.create_login_url('/'),
                    'logout':    users.create_logout_url(self.request.uri)                       
                    }     

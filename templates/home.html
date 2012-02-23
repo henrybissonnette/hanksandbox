@@ -61,8 +61,18 @@
 			</div>				
 		</div>
 	</div>
-	
-
+	{% comment %}
+	----------------------------------------------------------------------------------
+	-----------------------------RIGHT COLUMN-------------------------------------
+	{% endcomment %}		
+	<div class="right_half">
+		<h1 class="interface">Recent Comments</h1>
+		{% for comment in comments %}
+			{% with comment as doc %}
+				{% include 'streamComment.html' %}
+			{% endwith %}
+		{% endfor %}
+	</div>
 
 
 
