@@ -60,6 +60,9 @@
 		    <br>
 		    <input type="checkbox" name="draft" value="True" {% if document.draft or not document %}checked{% endif %} /> Mark as Draft 
 		    <br/>
+		    {% if user.is_admin %}
+		    <input type="checkbox" name="admin" value="True" {% if doc.admin%}checked{% endif %} /> Admin Doc
+		    {% endif %}
 		    <input type=submit value="Next Step: Add Tags >>"/>
 		</form>
 		

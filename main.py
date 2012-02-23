@@ -35,9 +35,9 @@ def get_document(name, filename, title=None):
     except:
         return None
 
-def get_documents(tag_list=[], tag_not_list=[], number=1000, draft=False, type=None, specialType=None, since=None):
+def get_documents(tag_list=[], tag_not_list=[], number=1000, draft=False, admin=False, type=None, specialType=None, since=None):
     """ tag_list should be a string list of tags """
-        
+    adminDocs = [] 
     document_query = Document.all()
     if specialType:
         document_query.filter("type ==",specialType)
@@ -49,13 +49,18 @@ def get_documents(tag_list=[], tag_not_list=[], number=1000, draft=False, type=N
         document_query.filter("type ==",type)
     if since:
         document_query.filter("date >=",since)    
-    
     for tag in tag_list:
         document_query.filter("tags ==",tag)
     for tag in tag_not_list:
         document_query.filter("tags !=",tag)
-    document_query.filter("draft ==",False)
+    if admin == 'include':
+        adminDocs  = Document.all().filter('admin ==',True).fetch(1000)
+        document_query.filter("admin ==",False)
+    else:
+        if not admin:
+            document_query.filter("admin ==",False)
     documents = document_query.order('-date').fetch(number)
+    documents.extend(adminDocs)
     return documents
 
 
@@ -660,6 +665,7 @@ class Document(db.Model):
     documentReplies (documents in reply)
     """    
     actionTally = db.IntegerProperty(default=0)
+    admin = db.BooleanProperty(default=False)
     author = db.ReferenceProperty(User, collection_name = 'works')
     authorname = db.StringProperty()
     content = db.TextProperty()
@@ -1826,6 +1832,7 @@ class Create_Document(baseHandler):
         description = functions.cleaner(description,deleteChars = '`~@#^*{[}]|/><)')
         username = self.request.get('username')
         draft = self.request.get('draft')
+        admin = self.request.get('admin')
         parentKey = self.request.get('parentKey')
         scriptless = self.request.get('scriptless')
         documentType = self.request.get('documentType')
@@ -1886,6 +1893,8 @@ class Create_Document(baseHandler):
         if not document.draft and document.virgin:
             document.virgin = False
             document.createEvents()
+        if admin == 'True':
+            document.admin = True
         document.put()         
        
         if scriptless == 'true' and documentType == 'document':
@@ -2205,7 +2214,7 @@ class Message(baseHandler):
 class Meta(baseHandler):
     def myGet(self):
         user = get_user()
-        metaDocs = get_documents(['Meta'])
+        metaDocs = get_documents(['Meta'],admin='include')
         featureRequests = get_documents(specialType='feature')
         bugReports = get_documents(specialType='bug')
         context = {
@@ -2797,7 +2806,10 @@ class UserInfo(baseHandler):
         email = self.request.get('email')
           
         user = get_user()
-        user.email = email
+        if email == 'daily':
+            user.email = 3
+        if email == 'never':
+            user.email = 0
         user.firstname = firstname
         user.lastname = lastname
         user.minimizeThreshold = int(threshold)

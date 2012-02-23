@@ -31,6 +31,10 @@
 	    <br>
 	    {% if not doc.special %}
 	    <input type="checkbox" name="draft" value="True" {% if doc.draft or not doc %}checked{% endif %} /> Mark as Draft
+	    <br />
+	    {% if user.is_admin %}
+	    <input type="checkbox" name="admin" value="True" {% if doc.admin%}checked{% endif %} /> Admin Doc
+	    {% endif %}
 	    {% endif %} 
 	    <br/>
 	    <input type=submit value="Save"/>

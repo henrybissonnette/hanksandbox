@@ -48,7 +48,7 @@
 			<h1 class="interface">Recent Documents</h1>
 		
 			{% for doc in main_documents %}
-			{% if not doc.draft %}
+			{% if not doc.draft and not doc.admin %}
 			{% include 'streamDocument.html'%}
 			{% endif %}
 			{% endfor %}
