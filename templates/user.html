@@ -145,21 +145,36 @@
 			{% endcomment %}
 				<div class="tab {name:'Personal Info',initial:'true'}">
 					<h2 class="interface notab">Personal Info</h2>
-					First Name: {{page_user.firstname}}</br>
-					Last Name: {{page_user.lastname}}</br>
-					{% if user.username == page_user.username or user.is_admin%}
-					<span title="Comments with Ratings lower than your rating threshold will display minimized.">Rating Threshold</span>:
-					{{page_user.minimizeThreshold}}	
-					{% endif %}		
-					<br/>
-					Tag Subscriptions: 
-					{% if page_user.subscriptions_tag %}
-						{% for tag in page_user.subscriptions_tag %}
-						<a href="/tag/{{tag.title}}/">{{tag.title}}</a>	
-						{% endfor %}
-					{% else %}
-						None
-					{% endif %}
+					<table>
+						<tr>
+							<td>First Name:</td>
+							<td>{{page_user.firstname}}</td>
+						</tr>
+						<tr>
+							<td>Last Name:</td>
+							<td>{{page_user.lastname}}</td>
+						</tr>
+						{% if user.username == page_user.username or user.is_admin%}
+						<tr>
+							<td>
+								<span title="Comments with Ratings lower than your rating threshold will display minimized.">
+								Rating Threshold
+								</span>:
+							</td>
+							<td>{{page_user.minimizeThreshold}}	</td>
+						</tr>
+						{% endif %}	
+						{% if page_user.subscriptions_tag %}
+						<tr>
+							<td>Tag Subscriptions: </td>
+							<td>
+								{% for tag in page_user.subscriptions_tag %}
+								<a href="/tag/{{tag.title}}/">{{tag.title}}</a>	
+								{% endfor %}							
+							</td>
+						</tr>
+						{% endif %}
+					</table>
 				</div>
 			{% comment %}
 			---------------------------------------------------------
@@ -174,25 +189,90 @@
 			{% endcomment %}
 			{% if user.username == page_user.username or user.is_admin%}
 				<div class="tab {name:'Edit'}">
-					<h2 class="notab interface">Edit</h2>					
+					<h2 class="notab interface">Edit</h2>	
 					<form action="/userinfo/" method="post">
-						First Name: <input type="text" name="firstname" value="{{page_user.firstname}}"  />
-						<br/>
-						Last Name: <input type="text" name="lastname" value="{{page_user.lastname}}" />	
-						<input type="checkbox" name="displayname" value="displayname" {%if page_user.name_preference == 'realname'%}checked{%endif%}/>	
-						Display my name on documents.
-						<br/>
-						Comments with Ratings lower than your rating threshold will display minimized.</br>
-						Rating Threshold: <input name="threshold" type="number" size=2 value={{page_user.minimizeThreshold}} />
+					<table>
+						<tr>
+							<td colspan="2">
+								<h3 class="interface">Info</h3>
+							</td>
+						</tr>
+						<tr>
+							<td>First Name:</td>
+							<td>
+								<input type="text" name="firstname" value="{{page_user.firstname}}"  />
+							</td>
+						</tr>
+						<tr>
+							<td>Last Name:</td>
+							<td>
+								<input type="text" name="lastname" value="{{page_user.lastname}}" />	
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<h3 class="interface">Settings</h3>
+							</td>
+						</tr>
+						<tr>
+							<td>
+							<input type="checkbox" name="displayname" value="displayname" {%if page_user.name_preference == 'realname'%}checked{%endif%}/>
+							</td>
+							<td>
+								Display my name on documents.	
+							</td>
+						</tr>
+						<tr>
+							<td>Recieve emails:</td>
+							<td>
+								<select name="email">
+									<option value="never" {% if user.email == 0 %}selected="selected"{% endif %}>Never</option>
+									<option value="daily" {% if user.email == 3 %}selected="selected"{% endif %}>Daily</option>
+								</select>	
+							</td>
+						</tr>
+						<tr>
+							<td class="subtle" colspan="2">
+								If you choose to recieve emails daily, you will only recieve an email on days when something relevant 
+								to your account has occured, such as replies to your comments or documents.
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2" style="border-bottom:solid 1px #bbb">
+							</td>
+						</tr>
+						<tr>
+							<td>Rating Threshold:</td>
+							<td >
+								<input name="threshold" type="number" size=2 value={{page_user.minimizeThreshold}} />
+							</td>
+						</tr>
+						<tr>
+							<td class="subtle" colspan="2">
+							Comments with Ratings lower than your rating threshold will display minimized.
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2" >
+								<hr />
+							</td>
+						</tr>
+					</table>
 						<input type="hidden" name="attribute" value="threshold">
-						<br/>
-
-						<input type="submit" value="Save Settings" />			
+						<input type="submit" value="Save Settings" />					
 					</form>
 				
 					</br>
 					<form action="/delete-account/" method="post">
-						<input type="submit" value="Delete my Account" title="Delete your Account?!" />
+						<table>
+							<tr>
+								<td>Delete my account:</td>
+								<td>
+									<input title="Delete your Account?!" type="image" value="Delete my Account" 
+									src="/static/images/noes_48.png" border="0" alt="SUBMIT!" name="noes!"> 									
+								</td>
+							</tr>
+						</table>
 						<input type="hidden" name="username" value="{{page_user.username}}" />
 					</form>
 				</div>

@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}
+Revise {{ originalDocument.title }}
+{% endblock %}
+
+{% block scripts %}
+	<script type="text/javascript" src="/static/js/edit.js"></script>
+{% endblock %}
+
+{% block content %}
+{% if revisedDocument %}
+	<form class="right" method="post" action="{{originalDocument.get_url}}revise/delete/">
+		<input type="hidden" name="revisionName" value="{{revisionName}}" />
+		<input type="submit" value="Delete Revision" />
+	</form>	
+{% endif %}
+
+<div class="left_half">
+	{% if user.username != originalDocument.author.username %}
+		<h1 class="creator">
+			<a title="Visit {{originalDocument.author.username}}'s  Page" class="creator" href="/user/{{originalDocument.author.username}}/">
+				{{originalDocument.author.username}}
+				{% if originalDocument.draft %} : draft{% endif %}
+			</a>
+		<h1 class="document {filename:'{{originalDocument.filename}}',author:'{{originalDocument.author.username}}'}" >{{originalDocument.title}}</h1>
+		
+		{% if originalDocument.subtitle %}
+			<h2 class="document">{{originalDocument.subtitle}}</h2>
+		{% endif %}
+		<br/>
+		{% if revisedDocument %}
+			{% with revisedDocument as doc %}
+			<form action="{{originalDocument.get_url}}revise/save/"  method=post>
+				
+				Revision Name: <input type="text" name="existing" size=40 value="{{revisedDocument.revisionName}}" />
+				<br/><br/>
+			    <textarea name="content" class="mceRevise" >{{doc.content}}</textarea>
+			    <br/>
+			    <input type=submit value="Save"/>
+			</form>			
+			{% endwith %}
+		{% else %}
+			{% with originalDocument as doc %}
+			<form action="{{originalDocument.get_url}}revise/save/"  method=post>
+							
+				Revision Name: <input type="text" name="existing" size=40 value="{{revisionName}}" />
+				<br/><br/>				
+			    <textarea name="content" class="mceRevise" >{{doc.content}}</textarea>
+			    <br/>
+			    <input type=submit value="Save"/>
+			</form>				
+			{% endwith %}
+		{% endif %}
+
+	
+	{% else %}
+		<form action="/create/document/"  method=post>
+			<table>
+				{% if not originalDocument.special %}
+				<tr>
+					<td>File Name: </td><td><input type="text" id="filename" name="filename" size=40 value="{{originalDocument.filename}}" /></td>
+				</tr>
+				{% endif %}
+				<tr>
+					<td>Title: </td><td><input type="text" name="title" size=40 value="{{originalDocument.title}}" /></td>
+				</tr>
+				{% if not originalDocument.special %}
+				<tr>
+					<td>Subtitle (optional): </td><td><input id="create_input" type="text" name="subtitle" size=40 value="{{originalDocument.subtitle}}" /></td>
+				</tr>
+				{% endif %}
+				<tr>
+					<td>Description: </td><td>
+						<textarea name="description" title="Used in streams and search results. Use it to attract readers who will be 
+						interested in your content. Max 150 characters. No special characters or HTML tags allowed." 
+						rows=2 cols=29>{{originalDocument.get_description}}</textarea></td>
+				</tr>
+			</table>
+			{% for tag in originalDocument.get_leaftags %}
+			<div class="include_{{tag.title}}">
+			<input type="hidden" name="added_tag" class="include_{{tag.title}}" value="{{tag.title}}"/>
+			</div>
+			{% endfor%}
+			<input type="hidden" name="username" value="{{originalDocument.author.username}}"/>
+			<input type="hidden" name="existing_filename" value="{{originalDocument.filename}}"/>
+		    <textarea name="document_content" class="mceBaseVertical" >{{originalDocument.content}}</textarea>
+		    <br>
+		    {% if not originalDocument.special %}
+		    <input type="checkbox" name="draft" value="True" {% if originalDocument.draft or not originalDocument %}checked{% endif %} /> Mark as Draft
+		    {% endif %} 
+		    <br/>
+		    <input type=submit value="Save"/>
+		</form>		
+	{% endif %}
+</div>
+
+<div class="right_half">
+	{% if user.username != originalDocument.author.username %}
+		{% with originalDocument as doc %}
+		{% include 'documentDisplay.html' %}
+		{% endwith %}
+	{% else %}
+		-revision by {{revisedDocument.revisor.username}}-
+		{% with revisedDocument as doc %}
+		{% include 'documentDisplay.html' %}
+		{% endwith %}
+	{% endif %}
+</div>
+
+{% endblock %}

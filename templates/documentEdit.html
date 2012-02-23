@@ -1,0 +1,37 @@
+	<form action="/create/document/"  method=post>
+		<table>
+			{% if not doc.special %}
+			<tr>
+				<td>File Name: </td><td><input type="text" id="filename" name="filename" size=40 value="{{doc.filename}}" /></td>
+			</tr>
+			{% endif %}
+			<tr>
+				<td>Title: </td><td><input type="text" name="title" size=80 value="{{doc.title}}" /></td>
+			</tr>
+			{% if not doc.special %}
+			<tr>
+				<td>Subtitle (optional): </td><td><input id="create_input" type="text" name="subtitle" size=80 value="{{doc.subtitle}}" /></td>
+			</tr>
+			{% endif %}
+			<tr>
+				<td>Description: </td><td>
+					<textarea name="description" title="Used in streams and search results. Use it to attract readers who will be 
+					interested in your content. Max 150 characters. No special characters or HTML tags allowed." 
+					rows=2 cols=59>{{doc.get_description}}</textarea></td>
+			</tr>
+		</table>
+		{% for tag in doc.get_leaftags %}
+		<div class="include_{{tag.title}}">
+		<input type="hidden" name="added_tag" class="include_{{tag.title}}" value="{{tag.title}}"/>
+		</div>
+		{% endfor%}
+		<input type="hidden" name="username" value="{{doc.author.username}}"/>
+		<input type="hidden" name="existing_filename" value="{{doc.filename}}"/>
+	    <textarea name="document_content" class="mceBase">{{doc.content}}</textarea>
+	    <br>
+	    {% if not doc.special %}
+	    <input type="checkbox" name="draft" value="True" {% if doc.draft or not doc %}checked{% endif %} /> Mark as Draft
+	    {% endif %} 
+	    <br/>
+	    <input type=submit value="Save"/>
+	</form>

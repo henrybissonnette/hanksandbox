@@ -1,0 +1,21 @@
+	<h1 class="creator">
+		<a title="Visit {{doc.author.username}}'s  Page" class="creator" href="/user/{{doc.author.username}}/">
+			{{doc.author.username}}
+			{% if doc.draft %} : draft{% endif %}
+		</a>
+		{% if ticket %}
+			<a title="More Meta Ticket's " class="creator" href="/meta/">
+			{% if 'feature' in doc.type %} : Feature Request{% endif %}
+			{% if 'bug' in doc.type %} : Bug Report{% endif %}
+			</a></h1>	
+		{% endif %}
+	<h1 class="document {filename:'{{doc.filename}}',author:'{{doc.author.username}}'}" >{{doc.title}}</h1>
+	
+	{% if doc.subtitle %}
+		<h2 class="document">{{doc.subtitle}}</h2>
+	{% endif %}
+	<div id="document">
+	{% autoescape off %}
+		{{doc.content}}
+	{% endautoescape %}
+	</div>

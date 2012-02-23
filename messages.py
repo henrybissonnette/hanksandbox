@@ -32,7 +32,7 @@ mainHTML =Template(u'''
             ${streamMessages} 
             
         </table>   
-
+        <a href="${OptOutURL}">please stop sending me email</a>
     </body>
     </html>
     ''')
@@ -79,7 +79,8 @@ def prepareHTMLMailing(mailing):
     finalMessage = mainHTML.substitute(
                                    documents = tempDocuments,
                                    comments= tempComments,
-                                   streamMessages= tempStreamMessages,                                   
+                                   streamMessages= tempStreamMessages,  
+                                   OptOutURL = mailing['user'].get_url(relative=False)+'email/cancel/'                                
                                    )
     return finalMessage
 
@@ -176,7 +177,7 @@ ${comments}\r\n
 
 ${streamMessages}\r\n
             
-
+If you no longer want to receive emails from bliterati visit: $(OptOutUrl)
 ''')
 
 def prepareTextMailing(mailing):
@@ -205,7 +206,8 @@ def prepareTextMailing(mailing):
     finalMessage = mainText.substitute(
                                    documents = tempDocuments,
                                    comments= tempComments,
-                                   streamMessages= tempStreamMessages,                                   
+                                   streamMessages= tempStreamMessages,    
+                                   OptOutURL = mailing['user'].get_url(relative=False)+'email/cancel/'                                 
                                    )
     return finalMessage
 

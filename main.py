@@ -306,17 +306,24 @@ class User(db.Model):
         self.works.filter('draft ==', True)
         
     def fetch_email(self):
-        user = self
-        comments = self.events.filter('type =','Comment').filter('emailed =',False).order('-date').fetch(1000)
-        documents = self.events.filter('type =','Document').filter('emailed =',False).order('-date').fetch(1000)
-        messages = self.streamMessages.filter('emailed =',False).order('-date').fetch(1000)
-        for event in comments+documents:
-            event.email()
-        for message in messages:
-            message.email()
-        if comments or documents or messages:
-            return {'user':user, 'comments':comments,'documents':documents,'messages':messages}
+        if self.email != 0:
+            user = self
+            comments = self.events.filter('type =','Comment').filter('emailed =',False).order('-date').fetch(1000)
+            documents = self.events.filter('type =','Document').filter('emailed =',False).order('-date').fetch(1000)
+            messages = self.streamMessages.filter('emailed =',False).order('-date').fetch(1000)
+            for event in comments+documents:
+                event.email()
+            for message in messages:
+                message.email()
+            if comments or documents or messages:
+                return {'user':user, 'comments':comments,'documents':documents,'messages':messages}
+            else:
+                return None
         else:
+            new == self.streamMessages.filter('emailed ==',False).fetch(1000)
+            new.extend(self.events.filter('emailed ==',False).fetch(1000))
+            for item in new:
+                item.email()
             return None
                 
     def fetch_stream(self):
@@ -1982,6 +1989,32 @@ class FAQ(baseHandler):
         tmpl = path.join(path.dirname(__file__), 'templates/FAQ.html')
         self.response.out.write(template.render(tmpl, context))
         
+class Email(baseHandler):
+    def myGet(self,username,request):
+        if request == 'none':
+            cancel(username,request)
+        
+    def cancel(self):
+        user = get_user()
+        if not user:
+            self.redirect(users.create_login_url(self.request.uri))
+        else:
+            if not user.username == username:
+                self.boot()
+            else:
+                user.email = 0
+                user.put()
+                context = {
+                            'user':      user,
+                           'login':     users.create_login_url(self.request.uri),
+                           'logout':    users.create_logout_url(self.request.uri)
+                           }     
+                tmpl = path.join(path.dirname(__file__), 'templates/emailCancel.html')
+                self.response.out.write(template.render(tmpl, context))
+                
+        
+         
+        
 class FAQadmin(baseHandler):
     """ Handler adds, edits, and deletes topic and question objects for the
     FAQ page, also serves the page itself."""
@@ -2116,7 +2149,8 @@ class Home(baseHandler):
                    'logout':    users.create_logout_url(self.request.uri)                       
                    }     
         tmpl = path.join(path.dirname(__file__), 'templates/home.html')
-        self.response.out.write(template.render(tmpl, context))   
+        self.response.out.write(template.render(tmpl, context))
+        
         
 class Invite(baseHandler):
     def myPost(self):
@@ -2760,8 +2794,10 @@ class UserInfo(baseHandler):
         lastname = self.request.get('lastname')
         threshold = self.request.get('threshold')
         displayname = self.request.get('displayname')
+        email = self.request.get('email')
           
         user = get_user()
+        user.email = email
         user.firstname = firstname
         user.lastname = lastname
         user.minimizeThreshold = int(threshold)
@@ -2862,6 +2898,7 @@ application = webapp.WSGIApplication([
     ('/meta/',Meta),                                    
     ('/admin/', Admin),
     ('/message/(.*)/(.*)/',Message),
+    ('/user/(.*)/email/(.*)/',Email),
     ('/user/(.*)/', UserPage),
     ('/register', Register),
     ('/create/(.*)/', Create_Document),
