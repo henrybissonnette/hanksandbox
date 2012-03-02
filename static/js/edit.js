@@ -1,6 +1,6 @@
 	
-	var added_tags = new Array();
-	
+var added_tags = new Array();
+basic_MCE()	
 
 $(document).ready(function(){	
 	var doc = $('h1.document').metadata()
@@ -17,7 +17,7 @@ $(document).ready(function(){
 		return false ;
 	}
 	
-	basic_MCE()
+
 			
 	$('#favorite').click(function(){	
 												

@@ -30,7 +30,9 @@
 		
 		<h2 class="interface"> <span class="username">{{ page_user.username }}</span>'s Essays</h2>		
 		{% ifequal page_user.username user.username %}
-		<a href="/create/document/" class="aButton" title="Begin writing a new essay.">Create</a>
+		<a href="/create/document/" title="Begin writing a new essay.">
+			<img src="/static/images/Nib_48.png" height="36" width="36" />
+		</a>
 		{% endifequal %}
 		 <br/><br/>
 		

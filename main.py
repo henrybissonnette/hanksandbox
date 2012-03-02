@@ -321,6 +321,8 @@ class User(db.Model):
             for message in messages:
                 message.email()
             if comments or documents or messages:
+                mailing = {'user':user, 'comments':comments,'documents':documents,'messages':messages}
+                logging.info(mailing['user'].get_url(relative=False)+'email/cancel/')
                 return {'user':user, 'comments':comments,'documents':documents,'messages':messages}
             else:
                 return None
@@ -1123,6 +1125,9 @@ class Comment(db.Model):
         #    self.put()
         #else: 
         #    raise Exception('comment rating would be outside -1 to 5')
+
+    def stringKey(self):
+        return str(self.key())
          
     def subscribe(self, user):
         if not user.username in self.subscribers:

@@ -6,6 +6,10 @@
 {{document.title}}
 {% endblock title%}
 
+{% block meta %}
+<meta name="description" content="document.get_description" /> 
+{% endblock %}
+
 {% block scripts %}
 	{% if user.username == document.author.username and not document.special%}
 	<script type="text/javascript" src="/static/js/edit.js"></script>
@@ -63,7 +67,7 @@
 	{% endcomment %}
 	{% if document.revisions.0 and user.username == document.author.username or user.username in document.revisors %}
 	<form id="revisionMenu" method="post" action="revise/view/">
-		View a Revision of this Document:
+		Revisions:<br />
 		<select name="revisionName">
 			{% for revision in document.revisions %}
 				{% if user.username == document.author.username or user.username == revision.revisor.username %}
@@ -228,12 +232,16 @@
 		{% if not ticket %}
 		{% if user and user.username != document.author.username and not document.key in user.favorites%}
 			<div id="favorite_div" class="docinfoitem">
-			<a title="add to favorites" href="{{document.get_url}}favorite/add/" ><img src="/static/images/star_bw_48px.png" height="36" width="36" /></a>
+			<a title="add to favorites" href="{{document.get_url}}favorite/add/" >
+				<img src="/static/images/star_bw_48px.png" height="36" width="36" />
+			</a>
 			</div>
 			{% endif %}
 			{% if user and user.username != document.author.username and document.key in user.favorites %}
 			<div class="docinfoitem" id="favorite_div">
-			<a title="remove from favorites" href="{{document.get_url}}favorite/remove/" ><img src="/static/images/star_48px.png" height="36" width="36" /></a>
+			<a title="remove from favorites" href="{{document.get_url}}favorite/remove/" >
+				<img src="/static/images/star_48px.png" height="36" width="36" />
+			</a>
 			</div>
 		{% endif %}
 		<span class="docinfoitem">Favorites: {{document.favCount}}</span></br>

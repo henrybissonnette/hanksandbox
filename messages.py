@@ -177,7 +177,7 @@ ${comments}\r\n
 
 ${streamMessages}\r\n
             
-If you no longer want to receive emails from bliterati visit: $(OptOutUrl)
+If you no longer want to receive emails from bliterati visit: ${OptOutURL}
 ''')
 
 def prepareTextMailing(mailing):
