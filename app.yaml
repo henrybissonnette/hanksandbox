@@ -1,6 +1,6 @@
 
 application: essayhost
-version: 1-2-test
+version: 1-2-1-test
 runtime: python
 api_version: 1
 

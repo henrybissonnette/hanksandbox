@@ -23,6 +23,7 @@ Revise {{ originalDocument.title }}
 				{{originalDocument.author.username}}
 				{% if originalDocument.draft %} : draft{% endif %}
 			</a>
+		</h1>
 		<h1 class="document {filename:'{{originalDocument.filename}}',author:'{{originalDocument.author.username}}'}" >{{originalDocument.title}}</h1>
 		
 		{% if originalDocument.subtitle %}
@@ -84,7 +85,7 @@ Revise {{ originalDocument.title }}
 			{% endfor%}
 			<input type="hidden" name="username" value="{{originalDocument.author.username}}"/>
 			<input type="hidden" name="existing_filename" value="{{originalDocument.filename}}"/>
-		    <textarea name="document_content" class="mceBaseVertical" >{{originalDocument.content}}</textarea>
+		    <textarea name="document_content" class="mceRevise" >{{originalDocument.content}}</textarea>
 		    <br>
 		    {% if not originalDocument.special %}
 		    <input type="checkbox" name="draft" value="True" {% if originalDocument.draft or not originalDocument %}checked{% endif %} /> Mark as Draft

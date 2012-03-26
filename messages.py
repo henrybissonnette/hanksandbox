@@ -32,6 +32,9 @@ mainHTML =Template(u'''
             ${streamMessages} 
             
         </table>   
+        <br />
+        <br />
+        Do not respond to this email.<br />
         <a href="${OptOutURL}">please stop sending me email</a>
     </body>
     </html>
@@ -80,7 +83,7 @@ def prepareHTMLMailing(mailing):
                                    documents = tempDocuments,
                                    comments= tempComments,
                                    streamMessages= tempStreamMessages,  
-                                   OptOutURL = mailing['user'].get_url(relative=False)+'email/cancel/'                                
+                                   OptOutURL = mailing['user'].get_url(relative=False)+'email/none/'                                
                                    )
     return finalMessage
 
@@ -207,7 +210,7 @@ def prepareTextMailing(mailing):
                                    documents = tempDocuments,
                                    comments= tempComments,
                                    streamMessages= tempStreamMessages,    
-                                   OptOutURL = mailing['user'].get_url(relative=False)+'email/cancel/'                                 
+                                   OptOutURL = mailing['user'].get_url(relative=False)+'email/none/'                                 
                                    )
     return finalMessage
 

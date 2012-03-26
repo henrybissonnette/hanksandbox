@@ -1,4 +1,5 @@
 from BeautifulSoup import BeautifulSoup
+import logging
 
 def get_document(name, filename, title=None):
 
@@ -83,7 +84,7 @@ def resolve(obj, path):
             break
     return obj
 
-def cleaner(value, deleteChars = ' `~!@#$%^&*()+={[}]|\"\':;?/>.<,', replaceChars=[]):
+def cleaner(value, deleteChars = ' `~!@#$%^&*()+={[}]|\"\':\\;?/>.<,', replaceChars=[]):
     value = parse(value)
     for char, replacement in replaceChars:
         value = value.replace(char,replacement)

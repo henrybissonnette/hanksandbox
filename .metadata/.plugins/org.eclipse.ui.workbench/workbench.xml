@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workbench progressCount="41" version="2.0">
 <workbenchAdvisor/>
-<window height="1160" maximized="true" width="960" x="430" y="-9">
+<window height="1160" maximized="true" width="960" x="960" y="0">
 <fastViewData fastViewLocation="1024"/>
 <perspectiveBar>
 <itemSize x="160"/>
@@ -19,7 +19,7 @@
 <coolItem id="group.editor" itemType="typeGroupMarker"/>
 <coolItem id="com.aptana.editor.svg" itemType="typePlaceholder" x="-1" y="-1"/>
 <coolItem id="com.aptana.editor.yaml" itemType="typePlaceholder" x="-1" y="-1"/>
-<coolItem id="com.aptana.editor.css" itemType="typeToolBarContribution" x="-1" y="-1"/>
+<coolItem id="com.aptana.editor.css" itemType="typePlaceholder" x="-1" y="-1"/>
 <coolItem id="com.aptana.editor.text" itemType="typePlaceholder" x="-1" y="-1"/>
 <coolItem id="com.aptana.editor.js" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="com.aptana.editor.html" itemType="typeToolBarContribution" x="-1" y="-1"/>
@@ -38,29 +38,64 @@
 <part id="2"/>
 <part id="3"/>
 <part id="4"/>
+<part id="5"/>
+<part id="6"/>
+<part id="7"/>
+<part id="8"/>
+<part id="9"/>
+<part id="10"/>
+<part id="11"/>
 </presentation>
 </folder>
 </info>
 </editorArea>
-<editor id="com.aptana.editor.css" name="main.css" partName="main.css" title="main.css" tooltip="C:\Users\Hank\qv\static\css\main.css" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/qv/static/css/main.css"/>
-<editorState selectionHorizontalPixel="0" selectionLength="9" selectionOffset="2719" selectionTopPixel="2550"/>
-</editor>
-<editor id="com.aptana.editor.html" name="base.html" partName="base.html" title="base.html" tooltip="C:\Users\Hank\qv\templates\base.html" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/qv/templates/base.html"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="529" selectionTopPixel="0"/>
-</editor>
-<editor id="org.python.pydev.editor.PythonEditor" name="urls.py" partName="urls" title="urls" tooltip="C:\Users\Hank\qv\urls.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/qv/urls.py"/>
+<editor id="com.aptana.editor.html" name="comments.html" partName="comments.html" title="comments.html" tooltip="C:\Users\Hank\qv\apps\comment\templates\blocks\comments.html" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/qv/apps/comment/templates/blocks/comments.html"/>
 <editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
 </editor>
-<editor id="com.aptana.editor.html" name="index.html" partName="index.html" title="index.html" tooltip="C:\Users\Hank\qv\apps\homepage\templates\homepage\index.html" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/qv/apps/homepage/templates/homepage/index.html"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1959" selectionTopPixel="408"/>
-</editor>
-<editor activePart="true" focus="true" id="org.python.pydev.editor.PythonEditor" name="models.py" partName="models" title="models" tooltip="C:\Users\Hank\qv\apps\homepage\models.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/qv/apps/homepage/models.py"/>
+<editor id="org.python.pydev.editor.PythonEditor" name="urls.py" partName="urls (core)" title="urls (core)" tooltip="C:\Users\Hank\qv\apps\core\urls.py" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/qv/apps/core/urls.py"/>
 <editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
+</editor>
+<editor id="com.aptana.editor.html" name="deal.html" partName="deal.html" title="deal.html" tooltip="C:\Users\Hank\qv\apps\core\templates\core\deal.html" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/qv/apps/core/templates/core/deal.html"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
+</editor>
+<editor id="org.python.pydev.editor.PythonEditor" name="forms.py" partName="forms" title="forms" tooltip="C:\Users\Hank\qv\apps\core\forms.py" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/qv/apps/core/forms.py"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="1836"/>
+</editor>
+<editor id="org.python.pydev.editor.PythonEditor" name="models.py" partName="models (comment)" title="models (comment)" tooltip="C:\Users\Hank\qv\apps\comment\models.py" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/qv/apps/comment/models.py"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="741" selectionTopPixel="0"/>
+</editor>
+<editor id="org.python.pydev.editor.PythonEditor" name="models.py" partName="models (account)" title="models (account)" tooltip="C:\Users\Hank\qv\apps\account\models.py" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/qv/apps/account/models.py"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="868" selectionTopPixel="0"/>
+</editor>
+<editor id="org.python.pydev.editor.PythonEditor" name="urls.py" partName="urls (account)" title="urls (account)" tooltip="C:\Users\Hank\qv\apps\account\urls.py" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/qv/apps/account/urls.py"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1889" selectionTopPixel="0"/>
+</editor>
+<editor id="org.python.pydev.editor.PythonEditor" name="views.py" partName="views" title="views" tooltip="C:\Users\Hank\qv\apps\account\views.py" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/qv/apps/account/views.py"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="7891" selectionTopPixel="2941"/>
+</editor>
+<editor id="org.python.pydev.editor.PythonEditor" name="models.py" partName="models (auth)" title="models (auth)" tooltip="C:\Users\Hank\qv\dev\Lib\site-packages\django\contrib\auth\models.py" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/qv/dev/Lib/site-packages/django/contrib/auth/models.py"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="893" selectionTopPixel="3315"/>
+</editor>
+<editor id="com.aptana.editor.html" name="user_page.html" partName="user_page.html" title="user_page.html" tooltip="C:\Users\Hank\qv\apps\account\templates\account\user_page.html" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/qv/apps/account/templates/account/user_page.html"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="101" selectionTopPixel="0"/>
+</editor>
+<editor id="com.aptana.editor.html" name="activate.html" partName="activate.html" title="activate.html" tooltip="C:\Users\Hank\qv\apps\account\templates\account\activate.html" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/qv/apps/account/templates/account/activate.html"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="222" selectionTopPixel="0"/>
+</editor>
+<editor activePart="true" focus="true" id="org.python.pydev.editor.PythonEditor" name="models.py" partName="models (core)" title="models (core)" tooltip="C:\Users\Hank\qv\apps\core\models.py" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/Hank/qv/apps/core/models.py"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1124" selectionTopPixel="2686"/>
 </editor>
 </editors>
 <views>
@@ -160,7 +195,7 @@
 <page content="org.eclipse.ui.cheatsheets.views.CheatSheetView" label="LabelNotFound"/>
 </folder>
 </info>
-<info part="org.eclipse.ui.editorss" ratio="0.22316684" ratioLeft="420" ratioRight="1462" relationship="2" relative="left"/>
+<info part="org.eclipse.ui.editorss" ratio="0.17321998" ratioLeft="326" ratioRight="1556" relationship="2" relative="left"/>
 <info folder="true" part="terminalArea" ratio="0.75" ratioLeft="636" ratioRight="212" relationship="4" relative="org.eclipse.ui.editorss">
 <folder appearance="2" expanded="2">
 <page content="org.eclipse.ui.console.ConsoleView" label="LabelNotFound"/>
@@ -171,7 +206,7 @@
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
-<info folder="true" part="org.eclipse.ui.internal.ViewStack@65fe31" ratio="0.74920297" ratioLeft="705" ratioRight="236" relationship="2" relative="org.eclipse.ui.editorss">
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@65fe31" ratio="0.7673716" ratioLeft="508" ratioRight="154" relationship="2" relative="org.eclipse.ui.editorss">
 <folder activePageID="org.eclipse.ui.views.ContentOutline" appearance="2" expanded="2">
 <page content="org.eclipse.ui.views.ContentOutline" label="Outline"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
@@ -192,170 +227,180 @@
 <workingSets/>
 <navigationHistory>
 <editors>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/hanksandbox/templates/user.html"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/hanksandbox/templates/document.html"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/hanksandbox/main.py"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/hanksandbox/templates/circle.html"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/hanksandbox/messages.py"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/hanksandbox/main.py"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.css" uri="file:/C:/Users/Hank/qv/static/css/main.css"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/qv/templates/base.html"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/urls.py"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/qv/apps/homepage/templates/homepage/index.html"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/qv/apps/core/templates/core/index.html"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/apps/core/forms.py"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/apps/homepage/models.py"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/settings.py"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/apps/core/models.py"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/apps/core/views.py"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/apps/comment/models.py"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/apps/subscription/models.py"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/apps/account/models.py"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/apps/account/urls.py"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/qv/apps/account/templates/account/feedback.html"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/apps/account/views.py"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/dev/Lib/site-packages/django/contrib/auth/models.py"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/qv/apps/account/templates/account/user_page.html"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/qv/apps/account/templates/account/signin.html"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/qv/apps/account/templates/account/base.html"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/qv/apps/account/templates/account/qiviews.html"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/qv/apps/account/templates/activate.html"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/apps/comment/models.py"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/apps/account/models.py"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/apps/account/views.py"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/dev/Lib/site-packages/django/contrib/auth/models.py"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" uri="file:/C:/Users/Hank/qv/apps/account/templates/account/activate.html"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/apps/core/models.py"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/apps/comment/models.py"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/apps/account/models.py"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/apps/account/views.py"/>
+<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/C:/Users/Hank/qv/dev/Lib/site-packages/django/contrib/auth/models.py"/>
 </editors>
-<item historyLabel="main" index="2">
-<position info="not_deleted" x="8798" y="17"/>
+<item historyLabel="views (core)" index="1">
+<position/>
 </item>
-<item historyLabel="user.html" index="0">
-<position info="not_deleted" x="5457" y="0"/>
+<item historyLabel="models (comment)" index="2">
+<position info="not_deleted" x="741" y="0"/>
 </item>
-<item historyLabel="main" index="2">
-<position info="not_deleted" x="7880" y="0"/>
-</item>
-<item historyLabel="user.html" index="0">
-<position info="not_deleted" x="5399" y="69"/>
-</item>
-<item historyLabel="document.html" index="1">
-<position info="not_deleted" x="1089" y="0"/>
-</item>
-<item historyLabel="user.html" index="0">
-<position info="not_deleted" x="5600" y="0"/>
-</item>
-<item historyLabel="document.html" index="1">
-<position info="not_deleted" x="9593" y="18"/>
-</item>
-<item historyLabel="user.html" index="0">
-<position info="not_deleted" x="5582" y="0"/>
-</item>
-<item historyLabel="main" index="2">
-<position info="not_deleted" x="7880" y="0"/>
-</item>
-<item historyLabel="user.html" index="0">
-<position info="not_deleted" x="5582" y="0"/>
-</item>
-<item historyLabel="user.html" index="0">
-<position info="not_deleted" x="5598" y="0"/>
-</item>
-<item historyLabel="circle.html" index="3">
-<position info="not_deleted" x="146" y="0"/>
-</item>
-<item historyLabel="messages" index="4">
-<position info="not_deleted" x="4750" y="0"/>
-</item>
-<item historyLabel="main" index="2">
-<position info="not_deleted" x="28177" y="7"/>
-</item>
-<item historyLabel="messages" index="4">
-<position info="not_deleted" x="1185" y="0"/>
-</item>
-<item historyLabel="main" index="5">
-<position info="not_deleted" x="28177" y="7"/>
-</item>
-<item historyLabel="main.css" index="6">
-<position info="not_deleted" x="903" y="0"/>
-</item>
-<item historyLabel="base.html" index="7">
-<position info="not_deleted" x="1698" y="0"/>
-</item>
-<item historyLabel="urls" index="8">
+<item historyLabel="models" index="3">
 <position info="not_deleted" x="0" y="0"/>
 </item>
-<item historyLabel="base.html" index="7">
-<position info="not_deleted" x="1698" y="0"/>
+<item historyLabel="models (comment)" index="2">
+<position info="not_deleted" x="741" y="0"/>
 </item>
-<item historyLabel="urls" index="8">
+<item historyLabel="models (core)" index="0">
+<position info="not_deleted" x="1672" y="0"/>
+</item>
+<item historyLabel="models (comment)" index="2">
+<position info="not_deleted" x="741" y="0"/>
+</item>
+<item historyLabel="models (account)" index="4">
+<position info="not_deleted" x="868" y="0"/>
+</item>
+<item historyLabel="urls (account)" index="5">
 <position info="not_deleted" x="0" y="0"/>
 </item>
-<item historyLabel="main.css" index="6">
-<position info="not_deleted" x="903" y="0"/>
-</item>
-<item historyLabel="base.html" index="7">
-<position info="not_deleted" x="481" y="15"/>
-</item>
-<item historyLabel="index.html" index="9">
-<position info="not_deleted" x="877" y="0"/>
-</item>
-<item historyLabel="main.css" index="6">
-<position info="not_deleted" x="903" y="0"/>
-</item>
-<item historyLabel="index.html" index="9">
-<position info="not_deleted" x="877" y="0"/>
-</item>
-<item historyLabel="main.css" index="6">
-<position info="not_deleted" x="6051" y="8"/>
-</item>
-<item historyLabel="base.html" index="7">
-<position info="not_deleted" x="481" y="15"/>
-</item>
-<item historyLabel="urls" index="8">
+<item historyLabel="feedback.html" index="6">
 <position info="not_deleted" x="0" y="0"/>
 </item>
-<item historyLabel="base.html" index="7">
-<position info="not_deleted" x="529" y="0"/>
+<item historyLabel="urls (account)" index="5">
+<position info="not_deleted" x="1490" y="0"/>
 </item>
-<item historyLabel="index.html" index="9">
-<position info="not_deleted" x="877" y="0"/>
-</item>
-<item historyLabel="main.css" index="6">
-<position info="not_deleted" x="4095" y="0"/>
-</item>
-<item historyLabel="index.html" index="9">
-<position info="not_deleted" x="877" y="0"/>
-</item>
-<item historyLabel="index.html | core" index="10">
+<item historyLabel="views.py | account" index="7">
 <position info="not_deleted" x="0" y="0"/>
 </item>
-<item historyLabel="index.html" index="9">
-<position info="not_deleted" x="877" y="0"/>
+<item historyLabel="urls (account)" index="5">
+<position info="not_deleted" x="1490" y="0"/>
 </item>
-<item historyLabel="main.css" index="6">
-<position info="not_deleted" x="4244" y="0"/>
-</item>
-<item historyLabel="index.html" index="9">
-<position info="not_deleted" x="1361" y="0"/>
-</item>
-<item historyLabel="main.css" index="6">
-<position info="not_deleted" x="4267" y="3"/>
-</item>
-<item historyLabel="index.html" index="9">
-<position info="not_deleted" x="1361" y="0"/>
-</item>
-<item historyLabel="main.css" index="6">
-<position info="not_deleted" x="4267" y="3"/>
-</item>
-<item historyLabel="index.html" index="9">
-<position info="not_deleted" x="1361" y="0"/>
-</item>
-<item historyLabel="main.css" index="6">
-<position info="not_deleted" x="4267" y="3"/>
-</item>
-<item historyLabel="index.html" index="9">
-<position info="not_deleted" x="1361" y="0"/>
-</item>
-<item historyLabel="main.css" index="6">
-<position info="not_deleted" x="2719" y="9"/>
-</item>
-<item historyLabel="index.html" index="9">
-<position info="not_deleted" x="1959" y="0"/>
-</item>
-<item historyLabel="forms" index="11">
+<item historyLabel="views.py | account" index="7">
 <position info="not_deleted" x="0" y="0"/>
 </item>
-<item historyLabel="index.html" index="9">
-<position info="not_deleted" x="1959" y="0"/>
+<item historyLabel="urls (account)" index="5">
+<position info="not_deleted" x="1509" y="0"/>
 </item>
-<item historyLabel="models" index="12">
+<item historyLabel="views.py | account" index="7">
+<position info="not_deleted" x="8719" y="0"/>
+</item>
+<item historyLabel="models (auth)" index="8">
+<position info="not_deleted" x="893" y="0"/>
+</item>
+<item historyLabel="views.py | account" index="7">
+<position info="not_deleted" x="8522" y="0"/>
+</item>
+<item historyLabel="user_page.html" index="9">
+<position info="not_deleted" x="122" y="0"/>
+</item>
+<item historyLabel="signin.html" index="10">
+<position info="not_deleted" x="0" y="35"/>
+</item>
+<item historyLabel="user_page.html" index="9">
+<position info="not_deleted" x="122" y="0"/>
+</item>
+<item historyLabel="base.html" index="11">
 <position info="not_deleted" x="0" y="0"/>
 </item>
-<item historyLabel="settings" index="13">
+<item historyLabel="user_page.html" index="9">
+<position info="not_deleted" x="122" y="0"/>
+</item>
+<item historyLabel="qiviews.html" index="12">
+<position info="not_deleted" x="39" y="1170"/>
+</item>
+<item historyLabel="user_page.html" index="9">
+<position info="not_deleted" x="101" y="0"/>
+</item>
+<item historyLabel="views.py | account" index="7">
+<position info="not_deleted" x="8614" y="0"/>
+</item>
+<item historyLabel="user_page.html" index="9">
+<position info="not_deleted" x="101" y="0"/>
+</item>
+<item historyLabel="models (auth)" index="8">
+<position info="not_deleted" x="893" y="0"/>
+</item>
+<item historyLabel="views.py | account" index="7">
+<position info="not_deleted" x="8614" y="0"/>
+</item>
+<item historyLabel="urls (account)" index="5">
+<position info="not_deleted" x="1466" y="0"/>
+</item>
+<item historyLabel="views.py | account" index="7">
+<position info="not_deleted" x="7763" y="7"/>
+</item>
+<item historyLabel="urls (account)" index="5">
+<position info="not_deleted" x="1473" y="0"/>
+</item>
+<item historyLabel="views.py | account" index="7">
+<position info="not_deleted" x="7588" y="0"/>
+</item>
+<item historyLabel="activate.html" index="13">
 <position info="not_deleted" x="0" y="0"/>
 </item>
-<item active="true" historyLabel="models" index="12">
+<item historyLabel="views.py | account" index="7">
+<position info="not_deleted" x="7588" y="0"/>
+</item>
+<item historyLabel="models (auth)" index="8">
+<position info="not_deleted" x="893" y="0"/>
+</item>
+<item historyLabel="views.py | account" index="7">
+<position info="not_deleted" x="7588" y="0"/>
+</item>
+<item historyLabel="urls (account)" index="5">
 <position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="models (comment)" index="14">
+<position info="not_deleted" x="741" y="0"/>
+</item>
+<item historyLabel="models (account)" index="15">
+<position info="not_deleted" x="868" y="0"/>
+</item>
+<item historyLabel="views" index="16">
+<position info="not_deleted" x="7588" y="0"/>
+</item>
+<item historyLabel="models (auth)" index="17">
+<position info="not_deleted" x="893" y="0"/>
+</item>
+<item historyLabel="activate.html" index="18">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="views" index="16">
+<position info="not_deleted" x="7891" y="0"/>
+</item>
+<item historyLabel="urls (account)" index="5">
+<position info="not_deleted" x="1889" y="0"/>
+</item>
+<item historyLabel="activate.html" index="18">
+<position info="not_deleted" x="222" y="0"/>
+</item>
+<item historyLabel="models (core)" index="19">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="models (comment)" index="20">
+<position info="not_deleted" x="741" y="0"/>
+</item>
+<item historyLabel="models (account)" index="21">
+<position info="not_deleted" x="868" y="0"/>
+</item>
+<item historyLabel="views" index="22">
+<position info="not_deleted" x="7891" y="0"/>
+</item>
+<item active="true" historyLabel="models (auth)" index="23">
+<position info="not_deleted" x="893" y="0"/>
 </item>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
@@ -378,50 +423,50 @@
 </trimLayout>
 </window>
 <mruList>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="settings.py" tooltip="C:\Users\Hank\qv\settings.py">
-<persistable uri="file:/C:/Users/Hank/qv/settings.py"/>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="models.py" tooltip="C:\Users\Hank\qv\apps\core\models.py">
+<persistable uri="file:/C:/Users/Hank/qv/apps/core/models.py"/>
 </file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="models.py" tooltip="C:\Users\Hank\qv\apps\homepage\models.py">
-<persistable uri="file:/C:/Users/Hank/qv/apps/homepage/models.py"/>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="activate.html" tooltip="C:\Users\Hank\qv\apps\account\templates\account\activate.html">
+<persistable uri="file:/C:/Users/Hank/qv/apps/account/templates/account/activate.html"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="activate.html" tooltip="C:\Users\Hank\qv\apps\account\templates\activate.html">
+<persistable uri="file:/C:/Users/Hank/qv/apps/account/templates/activate.html"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="qiviews.html" tooltip="C:\Users\Hank\qv\apps\account\templates\account\qiviews.html">
+<persistable uri="file:/C:/Users/Hank/qv/apps/account/templates/account/qiviews.html"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="base.html" tooltip="C:\Users\Hank\qv\apps\account\templates\account\base.html">
+<persistable uri="file:/C:/Users/Hank/qv/apps/account/templates/account/base.html"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="signin.html" tooltip="C:\Users\Hank\qv\apps\account\templates\account\signin.html">
+<persistable uri="file:/C:/Users/Hank/qv/apps/account/templates/account/signin.html"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="user_page.html" tooltip="C:\Users\Hank\qv\apps\account\templates\account\user_page.html">
+<persistable uri="file:/C:/Users/Hank/qv/apps/account/templates/account/user_page.html"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="models.py" tooltip="C:\Users\Hank\qv\dev\Lib\site-packages\django\contrib\auth\models.py">
+<persistable uri="file:/C:/Users/Hank/qv/dev/Lib/site-packages/django/contrib/auth/models.py"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="views.py" tooltip="C:\Users\Hank\qv\apps\account\views.py">
+<persistable uri="file:/C:/Users/Hank/qv/apps/account/views.py"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="feedback.html" tooltip="C:\Users\Hank\qv\apps\account\templates\account\feedback.html">
+<persistable uri="file:/C:/Users/Hank/qv/apps/account/templates/account/feedback.html"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="urls.py" tooltip="C:\Users\Hank\qv\apps\account\urls.py">
+<persistable uri="file:/C:/Users/Hank/qv/apps/account/urls.py"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="models.py" tooltip="C:\Users\Hank\qv\apps\account\models.py">
+<persistable uri="file:/C:/Users/Hank/qv/apps/account/models.py"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="models.py" tooltip="C:\Users\Hank\qv\apps\subscription\models.py">
+<persistable uri="file:/C:/Users/Hank/qv/apps/subscription/models.py"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="models.py" tooltip="C:\Users\Hank\qv\apps\comment\models.py">
+<persistable uri="file:/C:/Users/Hank/qv/apps/comment/models.py"/>
 </file>
 <file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="forms.py" tooltip="C:\Users\Hank\qv\apps\core\forms.py">
 <persistable uri="file:/C:/Users/Hank/qv/apps/core/forms.py"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="index.html" tooltip="C:\Users\Hank\qv\apps\core\templates\core\index.html">
-<persistable uri="file:/C:/Users/Hank/qv/apps/core/templates/core/index.html"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="index.html" tooltip="C:\Users\Hank\qv\apps\homepage\templates\homepage\index.html">
-<persistable uri="file:/C:/Users/Hank/qv/apps/homepage/templates/homepage/index.html"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="urls.py" tooltip="C:\Users\Hank\qv\urls.py">
-<persistable uri="file:/C:/Users/Hank/qv/urls.py"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="base.html" tooltip="C:\Users\Hank\qv\templates\base.html">
-<persistable uri="file:/C:/Users/Hank/qv/templates/base.html"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.css" name="main.css" tooltip="C:\Users\Hank\qv\static\css\main.css">
-<persistable uri="file:/C:/Users/Hank/qv/static/css/main.css"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="messages.py" tooltip="C:\Users\Hank\hanksandbox\messages.py">
-<persistable uri="file:/C:/Users/Hank/hanksandbox/messages.py"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="circle.html" tooltip="C:\Users\Hank\hanksandbox\templates\circle.html">
-<persistable uri="file:/C:/Users/Hank/hanksandbox/templates/circle.html"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="register.html" tooltip="C:\Users\Hank\hanksandbox\templates\register.html">
-<persistable uri="file:/C:/Users/Hank/hanksandbox/templates/register.html"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="home.html" tooltip="C:\Users\Hank\hanksandbox\templates\home.html">
-<persistable uri="file:/C:/Users/Hank/hanksandbox/templates/home.html"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="base.html" tooltip="C:\Users\Hank\hanksandbox\templates\base.html">
-<persistable uri="file:/C:/Users/Hank/hanksandbox/templates/base.html"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.html" name="streamDocument.html" tooltip="C:\Users\Hank\hanksandbox\templates\streamDocument.html">
-<persistable uri="file:/C:/Users/Hank/hanksandbox/templates/streamDocument.html"/>
-</file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="com.aptana.editor.js" name="tag_browser.js" tooltip="C:\Users\Hank\hanksandbox\static\js\tag_browser.js">
-<persistable uri="file:/C:/Users/Hank/hanksandbox/static/js/tag_browser.js"/>
 </file>
 </mruList>
 </workbench>

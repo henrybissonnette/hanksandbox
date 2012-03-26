@@ -107,6 +107,17 @@ div#bottomlinks{
 /**************WIDELY USED***********************/
 /************************************************/
 
+.tooltip{
+	background-image:url('/static/images/tooltip-gray24.png');
+	background-repeat: no-repeat;
+	height: 24px;
+	width: 24px;
+	padding: 0px;
+	margin: 0px;
+	display: block;
+	float: right;
+}
+
 .highlight{
 	background-color: #ff0;
 }
@@ -998,6 +1009,14 @@ div.marginalNote{
 #FAQ .A{
 	font-weight:bold;
 	font-size: 20px;
+}
+
+#revise{
+	background: yellow;
+	font-size: 20px;
+	border:solid 1px #663;
+	padding-right:2px;
+	padding-left:2px;
 }
 
 .mceRevise{

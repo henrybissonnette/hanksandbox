@@ -260,6 +260,7 @@ class User(db.Model):
     namePreference = db.StringProperty(default='username')
     object_type = db.StringProperty(default = 'User')
     username = db.StringProperty()
+    webpage = db.LinkProperty()
     
     def acceptInvitation(self, username):
         self.circlepermissions.append(username)
@@ -680,7 +681,7 @@ class Document(db.Model):
     authorname = db.StringProperty()
     content = db.TextProperty()
     date = db.DateTimeProperty(auto_now_add=True)
-    _description=db.StringProperty(default = '')
+    _description=db.StringProperty(default = '',multiline=True)
     draft = db.BooleanProperty(default=True)
     favorites = db.StringListProperty(default=[])
     favoriteTally = db.IntegerProperty(default = 0)
@@ -817,14 +818,20 @@ class Document(db.Model):
                 #stripped = stripped[:n]+stripped[n+5:]
         return stripped
     
-    def set_description(self, words):
-        words = functions.parse(words)
+    def set_description(self, words=''):
+        if words:
+            words = functions.parse(words)        
+        else:
+            words = functions.parse(self.content)
         words = words[:150]
-        self._description=words
+        self._description=words    
+        self.put()
         
     def get_description(self):
+        if not self._description:
+            self.set_description()
         return self._description
-    
+            
     def get_leaftags(self):
         return [Tag.get_by_key_name(title) for title in self.leaftags]
     
@@ -836,6 +843,14 @@ class Document(db.Model):
             return self.parentDocument.get_origin()
         else:
             return self
+        
+    def set_filename(self, filename=None):
+        if filename:
+            filename = functions.cleaner(filename.lower(), replaceChars=[[' ','-'],['_','-']])
+        else:
+            filename = functions.cleaner(title.lower(),replaceChars=[[' ','-'],['_','-']])
+        self.filename = filename
+        self.put()
         
     def set_rating(self):
         votes = self.ratings 
@@ -1506,12 +1521,14 @@ class AJAX(webapp.RequestHandler):
 class baseHandler(webapp.RequestHandler):
     
     def get(self,*args):
-        if self.usernameCheck():
-            self.myGet(*args)
+        if self.appspotRedirect():
+            if self.usernameCheck():
+                self.myGet(*args)
     
     def post(self,*args):
-        if self.usernameCheck():
-            self.myPost(*args)
+        if self.appspotRedirect():
+            if self.usernameCheck():
+                self.myPost(*args)
     
     def boot(self):
         self.redirect('/')
@@ -1521,6 +1538,14 @@ class baseHandler(webapp.RequestHandler):
         if not user:
             return True
             self.boot()
+    
+    def appspotRedirect(self):
+        url = self.request.url
+        if 'appspot.com' in url:
+            self.redirect(url.replace('essayhost.appspot.com','bliterati.com'))
+            return False
+        else:
+            return True
         
     def usernameCheck(self):
         googleUser = users.get_current_user()
@@ -1840,7 +1865,6 @@ class Create_Document(baseHandler):
         new = False
         existing_filename = self.request.get('existing_filename')
         filename = self.request.get('filename')
-        filename = functions.cleaner(filename)
         description = self.request.get('description')
         description = functions.cleaner(description,deleteChars = '`~@#^*{[}]|/><)')
         username = self.request.get('username')
@@ -1852,7 +1876,20 @@ class Create_Document(baseHandler):
         
         # username only gets passed on an edit
         if username:
-            document = get_document(username,existing_filename)
+            if filename == existing_filename:
+                document = get_document(username,existing_filename)
+                # on the off chance that somehow the document has been deleted
+                if not document:
+                    document = Document()
+                    draft = 'True'
+            else:
+                # if user changed filename save as new
+                old = get_document(username,existing_filename)
+                document = Document()
+                draft = 'True'
+                if not old.virgin:
+                    document.virgin = False
+                
         else:
             new = True
             # if new document uses existing filename this will happen
@@ -1889,7 +1926,7 @@ class Create_Document(baseHandler):
         document.title = title
         document.subtitle = escape(self.request.get('subtitle'))
         if filename:
-            document.filename = filename
+            document.set_filename(filename)
         document.set_description(description)
         if document.type:
             document.type.append(documentType)
@@ -1904,6 +1941,7 @@ class Create_Document(baseHandler):
             document.filename = str(document.key())
             self.makeTicket(document,user)
         if not document.draft and document.virgin:
+            document.date = datetime.datetime.now()
             document.virgin = False
             document.createEvents()
         if admin == 'True':
@@ -2014,9 +2052,9 @@ class FAQ(baseHandler):
 class Email(baseHandler):
     def myGet(self,username,request):
         if request == 'none':
-            cancel(username,request)
+            self.cancel(username)
         
-    def cancel(self):
+    def cancel(self,username):
         user = get_user()
         if not user:
             self.redirect(users.create_login_url(self.request.uri))
@@ -2822,12 +2860,17 @@ class UserInfo(baseHandler):
         threshold = self.request.get('threshold')
         displayname = self.request.get('displayname')
         email = self.request.get('email')
+        webpage = self.request.get('webpage')
           
         user = get_user()
         if email == 'daily':
             user.email = 3
         if email == 'never':
             user.email = 0
+        try:
+            user.webpage = webpage
+        except:
+            pass
         user.firstname = firstname
         user.lastname = lastname
         user.minimizeThreshold = int(threshold)

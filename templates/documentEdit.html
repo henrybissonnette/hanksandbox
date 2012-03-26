@@ -2,7 +2,10 @@
 		<table>
 			{% if not doc.special %}
 			<tr>
-				<td>File Name: </td><td><input type="text" id="filename" name="filename" size=40 value="{{doc.filename}}" /></td>
+				<td>
+					File Name: </td><td><input type="text" id="filename" name="filename" size=40 value="{{doc.filename}}" /> 
+					<span class="tooltip" title="Filenames can be used to create multiple versions of the same file. The filename will also be displayed in the URL for this document. The characters a-z, 0-9, and - (hyphen) are allowed. Search engines consider URLs when ordering search results. So if you want to connect you essay to a particular search term use that term in your filename. Though it's best not to create a keyword-heavy spammy-looking url that might scare away human visitors."></span>
+				</td>
 			</tr>
 			{% endif %}
 			<tr>

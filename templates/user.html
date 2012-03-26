@@ -181,6 +181,12 @@
 							<td>Last Name:</td>
 							<td>{{page_user.lastname}}</td>
 						</tr>
+						{% if page_user.webpage %}
+						<tr>
+							<td>Web Page:</td>
+							<td>{{page_user.webpage}}</td>
+						</tr>
+						{% endif %}
 						{% if user.username == page_user.username or user.is_admin%}
 						<tr>
 							<td>

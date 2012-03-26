@@ -7,7 +7,7 @@
 {% endblock title%}
 
 {% block meta %}
-<meta name="description" content="document.get_description" /> 
+<meta name="description" content="{{document.get_description}}" /> 
 {% endblock %}
 
 {% block scripts %}
@@ -59,7 +59,6 @@
 {% endcomment %}
 <div class="tab {name:'Document',initial:'true'}">
 	
-	
 	{% comment %}
 	---------------------------------------------------------
 	(((		REVISIONS
@@ -91,7 +90,7 @@
 	{% endcomment %}
 	<div id="interactBar">
 		{% if user.username in document.author.circle and not ticket%}
-		<a href="revise/new/">revise</a>
+		<a href="revise/new/" title="Start a new revision of this document." id="revise">Revise</a>
 		{% endif %}
 	</div>
 	{% comment %}
@@ -125,7 +124,7 @@
 	(((		REPLY DOCUMENT
 	---------------------------------------------------------
 	{% endcomment %}
-	{% if not ticket%}
+	{% if not ticket and not document.draft%}
 	
 	<div id="documentReplies">
 		
@@ -381,7 +380,7 @@
 	{% endif %}	
 	{% comment %}
 	---------------------------------------------------------
-			TAG								     	  )))
+			TAG								     	  	)))
 	---------------------------------------------------------
 	{% endcomment %}
 	</div>
