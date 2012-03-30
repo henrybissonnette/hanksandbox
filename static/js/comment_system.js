@@ -135,7 +135,14 @@ $(document).ready(function(){
 /* RATING THRESHOLD */
 
 $(document).ready(function(){
-	var threshold = $('.threshold').attr('value')
+	var threshold
+	if ($('.threshold').attr('value')){
+		threshold = $('.threshold').attr('value')
+	}
+	else{
+		threshold = 3;
+	}
+	
 	$('.comment').each(function(){
 				if ($('.commentRating',this).attr('value') < threshold){
 					$('.header',this).trigger('click')

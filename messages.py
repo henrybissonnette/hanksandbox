@@ -193,12 +193,12 @@ def prepareTextMailing(mailing):
         tempDocuments = 'NEW DOCUMENTS \r\n\r\n'
         
         for documentEvent in mailing['documents']:
-            tempDocuments = tempDocuments + templateDocumentHTML(documentEvent)   
+            tempDocuments = tempDocuments + templateDocument(documentEvent)   
     
     if mailing['comments']:        
         tempComments = 'NEW COMMENT\r\n\r\n'
         for commentEvent in mailing['comments']:
-            tempComments = tempComments + templateCommentHTML(commentEvent)
+            tempComments = tempComments + templateComment(commentEvent)
     
     if mailing['messages']:   
         tempStreamMessages = 'RECENT EVENTS\r\n\r\n'
@@ -214,7 +214,7 @@ def prepareTextMailing(mailing):
                                    )
     return finalMessage
 
-def templateDocumentHTML(documentEvent):
+def templateDocument(documentEvent):
     email_document = Template(u"""
     ${reasons}
     ${title}\r\n
@@ -230,7 +230,7 @@ def templateDocumentHTML(documentEvent):
                                      description = documentEvent.object.get_description()
                                      )    
     
-def templateCommentHTML(commentEvent):
+def templateComment(commentEvent):
     email_comment = Template(u"""
     ${reasons}
     Subject: ${subject}\r\n
@@ -248,7 +248,7 @@ def templateCommentHTML(commentEvent):
 
       
     
-def templateReasonsHTML(reasonsList):
+def templateReasons(reasonsList):
     email_reason = Template(u"${thisReason}\r\n")  
     tempReasons = ''
     for reason in reasonsList:
